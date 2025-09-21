@@ -1,0 +1,191 @@
+@font-face {
+    font-family: "Exo";
+    src: url("fonts/exo-regular-webfont.woff2") format("woff2"),
+         url("fonts/exo-regular-webfont.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Exo";
+    src: url("fonts/exo-bold-webfont.woff2") format("woff2"),
+         url("fonts/exo-bold-webfont.woff") format("woff");
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Exo";
+    src: url("fonts/exo-italic-webfont.woff2") format("woff2"),
+         url("fonts/exo-italic-webfont.woff") format("woff");
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+body{
+    font-family: "Exo", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+div {
+  background: radial-gradient(circle at center, #f0f0f0, #d0d0d0);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+}
+
+.photo-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 35px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    position: relative;
+}
+
+.photo-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;     /*50% 50%*/
+    min-height: 500px;
+    position: relative;
+}
+
+.photo{
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
+    position: relative;
+    overflow: hidden;
+}
+
+.photo-left {
+    background-image: url("../photos/DSC04436_edited.jpg");
+}
+
+.photo-right {
+    background-image: url("../photos/DSC04472_edited.jpg");
+}
+
+.photo::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        rgba(0,0,0,0.3) 0%, 
+        rgba(0,0,0,0.1) 50%, 
+        rgba(0,0,0,0.3) 100%
+    );
+}
+
+.text-overlay{
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(255, 255, 255);
+    text-align: center;
+    padding: 30px 40px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+.text-overlay h1 {
+    font-size: 2.7rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    letter-spacing: 3px;
+}
+
+.text-overlay p {
+    font-size: 1.2rem;
+    font-weight: normal;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+
+/* Navigation Styles */
+nav {
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: -15px 0;
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+}
+
+nav li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    padding: 12px 24px;
+    background: rgba(0, 0, 0, 0.85);
+    border-radius: 8px;
+    /*transition: all 0.3s ease;*/  /* Smooth transition for hover effects */
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+nav li a:hover {
+    background: rgba(0, 0, 0, 0.95);
+    transform: scale(1.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .photo-container {
+        grid-template-columns: 1fr;
+        min-height: 600px;
+    }
+    
+    .text-overlay {
+        padding: 30px 40px;
+    }
+    
+    .text-overlay h1 {
+        font-size: 2.5rem;
+        letter-spacing: 2px;
+    }
+    
+    .text-overlay p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .text-overlay {
+        padding: 25px 30px;
+    }
+    
+    .text-overlay h1 {
+        font-size: 2rem;
+        letter-spacing: 1px;
+    }
+    
+    .text-overlay p {
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+    }
+}
