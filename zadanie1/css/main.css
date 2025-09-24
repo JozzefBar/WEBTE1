@@ -31,10 +31,6 @@ body{
     padding: 0;
 }
 
-div {
-  background: radial-gradient(circle at center, #f0f0f0, #d0d0d0);
-}
-
 h1, h2, h3, h4, h5, h6 {
     font-weight: bold;
 }
@@ -46,14 +42,7 @@ h3 {
     padding-left: 15px;
     border-left: 4px solid #000000;
     text-align: left;
-}
-
-section {
-    padding: 30px;
-    margin-top: 10px;
-    margin-bottom: 20px;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    display: flow-root;
 }
 
 article {
@@ -63,15 +52,27 @@ article {
     text-align: left;
 }
 
+section {
+    padding: 30px;
+    margin-top: 25px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+}
+
 footer {
     text-align: center;
-    padding: 10px;
     background: #333;
+    padding: 10px 0 10px 0;     /*padding-top: 10px; padding-bottom: 10px;*/ 
     color: rgb(217, 217, 217);
     width: 100%;
 }
 
 /*photo header*/
+.photo-div{
+    background: radial-gradient(circle at center, #f0f0f0, #d0d0d0);
+}
+
 .photo-section {
     max-width: 1200px;
     margin: 0 auto;
@@ -96,13 +97,24 @@ footer {
     overflow: hidden;
 }
 
-.photo-left {
-    background-image: url("../photos/header_profile.jpg");
-}
+/* O mne */
+header.page-home .photo-left  { background-image: url("../photos/header_profile.jpg"); }
+header.page-home .photo-right { background-image: url("../photos/header_profile2.jpg"); }
 
-.photo-right {
-    background-image: url("../photos/header_profile2.jpg");
-}
+/* Životopis */
+header.page-cv .photo-left  { background-image: url("../photos/curriculum_photo2.jpg"); }
+header.page-cv .photo-right { background-image: url("../photos/curriculum_photo.jpg"); } 
+
+/* https://www.asaporg.com/practical-business-writing-tips-for-office-managers */
+/* https://titanbusinesssuites.com/importance-of-having-a-professional-office/ */
+
+/* Rozvrh */    
+header.page-schedule .photo-left  { background-image: url("../photos/timetable.jpg"); }
+header.page-schedule .photo-right { background-image: url("../photos/timetable2.jpg"); }
+
+/* https://sk.wikipedia.org/wiki/Fakulta_elektrotechniky_a_informatiky_Slovenskej_technickej_univerzity_v_Bratislave */
+/* https://able.ac/blog/writing-schedule/ */
+
 
 .photo::before {
     content: '';
@@ -173,30 +185,29 @@ nav li a {
     color: white;
     font-weight: bold;
     padding: 12px 24px;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.7);
     border-radius: 8px;
     /*transition: all 0.3s ease;*/  /* Smooth transition for hover effects */
     border: 1px solid rgba(255,255,255,0.2);
 }
 
 nav li a:hover {
-    background: rgba(0, 0, 0, 0.95);
+    background: rgba(0, 0, 0, 1);
     transform: scale(1.1);
 }
 
 /* Quote */
-aside {
-    font-size: 1.1rem;         
+aside.inline-quote {
+    font-size: 1rem;         
     font-weight: bold;
     font-style: italic;
     color: #2c3e50;
     text-align: center;
-    margin: 5px 15px;
-    padding: 10px;
-    background: rgba(208, 208, 208, 0.1);
+    margin-left: 6px;
+    margin-right: 6px;
+    background: rgba(208, 208, 208, 0.5);
     border-radius: 8px;
-    border: 2px solid #000000;
-    width: fit-content;
+    float: left;
 }
 
 /*Profile pic */
@@ -207,6 +218,178 @@ aside {
     margin: 10px 25px 20px 0;      
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+ul {
+    margin-left: 15px;  
+}
+
+ul li {
+  font-size: 1rem;       
+}
+
+ul li::marker {
+  font-size: 1.2rem;        
+  color: #313131;           
+}
+
+/* Index2 */
+.cv-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr;   /* dva stĺpce */
+  min-height: 700px;
+  border-radius: 15px;
+}
+
+.cv-left {
+  background-color: #f4f4f4;
+  padding: 30px 40px;
+  text-align: right;
+}
+
+.cv-left ul {
+  direction: rtl;         
+  padding-right: 20px;    
+  text-align: right;       
+}
+
+.cv-left h3 {
+  text-align: right;
+  border-left: none;      
+  border-right: 4px solid #000000;
+  padding-right: 15px;
+}
+
+.cv-right {
+  background-color: #ffffff;
+  padding: 30px 40px;
+}
+
+.cv-photo {
+  width: 180px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.edu-list li{
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  align-items: start;
+  margin: 14px 0;
+}
+
+.edu-time{
+  color: #222;
+  font-weight: 600;
+}
+.edu-info strong{
+  font-weight: 700;
+}
+.edu-info > div{
+  margin-top: 2px;
+}
+
+
+/* Index3 */
+.schedule-wrap{
+  overflow-x: auto;              
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+  background: #fff;
+  border-radius: 8px;
+}
+
+.schedule{
+  width: 100%;
+  min-width: 900px;
+  border-collapse: separate;
+  font-size: 0.95rem;
+}
+
+.schedule thead th{
+  position: sticky; top: 0;
+  background: #11111197; color: #fff;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.schedule th,
+.schedule td{
+  border: 1px solid #ddd;
+  padding: 8px 10px;
+  vertical-align: middle;
+  font-weight: bold;
+  min-width: 80px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.schedule tbody tr:nth-of-type(even){
+  background: #f2f2f2;     
+}
+
+.schedule .sticky-col{
+  position: sticky; left: 0;
+  background: #fff;
+  min-width: 52px;
+}
+
+/* Farby podľa typu hodiny */
+.schedule td.free{ 
+    background: #fafafa;
+}
+
+.schedule td.lec{
+  background: #e9f3ff;
+  border-color: #3b82f6;
+}
+
+.schedule td.sem{
+  background: #eafbf2;
+  border-color: #10b981;
+}
+
+.schedule td.pe{
+  background: #fff3e6;
+  border-color: #f59e0b;
+}
+
+/* Legenda */
+.schedule-legend{
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge{
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: .85rem;
+  border: 1px solid #aaa;
+  background: #f5f5f5;
+}
+.badge.lec{ 
+    background: #e9f3ff;
+    border-color: #3b82f6; 
+}
+.badge.lab{ 
+    background: #eafbf2;
+    border-color: #10b981;
+}
+.badge.pe {
+     background: #fff3e6;
+     border-color: #f59e0b; 
+    }
+
+/* --- Kredit (zdroj) --- */
+.schedule-credit{
+  margin-top: 8px;
+  font-size: .85rem;
+  color: #555;
+  font-style: italic;
 }
 
 /* Responsive Design */
@@ -251,6 +434,44 @@ aside {
         width: 150px;
         margin: 0 20px 15px 0;
     }
+
+    .edu-list li{
+        grid-template-columns: 1fr;
+        row-gap: 4px;
+    }
+  
+    .cv-container {
+        grid-template-columns: 1fr;
+    }
+
+    .cv-left { 
+        text-align: left; 
+    }
+
+    .cv-left h3 {
+        border-right: none;
+        border-left: 4px solid #000;
+        padding-left: 15px;
+        padding-right: 0;
+        text-align: left;
+    }
+
+    .cv-left ul { 
+        direction: ltr; 
+        text-align: left; 
+        padding: 0 0 0 20px; }
+
+    .schedule{ 
+        font-size: 0.85rem;
+    }
+
+    .schedule thead th{ 
+        padding: 8px 6px;
+    }
+
+    .schedule th, .schedule td{
+         padding: 6px 8px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -277,9 +498,20 @@ aside {
         margin: -8px 0;
     }
 
-    nav li a{
-        padding: 8px 12px;  
+    nav ul {
+        display: grid;
+        grid-template-columns: 1fr 1fr; 
+        grid-gap: 8px;                    
+        justify-items: stretch;          
+        margin:auto;       
+        max-width: 350px;
+    }
+
+    nav li a {
+        padding: 8px 6px;
         font-size: 0.8rem;
+        text-align: center;              
+        display: block;
     }
 
     .profile-photo {

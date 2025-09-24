@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Môj rozvrh</title>
+  <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+    <header class="page-schedule">
+        <div class = "photo-div">
+            <div class="photo-section">
+                <div class="photo-container">
+                    <div class="photo photo-left"></div>
+                    <div class="photo photo-right"></div>
+                    <div class="text-overlay">
+                        <h1>Jozef Barčák</h1>
+                        <p>Môj rozvrh</p>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        <nav>
+          <ul>
+            <li><a href="index.html">O mne</a></li>
+            <li><a href="index2.html">Životopis</a></li>
+            <li><a href="index3.html">Môj rozvrh</a></li>
+            <li><a href="index4.html">Interaktívny obrázok</a></li>
+          </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h3>Môj rozvrh</h3> 
+            <div class="schedule-wrap">
+                <table class="schedule">
+                    <thead>
+                      <tr>
+                          <th class="sticky-col">Deň</th>
+                          <th>7-8</th><th>8-9</th><th>9-10</th><th>10-11</th>
+                          <th>11-12</th><th>12-13</th><th>13-14</th><th>14-15</th>
+                          <th>15-16</th><th>16-17</th><th>17-18</th><th>18-19</th>
+                          <th>19-20</th><th>20-21</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th class="sticky-col">Po</th>
+                            <td class="free" colspan="8"></td>
+                            <td class="lec" colspan="2">Analýza a zložitosť algoritmov<br><small>cd300</small></td>
+                            <td class="free" colspan="4"></td>
+                        </tr> 
+                        <tr>
+                            <th class="sticky-col">Ut</th>
+                            <td class="free"></td>
+                            <td class="sem" colspan="2">Analýza a zložitosť algoritmov<br><small>de300</small></td>
+                            <td class="lec" colspan="2">Webové technológie 1<br><small>cd150</small></td>
+                            <td class="free" colspan="3"></td>
+                            <td class="lec" colspan="2">Operačné systémy<br><small>cpu-e</small></td>
+                            <td class="free" colspan="5"></td>
+                        </tr> 
+                        <tr>
+                            <th class="sticky-col">St</th>
+                            <td class="free"></td>
+                            <td class="lec" colspan="2">Operačné systémy<br><small>cd300</small></td>
+                            <td class="lec" colspan="2">Webové technológie 1<br><small>cd150</small></td>
+                            <td class="free"></td>
+                            <td class="pe" colspan="2">Telesná kultúra 5<br><small>POML</small></td>
+                            <td class="free" colspan="6"></td>
+                        </tr> 
+                        <tr>
+                            <th class="sticky-col">Št</th>
+                            <td class="free"></td>
+                            <td class="sem">Analýza a zložitosť algoritmov<br><small>e701</small></td>
+                            <td class="free" colspan="12"></td>
+                        </tr> 
+                        <tr>
+                            <th class="sticky-col">Pi</th>
+                            <td class="free"></td>
+                            <td class="lec" colspan="2">Webové technológie 1<br><small>c117a</small></td>
+                            <td class="free" colspan="11"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>    
+                    <div class="schedule-legend">
+                    <span class="badge lec">Prednáška</span>
+                    <span class="badge lab">Cvičenie</span>
+                    <span class="badge pe">Telesná</span>
+                </div>    
+                <p class="photo-credit schedule-credit">
+                    Zdroj: <a href="https://aladin.fei.stuba.sk/rozvrh/" target="_blank" rel="noopener noreferrer">Rozvrh hodín FEI STU na zimny semester 2025/2026</a>
+                </p>
+        </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Jozef Barčák</p>
+    </footer>
+</body>
+</html>
