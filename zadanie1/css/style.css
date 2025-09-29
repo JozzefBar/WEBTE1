@@ -1,0 +1,703 @@
+@font-face {
+    font-family: "Exo";
+    src: url("fonts/exo-regular-webfont.woff2") format("woff2"),
+         url("fonts/exo-regular-webfont.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Exo";
+    src: url("fonts/exo-bold-webfont.woff2") format("woff2"),
+         url("fonts/exo-bold-webfont.woff") format("woff");
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Exo";
+    src: url("fonts/exo-italic-webfont.woff2") format("woff2"),
+         url("fonts/exo-italic-webfont.woff") format("woff");
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+body{
+    font-family: "Exo", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+}
+
+h3 {
+    color: #313131;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    padding-left: 15px;
+    border-left: 4px solid #000000;
+    text-align: left;
+    display: flow-root;
+}
+
+article {
+    margin: 20px 80px;
+    padding: 20px 80px;
+    background: rgba(255, 255, 255, 0.8);
+    text-align: left;
+}
+
+section {
+    padding: 30px;
+    margin-top: 25px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+}
+
+footer {
+    text-align: center;
+    background: #333;
+    padding: 10px 0 10px 0;     /*padding-top: 10px; padding-bottom: 10px;*/ 
+    color: rgb(217, 217, 217);
+    width: 100%;
+}
+
+/*photo header*/
+.photo-div{
+    background: radial-gradient(circle at center, #f0f0f0, #d0d0d0);
+}
+
+.photo-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 35px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    position: relative;
+}
+
+.photo-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;     /*50% 50%*/
+    min-height: 500px;
+    position: relative;
+}
+
+.photo {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
+    position: relative;
+    overflow: hidden;
+}
+
+/* O mne */
+header.page-home .photo-left  { background-image: url("../photos/header_profile.jpg"); }
+header.page-home .photo-right { background-image: url("../photos/header_profile2.jpg"); }
+
+/* Životopis */
+header.page-cv .photo-left  { background-image: url("../photos/curriculum_photo2.jpg"); }
+header.page-cv .photo-right { background-image: url("../photos/curriculum_photo.jpg"); } 
+
+/* https://www.asaporg.com/practical-business-writing-tips-for-office-managers */
+/* https://titanbusinesssuites.com/importance-of-having-a-professional-office/ */
+
+/* Rozvrh */    
+header.page-schedule .photo-left  { background-image: url("../photos/timetable.jpg"); }
+header.page-schedule .photo-right { background-image: url("../photos/timetable2.jpg"); }
+
+/* https://sk.wikipedia.org/wiki/Fakulta_elektrotechniky_a_informatiky_Slovenskej_technickej_univerzity_v_Bratislave */
+/* https://able.ac/blog/writing-schedule/ */
+
+/* Interaktivny obrázok */    
+header.page-interactive .photo-left  { background-image: url("../photos/interactive.jpg"); }
+header.page-interactive .photo-right { background-image: url("../photos/interactive2.jpg"); }
+
+/* https://medium.com/creative-enlightenment/zooming-out-why-distanced-thinking-is-your-new-superpower-636de978ac63 */
+/* https://amyklipp.wordpress.com/2021/02/25/take-time-to-zoom-out/ */
+
+
+.photo::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        rgba(0,0,0,0.3) 0%, 
+        rgba(0,0,0,0.1) 50%, 
+        rgba(0,0,0,0.3) 100%
+    );
+}
+
+.text-overlay{
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(255, 255, 255);
+    text-align: center;
+    padding: 20px 30px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+.text-overlay h1 {
+    font-size: 2.7rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    letter-spacing: 3px;
+}
+
+.text-overlay p {
+    font-size: 1.5rem;
+    font-weight: normal;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+/* Navigation Styles */
+nav {
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: -15px 0;
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+}
+
+nav li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    padding: 12px 24px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+nav li a:hover {
+    background: rgba(0, 0, 0, 1);
+    transform: scale(1.1);
+}
+
+/* Quote */
+aside.inline-quote {
+    font-size: 1rem;         
+    font-weight: bold;
+    font-style: italic;
+    color: #2c3e50;
+    text-align: center;
+    margin-left: 6px;
+    margin-right: 6px;
+    background: rgba(208, 208, 208, 0.5);
+    border-radius: 8px;
+    float: left;
+}
+
+/*Profile pic */
+.profile-photo {
+    width: 200px;
+    height: auto;
+    float: left;                
+    margin: 10px 25px 20px 0;      
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+ul {
+    margin-left: 15px;  
+}
+
+ul li {
+  font-size: 1rem;       
+}
+
+ul li::marker {
+  font-size: 1.2rem;        
+  color: #313131;           
+}
+
+/* Index2 */
+.cv-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr; 
+  min-height: 700px;
+  border-radius: 15px;
+}
+
+.cv-left {
+  background-color: #f4f4f4;
+  padding: 30px 40px;
+  text-align: right;
+}
+
+.cv-photo{
+    display: block;
+    height: auto;
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.cv-left ul {
+  direction: rtl;         
+  padding-right: 20px;    
+  text-align: right;       
+}
+
+.cv-left h3 {
+  text-align: right;
+  border-left: none;      
+  border-right: 4px solid #000000;
+  padding-right: 15px;
+}
+
+.cv-right {
+  background-color: #ffffff;
+  padding: 30px 40px;
+}
+
+.cv-photo {
+  width: 180px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.edu-list li{
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  align-items: start;
+  margin: 14px 0;
+}
+
+.edu-time{
+  color: #222;
+  font-weight: 600;
+}
+.edu-info strong{
+  font-weight: 700;
+}
+.edu-info > div{
+  margin-top: 2px;
+}
+
+
+/* Index3 */
+.schedule-wrap{
+  overflow-x: auto;              
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+  background: #fff;
+  border-radius: 8px;
+}
+
+.schedule{
+  width: 100%;
+  min-width: 900px;
+  border-collapse: separate;
+  font-size: 0.95rem;
+}
+
+.schedule thead th{
+  position: sticky; top: 0;
+  background: #11111197; color: #fff;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.schedule th,
+.schedule td{
+  border: 1px solid #ddd;
+  padding: 8px 10px;
+  vertical-align: middle;
+  font-weight: bold;
+  min-width: 80px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.schedule tbody tr:nth-of-type(even){
+  background: #f2f2f2;     
+}
+
+.schedule .sticky-col{
+  position: sticky; left: 0;
+  background: #fff;
+  min-width: 52px;
+}
+
+/* Farby podľa typu hodiny */
+.schedule td.free{ 
+    background: #fafafa;
+}
+
+.schedule td.lec{
+  background: #e9f3ff;
+  border-color: #3b82f6;
+}
+
+.schedule td.sem{
+  background: #eafbf2;
+  border-color: #10b981;
+}
+
+.schedule td.pe{
+  background: #fff3e6;
+  border-color: #f59e0b;
+}
+
+/* Legenda */
+.schedule-legend{
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge{
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: .85rem;
+  border: 1px solid #aaa;
+  background: #f5f5f5;
+}
+.badge.lec{ 
+    background: #e9f3ff;
+    border-color: #3b82f6; 
+}
+.badge.lab{ 
+    background: #eafbf2;
+    border-color: #10b981;
+}
+.badge.pe {
+     background: #fff3e6;
+     border-color: #f59e0b; 
+    }
+
+/* Zdroj */
+.schedule-credit{
+    margin-top: 8px;
+    font-size: .85rem;
+    color: #555;
+    font-style: italic;
+}
+
+
+/*index4*/
+.interactive-container {
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.interactive-image {
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1;
+}
+
+.hotspot {
+    position: absolute;
+    border: 3px solid #0096cc;
+    border-radius: 50%;
+    background: rgba(0, 122, 204, 0.2);
+    cursor: pointer;
+    animation: pulse 2s infinite;
+    width: 30px;
+    height: 30px;
+    z-index: 2;
+}
+
+.hotspot:hover {
+    background: rgba(0, 122, 204, 0.4);
+    transform: scale(1.1);
+    animation: none;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 156, 204, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 122, 204, 0.25);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 122, 204, 0);
+    }
+}
+
+.tooltip {
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.3;
+    min-width: 150px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.tooltip h4 {
+    margin: 0 0 8px 0;
+    color: #0089e4;
+    font-size: 16px;
+}
+
+.tooltip p {
+    margin: 0;
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -12px;            
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-right-color: #333;
+}
+      
+.hotspot:hover .tooltip {
+    left: 120%;           
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 1;
+    visibility: visible;
+}
+
+.A-hotspot{
+    top: 38%;
+    left: 11%;
+}
+
+.B-hotspot{
+    top: 50%;
+    left: 25%;
+}
+
+.C-hotspot{
+    top: 80%;
+    left: 45%;
+}
+
+.D-hotspot{
+    top: 40%;
+    left: 57%;
+}
+
+.E-hotspot{
+    top: 25%;
+    left: 75%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .photo{
+        background-position: center 15%;
+    }
+
+    .photo-container {
+        grid-template-columns: 1fr;
+        min-height: 600px;
+    }
+    
+    .text-overlay {
+        padding: 15px 25px;
+    }
+    
+    .text-overlay h1 {
+        font-size: 2.5rem;
+        letter-spacing: 2px;
+    }
+    
+    .text-overlay p {
+        font-size: 1rem;
+    }
+
+    nav {
+        margin: -10px 0;
+    }
+
+    nav li a{
+        padding: 10px 16px;  
+        font-size: 0.9rem;
+    }
+
+    .profile-photo {
+        width: 150px;
+        margin: 0 20px 15px 0;
+    }
+
+    .edu-list li{
+        grid-template-columns: 1fr;
+        row-gap: 4px;
+    }
+  
+    .cv-container {
+        grid-template-columns: 1fr;
+    }
+
+    .cv-photo{
+        margin-right: auto;
+        margin-left: 0;
+    }
+
+    .cv-left { 
+        text-align: left; 
+    }
+
+    .cv-left h3 {
+        border-right: none;
+        border-left: 4px solid #000;
+        padding-left: 15px;
+        padding-right: 0;
+        text-align: left;
+    }
+
+    .cv-left ul { 
+        direction: ltr; 
+        text-align: left; 
+        padding: 0 0 0 20px; }
+
+    .schedule{ 
+        font-size: 0.85rem;
+    }
+
+    .schedule thead th{ 
+        padding: 8px 6px;
+    }
+
+    .schedule th, .schedule td{
+         padding: 6px 8px;
+    }
+
+    .hotspot {
+        width: 22px;
+        height: 22px;
+        border-width: 2px;
+    }
+
+    .tooltip {
+        font-size: 13px;
+        padding: 8px;
+        min-width: 120px;
+        max-width: 60vw;
+    }
+
+    .hotspot:hover .tooltip {
+        left: 35px;
+        top: -15px;
+        transform: none;
+    }
+
+    .tooltip::after {
+        top: 20px;
+        left: -6px;
+        transform: none;
+    }
+}
+
+@media (max-width: 480px) {
+    section {
+        margin-top: 8px;
+    }
+
+    .text-overlay {
+        padding: 10px 20px;
+    }
+    
+    .text-overlay h1 {
+        font-size: 2rem;
+        letter-spacing: 1px;
+    }
+    
+    .text-overlay p {
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+    }
+
+    nav {
+        margin: -8px 0;
+    }
+
+    nav ul {
+        display: grid;
+        grid-template-columns: 1fr 1fr; 
+        grid-gap: 4px;                    
+        justify-items: stretch;          
+        margin:auto;       
+        max-width: 350px;
+    }
+
+    nav li a {
+        padding: 8px 6px;
+        font-size: 0.8rem;
+        text-align: center;              
+        display: block;
+    }
+
+    .profile-photo {
+        float: none;
+        width: 100%;
+        margin: 0 0 15px 0;
+        display: block;
+    }
+
+    .interactive-container {
+        overflow: hidden;
+        width: 100%;
+        max-width: 100vw;
+    }
+
+    .hotspot {
+        width: 18px;
+        height: 18px;
+    }
+
+    .tooltip {
+        font-size: 12px;
+        padding: 6px 8px;
+        max-width: 80vw;
+    }
+
+    .hotspot:hover .tooltip {
+        left: 30px;
+        top: -10px;
+    }
+
+    .tooltip::after {
+        top: -6px;
+        border-width: 6px;
+    }
+}
