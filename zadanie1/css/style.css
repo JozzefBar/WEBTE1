@@ -661,12 +661,12 @@ ul li::marker {
 
     .tooltip {
         padding: 8px;
-        font-size: 0.7rem;
+        font-size: 0.8rem;
         max-width: 200px;
     }
 
     .tooltip h4 {
-        font-size: 0.9rem;
+        font-size: 1rem;
     }
 
     .tooltip::after {
@@ -702,17 +702,12 @@ ul li::marker {
     }
 
     nav ul {
-        display: grid;
-        grid-template-columns: 1fr 1fr; 
-        grid-gap: 4px;                    
-        justify-items: stretch;          
-        margin:auto;       
-        max-width: 350px;
+        grid-gap: 1px;                    
     }
 
     nav li a {
         padding: 8px 6px;
-        font-size: 0.8rem;
+        font-size: 0.6rem;
         text-align: center;              
         display: block;
     }
