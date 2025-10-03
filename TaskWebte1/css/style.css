@@ -100,7 +100,7 @@ header.page-home .photo-right {
     background-image: url("../photos/header_profile2.jpg");
 }
 
-/* Životopis */
+/* Zivotopis */
 header.page-cv .photo-left {
     background-image: url("../photos/curriculum_photo2.jpg");
 }
@@ -118,7 +118,7 @@ header.page-schedule .photo-right {
     background-image: url("../photos/timetable2.jpg");
 }
 
-/* Interaktivny obrázok */
+/* Interaktivny obrazok */
 header.page-interactive .photo-left {
     background-image: url("../photos/interactive.jpg");
 }
@@ -354,7 +354,7 @@ ul li::marker {
 .schedule {
     width: 100%;
     min-width: 900px;
-    border-collapse: separate;
+    border-collapse: collapse;
     font-size: 0.95rem;
 }
 
@@ -378,8 +378,8 @@ ul li::marker {
     overflow-wrap: break-word;
 }
 
-.schedule tbody tr:nth-of-type(even) {
-    background: #f2f2f2;
+.schedule tr:nth-of-type(even) {
+  background: #5202ff;
 }
 
 .schedule .sticky-col {
@@ -387,26 +387,23 @@ ul li::marker {
     left: 0;
     background: #fff;
     min-width: 52px;
+    z-index: 2;
 }
 
-/* Farby podľa typu hodiny */
 .schedule td.free {
     background: #fafafa;
 }
 
 .schedule td.lec {
     background: #e9f3ff;
-    border-color: #3b82f6;
 }
 
 .schedule td.sem {
     background: #eafbf2;
-    border-color: #10b981;
 }
 
 .schedule td.pe {
     background: #fff3e6;
-    border-color: #f59e0b;
 }
 
 /* Legenda */
