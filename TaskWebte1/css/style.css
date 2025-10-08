@@ -77,8 +77,7 @@ footer {
 
 .photo-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    /*50% 50%*/
+    grid-template-columns: 1fr 1fr; /*50% 50%*/
     min-height: 400px;
     position: relative;
 }
@@ -134,10 +133,10 @@ header.page-interactive .photo-right {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg,
-            rgba(0, 0, 0, 0.3) 0%,
-            rgba(0, 0, 0, 0.1) 50%,
-            rgba(0, 0, 0, 0.3) 100%);
+    background: radial-gradient(ellipse at center,
+            rgba(0, 0, 0, 0.15) 0%,
+            rgba(0, 0, 0, 0.3) 50%,
+            rgba(0, 0, 0, 0.6) 100%);
 }
 
 .photo-credit {
@@ -345,10 +344,9 @@ ul li::marker {
 /* Index3 */
 .schedule-wrap {
     overflow-x: auto;
-    border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
     background: #fff;
-    border-radius: 8px;
+    border-radius: 16px;
 }
 
 .schedule {
@@ -378,10 +376,6 @@ ul li::marker {
     overflow-wrap: break-word;
 }
 
-.schedule tr:nth-of-type(even) {
-  background: #5202ff;
-}
-
 .schedule .sticky-col {
     position: sticky;
     left: 0;
@@ -395,18 +389,27 @@ ul li::marker {
 }
 
 .schedule td.lec {
-    background: #e9f3ff;
+    background: #d4e7ff;
 }
 
 .schedule td.sem {
-    background: #eafbf2;
+    background: #d4f4e6;
 }
 
 .schedule td.pe {
-    background: #fff3e6;
+    background: #ffe8cc;
 }
 
-/* Legenda */
+/* Darker shades for even rows */
+.schedule tr:nth-of-type(even) td.free {
+    background: #f0f0f0;
+}
+
+.schedule tr:nth-of-type(even) .sticky-col {
+    background: #f5f5f5;
+}
+
+/* Legend */
 .schedule-legend {
     margin-top: 12px;
     display: flex;
@@ -428,7 +431,7 @@ ul li::marker {
     border-color: #3b82f6;
 }
 
-.badge.lab {
+.badge.sem {
     background: #eafbf2;
     border-color: #10b981;
 }
@@ -438,7 +441,7 @@ ul li::marker {
     border-color: #f59e0b;
 }
 
-/* Zdroj */
+/* Source */
 .schedule-credit {
     margin-top: 8px;
     font-size: .85rem;
@@ -724,7 +727,7 @@ ul li::marker {
     }
 
     nav ul {
-        grid-gap: 1px;
+        gap: 1px;
     }
 
     nav li a {
