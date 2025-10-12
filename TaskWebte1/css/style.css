@@ -293,6 +293,10 @@ ul li::marker {
     height: auto;
     margin-left: auto;
     margin-right: 0;
+    width: 180px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .cv-left ul {
@@ -311,13 +315,6 @@ ul li::marker {
 .cv-right {
     background-color: #ffffff;
     padding: 30px 40px;
-}
-
-.cv-photo {
-    width: 180px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .edu-list li {
@@ -373,7 +370,6 @@ ul li::marker {
     font-weight: bold;
     min-width: 80px;
     word-wrap: break-word;
-    overflow-wrap: break-word;
 }
 
 .schedule .sticky-col {
