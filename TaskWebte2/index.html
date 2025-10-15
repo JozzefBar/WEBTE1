@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel = "stylesheet" href = "css/style.css">
+    <script async src="js/main.js"></script>
+</head>
+<body>
+
+    <h1>Formular</h1>
+
+    <form id="myForm" action="https://form2mail.iolab.sk/form2mail.php" method="post" enctype="multipart/form-data">
+
+        <input type="hidden" name="apikey" value="08fb6574750444e27af4f59bd3bd2f82">
+        <input type="hidden" name="from" value="xbarcakj@stuba.sk">
+        <input type="hidden" name="sender" value="Jozef Barcak">
+        <input type="hidden" name="to" value="jojobarcak@gmail.com">
+        <input type="hidden" name="subject" value="Data formularu">
+        <input type="hidden" name="redirectOk" value="https://webte.fei.stuba.sk/~xbarcakj/indexSuccess.html">
+        <input type="hidden" name="redirectFalse" value="https://webte.fei.stuba.sk/~xbarcakj/indexFail.html">
+    
+        <section class="column">
+            <label for="name">Meno:</label>
+            <input type="text" id="name" name="name">
+            <span class="error" id="nameError"></span>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email">
+            <span class="error" id="emailError"></span>
+
+            <label for="age">Vek:</label>
+            <input type="number" id="age" name="Vek" min="0" max="120">
+            <span class="error" id="errorAge"></span>
+
+        </section>
+        <section class="column">
+            <label for="dob">Dátum narodenia:</label>
+            <input type="date" id="dob" name="Dat_narodenia">
+            <span class="error" id="errorDob"></span>
+
+            <label>
+                <input type="checkbox" id="agree" name="Suhlas_s_podm">
+                    Súhlasím s podmienkami
+            </label>
+            <span class="error" id="termsError"></span>
+
+            Pohlavie: <br />
+            <label>
+                <input type="radio" name="Pohlavie" value="male">
+                Muž
+            </label>
+            <label>
+                <input type="radio" name="Pohlavie" value="female">
+                Žena
+            </label>
+            <label>
+                <input type="radio" name="Pohlavie" value="other">
+                Iné
+            </label>
+            <span class="error" id="genderError"></span>
+
+            <label for="message">Správa:</label>
+            <textarea id="message" name="Dodatocna_sprava" rows="4" cols="30"></textarea>
+            <span class="error" id="messageError"></span>
+            
+        </section>
+
+        <input type="submit" value="Odoslať"></button>
+
+    </form>
+
+</body>
+</html>
