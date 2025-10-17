@@ -18,30 +18,56 @@
         <input type="hidden" name="sender" value="Jozef Barcak">
         <input type="hidden" name="to" value="jojobarcak@gmail.com">
         <input type="hidden" name="subject" value="Data formularu">
-        <input type="hidden" name="redirectOk" value="https://webte.fei.stuba.sk/~xbarcakj/indexSuccess.html">
-        <input type="hidden" name="redirectFalse" value="https://webte.fei.stuba.sk/~xbarcakj/indexFail.html">
+        <input type="hidden" name="redirectOk" value="https://www.fei.stuba.sk/"> <!--- "https://webte.fei.stuba.sk/~xbarcakj/indexSuccess.html" --->
+        <input type="hidden" name="redirectFalse" value="https://www.stuba.sk/">  <!--- "https://webte.fei.stuba.sk/~xbarcakj/indexFail.html" --->
     
         <section class="column">
-            <label for="name">Meno:</label>
-            <input type="text" id="name" name="name">
-            <span class="error" id="nameError"></span>
+            <label for="firstName">Meno:</label>
+            <input type="text" id="firstName" name="firstName">
+            <span class="error" id="firstNameError"></span>
+
+            <label for="lastName">Priezvisko:</label>
+            <input type="text" id="lastName" name="lastName">
+            <span class="error" id="lastNameError"></span>
 
             <label for="email">Email:</label>
             <input type="email" id="email" name="email">
             <span class="error" id="emailError"></span>
 
+            <label for="dob">Dátum narodenia:</label>
+            <input type="date" id="dob" name="Dat_narodenia">
+            <span class="error" id="dobError"></span>
+
             <label for="age">Vek:</label>
-            <input type="number" id="age" name="Vek" min="0" max="120">
-            <span class="error" id="errorAge"></span>
+            <input type="number" id="age" name="Vek" readonly>
+            <span class="error" id="ageError"></span>
+
+            <label for="sport">Vyberte šport:</label>
+            <select id="sport" name="Sport">
+                <option value="">--Vyberte--</option>
+                <option value="futbal">Futbal</option>
+                <option value="basketbal">Basketbal</option>
+                <option value="tenis">Tenis</option>
+                <option value="plavanie">Plávanie</option>
+            </select>
+            <span class="error" id="sportError"></span>
+
+            <label for="space">Vyberte priestor:</label>
+            <select id="space" name="Priestor">
+                <option value="">-- Najprv vyberte šport --</option>
+            </select>
+            <span class="error" id="spaceError"></span>
+
+            <label for="time">Vyberte čas a cenu:</label>
+            <select id="time" name="Cas">
+                <option value="">-- Najprv vyberte priestor --</option>
+            </select>
+            <span class="error" id="timeError"></span>
 
         </section>
         <section class="column">
-            <label for="dob">Dátum narodenia:</label>
-            <input type="date" id="dob" name="Dat_narodenia">
-            <span class="error" id="errorDob"></span>
-
             <label>
-                <input type="checkbox" id="agree" name="Suhlas_s_podm">
+                <input type="checkbox" id="terms" name="Suhlas_s_podm">
                     Súhlasím s podmienkami
             </label>
             <span class="error" id="termsError"></span>
@@ -64,6 +90,39 @@
             <label for="message">Správa:</label>
             <textarea id="message" name="Dodatocna_sprava" rows="4" cols="30"></textarea>
             <span class="error" id="messageError"></span>
+            
+            Spôsob platby:
+            <label>
+                <input type="radio" name="Platba" value="hotovostou" id="paymentCash">
+                Hotovosťou
+            </label>
+            <label>
+                <input type="radio" name="Platba" value="kartou" id="paymentCard">
+                Kartou
+            </label>
+            <label>
+                <input type="radio" name="Platba" value="fakturou" id="paymentInvoice">
+                Platba na faktúru
+            </label>
+            <span class="error" id="paymentError"></span>
+
+            <div id="invoiceFields" style="display: none;">
+                <label for="companyName">Názov Firmy:</label>
+                <input type="text" id="companyName" name="Nazov_spolocnosti">
+                <span class="error" id="companyNameError"></span>
+
+                <label for="ico">IČO:</label>
+                <input type="text" id="ico" name="ico">
+                <span class="error" id="icoError"></span>
+
+                <label for="dic">DIČ:</label>
+                <input type="text" id="dic" name="dic">
+                <span class="error" id="dicError"></span>
+
+                <label for="address">Adresa:</label>
+                <input type="text" id="address" name="address">
+                <span class="error" id="addressError"></span>
+            </div>
             
         </section>
 
