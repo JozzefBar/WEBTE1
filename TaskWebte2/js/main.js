@@ -128,16 +128,18 @@ const sportData = {
 
 const form = document.getElementById('myForm');
 const inputs = {
-
     firstName: document.getElementById('firstName'),
     lastName: document.getElementById('lastName'),
     email: document.getElementById('email'),
+    phonePrefix: document.getElementById('phonePrefix'),
+    phoneNumber: document.getElementById('phoneNumber'),
     dob: document.getElementById('dob'),
     age: document.getElementById('age'),
     sport: document.getElementById('sport'),
     space: document.getElementById('space'),
     time: document.getElementById('time'),
-    terms: document.getElementById('terms'),
+    otherEquipmentCheckbox: document.getElementById('otherEquipmentCheckbox'),
+    otherEquipmentInput: document.getElementById('otherEquipmentInput'),
     message: document.getElementById('message'),
     paymentCash: document.getElementById('paymentCash'),
     paymentCard: document.getElementById('paymentCard'),
@@ -145,19 +147,22 @@ const inputs = {
     companyName: document.getElementById('companyName'),
     ico: document.getElementById('ico'),
     dic: document.getElementById('dic'),
-    address: document.getElementById('address')
+    address: document.getElementById('address'),
+    authorName: document.getElementById('authorName')
 }
 
 const errors = {
     firstName: document.getElementById('firstNameError'),
     lastName: document.getElementById('lastNameError'),
     email: document.getElementById('emailError'),
+    phone: document.getElementById('phoneError'),
     dob: document.getElementById('dobError'),
-    //age: document.getElementById('ageError'),       //?????
     sport: document.getElementById('sportError'),
     space: document.getElementById('spaceError'),
-    time: document.getElementById('timeError'),
-    terms: document.getElementById('termsError'),
+    time: document.getElementById('timeError'), 
+    gender: document.getElementById('genderError'),
+    equipment: document.getElementById('equipmentError'),
+    otherEquipment: document.getElementById('otherEquipmentError'),
     message: document.getElementById('messageError'),
     payment: document.getElementById('paymentError'),
     companyName: document.getElementById('companyNameError'),
@@ -194,13 +199,13 @@ function validateEmail(value) {
     return "";
 }
 
-/*
-function validateAge(value) {
-    if(!value.trim()) return "Vek je povinný";
-    if(value < 0 || value > 120) return "Vek musí byť medzi 0 a 120";
+function validatePhone(prefix, number) {
+    if(prefix && !number.trim()) return "Telefónne číslo je povinné";
+    if(number.trim() && !prefix) return "Predvoľba je povinná";
+    if(!prefix && !number.trim()) return "";
+    if(prefix && (number.length < 6 || number.length > 15)) return "Telefónne číslo musí mať 6-15 číslic";
     return "";
 }
-*/
 
 function validateDob(value){
     if(!value.trim()) return "Dátum narodenia je povinný";
@@ -225,13 +230,28 @@ function validateTime(value) {
     return "";
 }
 
-function validateTerms(value){
-    if(!value) return "Musíte súhlasiť s podmienkami";
+function validateGender(){
+    const genderRadios = document.querySelectorAll('input[name="Pohlavie"]');
+    const checked = Array.from(genderRadios).some(radio => radio.checked)
+    if(!checked) return "Musíte vybrať pohlavie";
+    return "";
+}
+
+function validateOtherEquipment(value, isOtherChecked){
+    if(isOtherChecked && !value.trim()) return "Musíte uviesť aké iné vybavenie potrebujete";
     return "";
 }
 
 function validateMessage(value){
     if(value.length > 500) return "Správa nesmie presiahnuť 500 znakov";
+    return "";
+}
+
+function validatePayment() {
+    const paymentRadios = document.querySelectorAll('input[name="payment"]');
+    const checked = Array.from(paymentRadios).some(radio => radio.checked);
+    
+    if(!checked) return "Musíte vybrať spôsob platby";
     return "";
 }
 
@@ -286,8 +306,8 @@ inputs.sport.addEventListener('change', function(){
 
     const errorMessage = validateSport(selectedSport);
     showError(inputs.sport, errors.sport, errorMessage);
-    inputs.space.innerHTML = '<option value="">Najprv vyberte priestor</option>';
-    inputs.time.innerHTML = '<option value="">Najpr vyberte čas</option>';
+    inputs.space.innerHTML = '<option value="">Najprv vyberte šport</option>';
+    inputs.time.innerHTML = '<option value="">Najprv vyberte priestor</option>';
 
     inputs.space.disabled = true;
     inputs.time.disabled = true;
@@ -299,6 +319,7 @@ inputs.sport.addEventListener('change', function(){
 
     if(selectedSport && sportData[selectedSport]){
         inputs.space.innerHTML = '<option value="">Vyberte priestor</option>';
+        inputs.time.innerHTML = '<option value="">Najprv vyberte priestor</option>';
         
         const spaces = sportData[selectedSport].spaces;
         for(const [key, space] of Object.entries(spaces)){
@@ -319,7 +340,6 @@ inputs.space.addEventListener('change', function(){
 
     const errorMessage = validateSpace(selectedSpace);
     showError(inputs.space, errors.space, errorMessage);
-    inputs.time.innerHTML = '<option value="">Najpr vyberte čas</option>';
     
     inputs.time.disabled = true;
 
@@ -344,12 +364,66 @@ inputs.space.addEventListener('change', function(){
 // Event listener pre výber času
 inputs.time.addEventListener('change', function(){
     const errorMsg = validateTime(this.value);
+    errors.time.textContent = errorMsg;
     showError(this, errors.cas, errorMsg);
+
+});
+
+// Event listener pre výber pohlavia
+const genderRadios = document.querySelectorAll('input[name="Pohlavie"]');
+genderRadios.forEach(radio => {
+    radio.addEventListener('change', function(){
+        const errorMsg = validateGender();
+        errors.gender.textContent = errorMsg;
+        genderRadios.forEach(r => {
+            if(errorMsg){
+                r.classList.add('error');
+                r.classList.remove('valid');
+            }
+            else{
+                r.classList.remove('error');
+                r.classList.add('valid');
+            }
+        });
+    });
+});
+
+// Event listener pre iné vybavenie
+const otherEquipmentContainer = document.getElementById('otherEquipmentContainer');
+
+inputs.otherEquipmentCheckbox.addEventListener('change', function(){
+    if(this.checked){
+        otherEquipmentContainer.style.display = 'block';
+        inputs.otherEquipmentInput.focus();
+    }
+    else{
+        otherEquipmentContainer.style.display = 'none';
+        inputs.otherEquipmentInput.value = '';
+        errors.otherEquipment.textContent = '';
+        inputs.otherEquipmentInput.classList.remove('error', 'valid');
+    }
 });
 
 // Event listener pre prepínanie platobných metód
-const invoiceFields = document.getElementById('invoiceFields');
+const paymentRadio = document.querySelectorAll('input[name="payment"]');
+paymentRadio.forEach(radio => {
+    radio.addEventListener('change', function(){
+        const errorMsg = validatePayment();
+        errors.payment.textContent = errorMsg;
+        paymentRadio.forEach(r => {
+            if(errorMsg){
+                r.classList.add('error');
+                r.classList.remove('valid');
+            }   
+            else{
+                r.classList.remove('error');
+                r.classList.add('valid');
+            }
+        });
+    });
+});
 
+const invoiceFields = document.getElementById('invoiceFields');
 inputs.paymentCash.addEventListener('change', function(){
     if(this.checked){
         invoiceFields.style.display = 'none';
@@ -388,20 +462,37 @@ inputs.paymentInvoice.addEventListener('change', function(){
     }
 });
 
+//event listener pre zobrazenie mena autora
+const showAuthorBtn = document.getElementById('showAuthorBtn');
+showAuthorBtn.addEventListener('click', function(){
+    const authorName = inputs.authorName;
+    if(authorName.style.display === 'none'){
+        authorName.style.display = 'block';
+        showAuthorBtn.textContent = 'Skryť autora formulára';
+    }
+    else{
+        authorName.style.display = 'none';
+        showAuthorBtn.textContent = 'Zobraziť autora formulára';
+    }
+});
+
 // Event listeners for real-time validation
 Object.keys(inputs).forEach(key => {
     if(key === 'sport' || key === 'space' || key === 'time' || 
-       key === 'paymentCash' || key === 'paymentCard' || key === 'paymentInvoice') return;
+       key === 'paymentCash' || key === 'paymentCard' || key === 'paymentInvoice' ||
+       key === 'otherEquipmentCheckbox') return;
 
     inputs[key].addEventListener('input', () => {
         const value = inputs[key].value;
         let errorMessage = "";
         const isInvoicePayment = inputs.paymentInvoice.checked;
+        const isOtherEquipmentChecked = inputs.otherEquipmentCheckbox.checked;
+        const prefix = inputs.phonePrefix.value;
 
         if(key === "firstName") errorMessage = validateFirstName(value);
         else if(key === "lastName") errorMessage = validateLastName(value);
         else if(key === "email") errorMessage = validateEmail(value);
-        //else if(key === "age") errorMessage = validateAge(value);
+        else if(key === "phoneNumber") errorMessage = validatePhone(prefix, value);
         else if(key === "dob"){
             errorMessage = validateDob(value);
             if(!errorMessage && value){
@@ -409,7 +500,7 @@ Object.keys(inputs).forEach(key => {
                 inputs.age.value = age;
             }
         }
-        else if(key === "terms") errorMessage = validateTerms(inputs[key].checked);
+        else if(key === "otherEquipmentInput") errorMessage = validateOtherEquipment(value, isOtherEquipmentChecked);
         else if(key === "message") errorMessage = validateMessage(value);
         else if(key === "companyName") errorMessage = validateCompanyName(value, isInvoicePayment);
         else if(key === "ico") errorMessage = validateICO(value, isInvoicePayment);
@@ -429,6 +520,139 @@ Object.keys(inputs).forEach(key => {
     });
 })
 
+// function to update character count
+function updateCharCount(inputElement, countElement, maxLength) {
+    if(!countElement) return;
+
+    const currentLength = inputElement.value.length;
+    countElement.textContent = `${currentLength} / ${maxLength}`;
+
+    if(currentLength >= maxLength * 0.9) {
+        countElement.style.color = 'orange';
+    } else if(currentLength === maxLength) {
+        countElement.style.color = 'red';
+    } else {
+        countElement.style.color = '#666';
+    }
+}
+
+const charCounters = [
+    { input: inputs.firstName, counter: document.getElementById('firstNameCount'), max: 40 },
+    { input: inputs.lastName, counter: document.getElementById('lastNameCount'), max: 40 },
+    { input: inputs.email, counter: document.getElementById('emailCount'), max: 50 },
+    { input: inputs.phoneNumber, counter: document.getElementById('phoneNumberCount'), max: 15 },
+    { input: inputs.message, counter: document.getElementById('messageCount'), max: 500 },
+    { input: inputs.ico, counter: document.getElementById('icoCount'), max: 8 },
+    { input: inputs.dic, counter: document.getElementById('dicCount'), max: 10 },
+    { input: inputs.address, counter: document.getElementById('addrCount'), max: 30 },
+    { input: inputs.companyName, counter: document.getElementById('compNameCount'), max: 50 }
+];
+
+charCounters.forEach(item => {
+    if(item.input && item.counter) {
+        updateCharCount(item.input, item.counter, item.max);
+        
+        item.input.addEventListener('input', () => {
+            updateCharCount(item.input, item.counter, item.max);
+        });
+    }
+});
+
+
+// Whole section for Modal
+const modal = document.getElementById('orderModal');
+const orderSummary = document.getElementById('orderSummary');
+const totalPriceElement = document.getElementById('totalPrice');
+const confirmBtn = document.getElementById('confirmOrder');
+const cancelBtn = document.getElementById('cancelOrder');
+
+function generateOrderSummary(){
+    let summary = "";
+    let totalPrice = 0;
+
+    summary += '<h3>Osobné údaje</h3>';
+    if(inputs.firstName.value)
+        summary += `<div class="summary-item"><strong>Meno:</strong><span>${inputs.firstName.value}</span></div>`;
+    if(inputs.lastName.value)
+        summary += `<div class="summary-item"><strong>Priezvisko:</strong><span>${inputs.lastName.value}</span></div>`;
+    if(inputs.email.value)
+        summary += `<div class="summary-item"><strong>Email:</strong><span>${inputs.email.value}</span></div>`;
+
+    const genderRatio = document.querySelector('input[name="Pohlavie"]:checked');
+    if(genderRatio){
+        const genderText = genderRadio.value === 'male' ? 'Muž' : genderRadio.value === 'female' ? 'Žena' : 'Iné';
+        summary += `<div class="summary-item"><strong>Pohlavie:</strong><span>${genderText}</span></div>`;
+    }
+
+    if(inputs.dob.value)
+        summary += `<div class="summary-item"><strong>Dátum narodenia:</strong><span>${inputs.dob.value}</span></div>`;
+    if(inputs.age.value)
+        summary += `<div class="summary-item"><strong>Vek:</strong><span>${inputs.age.value} rokov</span></div>`;
+    if(inputs.phoneNumber.value && inputs.phonePrefix.value)
+        summary += `<div class="summary-item"><strong>Telefón:</strong><span>${inputs.phonePrefix.value} ${inputs.phoneNumber.value}</span></div>`;
+
+    summary += '<h3>Rezervácia</h3>';
+
+    if(inputs.sport.value){
+        const sportName = sportData[inputs.sport.value].name;
+        summary += `<div class="summary-item"><strong>Šport:</strong><span>${sportName}</span></div>`;
+    }
+    if(inputs.space.value && inputs.sport.value){
+        const spaceName = sportData[inputs.sport.value].spaces[inputs.space.value].name;
+        summary += `<div class="summary-item"><strong>Priestor:</strong><span>${spaceName}</span></div>`;
+    }
+    if(inputs.time.value && inputs.space.value && inputs.sport.value){
+        const [time, price] = inputs.time.value.split('|');
+        totalPrice += parseFloat(price);
+        summary += `<div class="summary-item"><strong>Čas:</strong><span>${time}</span></div>`;
+        summary += `<div class="summary-item"><strong>Cena priestoru:</strong><span>${price} €</span></div>`;
+    }
+
+    const checkedEquipment = document.querySelectorAll('.equipment-checkbox:checked');
+    if(checkedEquipment.length > 0){
+        summary += '<h3>Požičané vybavenie</h3>';
+        checkedEquipment.forEach(checkbox => {
+            if(checkbox.id === 'otherEquipmentCheckbox' && inputs.otherEquipmentInput.value)
+                summary += `<div class="summary-item"><strong>Iné vybavenie:</strong><span>${inputs.otherEquipmentInput.value}</span></div>`;
+            else if(checkbox.id !== 'otherEquipmentCheckbox'){
+                const label = checkbox.parentElement.textContent.trim();
+                summary += `<div class="summary-item"><strong>✓</strong><span>${label}</span></div>`;
+            }
+        });
+    }
+
+    summary += '<h3>Platba</h3>';
+    const paymentRadio = document.querySelector('input[name="payment"]:checked');
+    if(paymentRadio){
+        let paymentText = "";
+        if(paymentRadio.id === 'paymentCash') paymentText = "Hotovosť";
+        else if(paymentRadio.id === 'paymentCard') paymentText = "Platobná karta";
+        else if(paymentRadio.id === 'paymentInvoice') paymentText = "Platba na faktúru";
+
+        summary += `<div class="summary-item"><strong>Spôsob platby:</strong><span>${paymentText}</span></div>`;
+    
+        if(paymentRadio.value === 'invoice'){
+            if(inputs.companyName.value)
+                summary += `<div class="summary-item"><strong>Názov spoločnosti:</strong><span>${inputs.companyName.value}</span></div>`;
+            if(inputs.ico.value)
+                summary += `<div class="summary-item"><strong>IČO:</strong><span>${inputs.ico.value}</span></div>`;
+            if(inputs.dic.value)
+                summary += `<div class="summary-item"><strong>DIČ:</strong><span>${inputs.dic.value}</span></div>`;
+            if(inputs.address.value)
+                summary += `<div class="summary-item"><strong>Adresa:</strong><span>${inputs.address.value}</span></div>`;
+        }
+    }
+
+    if (inputs.message.value){
+        summary += '<h3>Dodatočná správa</h3>';
+        summary += `<div class="summary-item"><span style="font-style: italic;">${inputs.message.value}</span></div>`;
+    }
+
+    orderSummary.innerHTML = summary;
+    totalPriceElement.textContent = `Celková cena: ${totalPrice.toFixed(2)} €`;
+}
+
+
 // Form submission
 form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -436,12 +660,14 @@ form.addEventListener('submit', (event) => {
     const firstName = inputs.firstName.value.trim();
     const lastName = inputs.lastName.value.trim();
     const email = inputs.email.value.trim();
+    const phonePrefix = inputs.phonePrefix.value;
+    const phoneNumber = inputs.phoneNumber.value.trim();
     const dob = inputs.dob.value.trim();
-    //const age = inputs.age.value.trim(); //?????
     const sport = inputs.sport.value;
     const space = inputs.space.value;
     const time = inputs.time.value;
-    const terms = inputs.terms.checked;
+    const isOtherEquipmentChecked = inputs.otherEquipmentCheckbox.checked;
+    const otherEquipment = inputs.otherEquipmentInput.value.trim();
     const message = inputs.message.value.trim();
     const isInvoicePayment = inputs.paymentInvoice.checked;
     const companyName = inputs.companyName.value.trim();
@@ -453,13 +679,15 @@ form.addEventListener('submit', (event) => {
             firstName: validateFirstName(firstName),
             lastName: validateLastName(lastName),
             email: validateEmail(email),
+            phone: validatePhone(phonePrefix, phoneNumber),
             dob: validateDob(dob),
-            //age: validateAge(age), //?????
             sport: validateSport(sport),
             space: validateSpace(space),
             time: validateTime(time),
-            terms: validateTerms(terms),
+            gender: validateGender(),
+            otherEquipment: validateOtherEquipment(otherEquipment, isOtherEquipmentChecked),
             message: validateMessage(message),
+            payment: validatePayment(),
             companyName: validateCompanyName(companyName, isInvoicePayment),
             ico: validateICO(ico, isInvoicePayment),
             dic: validateDIC(dic, isInvoicePayment),
@@ -470,20 +698,35 @@ form.addEventListener('submit', (event) => {
     Object.keys(validateErrors).forEach(key => {
         if(validateErrors[key]){
             errors[key].textContent = validateErrors[key];
-            inputs[key].classList.add('error');
-            inputs[key].classList.remove('valid');
+            if(inputs[key]) {
+                inputs[key].classList.add('error');
+                inputs[key].classList.remove('valid');
+            }
             hasError = true;
         }
         else{
             errors[key].textContent = "";
-            inputs[key].classList.remove('error');
-            inputs[key].classList.add('valid');
+            if(inputs[key]) {
+                inputs[key].classList.remove('error');
+                inputs[key].classList.add('valid');
+            }
         }
     });
 
     if(!hasError){
-        console.log('FORMULÁR SA ODOSIELA!');
-        form.submit();
+        generateOrderSummary();
+        modal.style.display = 'block';
     }
-    
+});
+
+confirmBtn.addEventListener('click', function(){
+    modal.style.display = 'none';
+    form.submit(); 
+});
+cancelBtn.addEventListener('click', function(){
+    modal.style.display = 'none';
+});
+window.addEventListener('click', function(event){
+    if(event.target === modal)
+        modal.style.display = 'none';
 });
