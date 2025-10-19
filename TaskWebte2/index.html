@@ -11,7 +11,7 @@
 
 <body>
 
-    <h1>Formular</h1>
+    <h1>Formulár</h1>
 
     <form id="myForm" action="https://form2mail.iolab.sk/form2mail.php" method="post" enctype="multipart/form-data"
         autocomplete="off">
@@ -28,17 +28,17 @@
 
         <div class="form-columns">
             <section class="column">
-                <label for="firstName">Meno*:</label>
+                <label for="firstName"><strong>Meno*:</strong></label>
                 <input type="text" id="firstName" name="firstName" maxlength="40">
                 <span class="char-count" id="firstNameCount">0 / 40</span>
                 <span class="error" id="firstNameError"></span>
 
-                <label for="lastName">Priezvisko*:</label>
+                <label for="lastName"><strong>Priezvisko*:</strong></label>
                 <input type="text" id="lastName" name="lastName" maxlength="40">
                 <span class="char-count" id="lastNameCount">0 / 40</span>
                 <span class="error" id="lastNameError"></span>
 
-                <label for="email">Email*:</label>
+                <label for="email"><strong>Email*:</strong></label>
                 <input type="email" id="email" name="email" maxlength="50">
                 <span class="char-count" id="emailCount">0 / 80</span>
                 <span class="error" id="emailError"></span>
@@ -61,92 +61,119 @@
                 </div>
                 <span class="error" id="phoneError"></span>
 
-                <label for="dob">Dátum narodenia*:</label>
-                <input type="date" id="dob" name="Dat_narodenia">
+                <label for="dob"><strong>Dátum narodenia*:</strong></label>
+                <input type="date" id="dob" name="dateOfBirth">
                 <span class="error" id="dobError"></span>
 
                 <label for="age">Vek:</label>
-                <input type="number" id="age" name="Vek" readonly>
+                <input type="number" id="age" name="age" readonly>
                 <span class="error" id="ageError"></span>
 
                 <fieldset>
-                    <legend>Pohlavie*</legend>
-                    <label><input type="radio" name="Pohlavie" value="male"> Muž</label>
-                    <label><input type="radio" name="Pohlavie" value="female"> Žena</label>
-                    <label><input type="radio" name="Pohlavie" value="other"> Iné</label>
+                    <legend><strong>Pohlavie*</strong></legend>
+                    <label><input type="radio" name="gender" value="male"> Muž</label>
+                    <label><input type="radio" name="gender" value="female"> Žena</label>
+                    <label><input type="radio" name="gender" value="other"> Iné</label>
                     <span class="error" id="genderError"></span>
                 </fieldset>
 
-                <label for="sport">Vyberte šport*:</label>
-                <select id="sport" name="Sport">
-                    <option value="">--Vyberte--</option>
-                    <option value="futbal">Futbal</option>
-                    <option value="basketbal">Basketbal</option>
-                    <option value="tenis">Tenis</option>
-                    <option value="plavanie">Plávanie</option>
-                </select>
-                <span class="error" id="sportError"></span>
-
-                <label for="space">Vyberte priestor*:</label>
-                <select id="space" name="Priestor">
-                    <option value="">-- Najprv vyberte šport --</option>
-                </select>
-                <span class="error" id="spaceError"></span>
-
-                <label for="time">Vyberte čas a cenu*:</label>
-                <select id="time" name="Cas">
-                    <option value="">-- Najprv vyberte priestor --</option>
-                </select>
-                <span class="error" id="timeError"></span>
+                <label for="bookingDate"><strong>Dátum rezervácie*:</strong></label>
+                <input type="date" id="bookingDate" name="bookingate">
+                <span class="error" id="bookingDateError"></span>
 
             </section>
 
             <section class="column">
+                <label for="sport"><strong>Vyberte šport*:</strong></label>
+                <select id="sport" name="sport">
+                    <option value="">--Vyberte--</option>
+                    <option value="Football">Futbal</option>
+                    <option value="Basketball">Basketbal</option>
+                    <option value="Tenis">Tenis</option>
+                    <option value="Swimming">Plávanie</option>
+                </select>
+                <span class="error" id="sportError"></span>
+
+                <label for="space"><strong>Vyberte priestor*:</strong></label>
+                <select id="space" name="space">
+                    <option value="">-- Najprv vyberte šport --</option>
+                </select>
+                <span class="error" id="spaceError"></span>
+
+                <label for="time"><strong>Vyberte čas a cenu*:</strong></label>
+                <select id="time" name="time">
+                    <option value="">-- Najprv vyberte priestor --</option>
+                </select>
+                <span class="error" id="timeError"></span>
+
                 <fieldset>
-                    <legend>Športové vybavenie*</legend>
-                    <label><input type="checkbox" name="Vybavenie" value="lopta" class="equipment-checkbox">
-                        Lopta</label>
-                    <label><input type="checkbox" name="Vybavenie" value="rakety"> Rakety</label>
-                    <label><input type="checkbox" name="Vybavenie" value="tenisove_lopty"> Tenisové lopty</label>
-                    <label><input type="checkbox" name="Vybavenie" value="plavecke_okuliare"> Plavecké okuliare</label>
-                    <label><input type="checkbox" name="Vybavenie" value="spotova_obuv"> Športová obuv</label>
-                    <label><input type="checkbox" name="Vybavenie" value="dresy"> Dresy</label>
-                    <label><input type="checkbox" id="otherEquipmentCheckbox" name="Vybavenie" value="ine"> Iné, uveďte
-                        aké</label>
+                    <legend>Športové vybavenie</legend>
+                    <label><input type="checkbox" name="equipment" value="ball"> Lopta</label>
+                    <label><input type="checkbox" name="equipment" value="rackets"> Rakety</label>
+                    <label><input type="checkbox" name="equipment" value="tennis_balls"> Tenisové lopty</label>
+                    <label><input type="checkbox" name="equipment" value="swimming_goggles"> Plavecké okuliare</label>
+                    <label><input type="checkbox" name="equipment" value="sports_shoes"> Športová obuv</label>
+                    <label><input type="checkbox" name="equipment" value="jerseys"> Dresy</label>
+                    <label><input type="checkbox" id="otherEquipmentCheckbox" name="equipment" value="other"> Iné,
+                        uveďte aké</label>
 
                     <div id="otherEquipmentContainer" style="display:none;">
-                        <input type="text" id="otherEquipmentInput" name="Ine_vybavenie"
+                        <input type="text" id="otherEquipmentInput" name="otherEquipment"
                             placeholder="Napíšte aké vybavenie potrebujete">
+                        <span class="char-count" id="otherEquipmentCount">0 / 60</span>
                         <span class="error" id="otherEquipmentError"></span>
                     </div>
                     <span class="error" id="equipmentError"></span>
                 </fieldset>
 
                 <fieldset>
-                    <legend>Spôsob platby*</legend>
-                    <label><input type="radio" name="Platba" value="hotovostou" id="paymentCash"> Hotovosťou</label>
-                    <label><input type="radio" name="Platba" value="kartou" id="paymentCard"> Kartou</label>
-                    <label><input type="radio" name="Platba" value="fakturou" id="paymentInvoice"> Platba na
+                    <legend><strong>Spôsob platby*</strong></legend>
+                    <label><input type="radio" name="payment" value="cash" id="paymentCash"> Hotovosťou</label>
+                    <label><input type="radio" name="payment" value="card" id="paymentCard"> Kartou</label>
+                    <label><input type="radio" name="payment" value="invoice" id="paymentInvoice"> Platba na
                         faktúru</label>
                     <span class="error" id="paymentError"></span>
 
+
+                    <div id="cardFields" style="display:none;">
+                        <div class="card-grid">
+                            <div class="card-row card-number">
+                                <label for="cardNumber">Číslo karty*:</label>
+                                <input type="number" id="cardNumber" name="cardNumber" maxlength="16" placeholder="xxxx xxxx xxxx xxxx">
+                                <span class="char-count" id="cardNumberCount">0 / 16</span>
+                                <span class="error" id="cardNumberError"></span>
+                            </div>
+                            <div class="card-row card-expiry">
+                                <label for="cardExpiry">Dátum platnosti*:</label>
+                                <input type="month" id="cardExpiry" name="cardExpiry">
+                                <span class="error" id="cardExpiryError"></span>
+                            </div>
+                            <div class="card-row card-cvv">
+                                <label for="cardCvv">CVV*:</label>
+                                <input type="number" id="cardCvv" name="cardCvv" maxlength="3">
+                                <span class="char-count" id="cardCvvCount">0 / 3</span>
+                                <span class="error" id="cardCvvError"></span>
+                            </div>
+                        </div>
+
+                    </div>
                     <div id="invoiceFields" style="display:none;">
-                        <label for="companyName">Názov firmy:</label>
-                        <input type="text" id="companyName" name="Nazov_spolocnosti" maxlength="50">
+                        <label for="companyName">Názov firmy*:</label>
+                        <input type="text" id="companyName" name="companyName" maxlength="50">
                         <span class="char-count" id="compNameCount">0 / 50</span>
                         <span class="error" id="companyNameError"></span>
 
-                        <label for="ico">IČO:</label>
+                        <label for="ico">IČO*:</label>
                         <input type="text" id="ico" name="ico">
                         <span class="char-count" id="icoCount">0 / 8</span>
                         <span class="error" id="icoError"></span>
 
-                        <label for="dic">DIČ:</label>
+                        <label for="dic">DIČ*:</label>
                         <input type="text" id="dic" name="dic">
                         <span class="char-count" id="dicCount">0 / 10</span>
                         <span class="error" id="dicError"></span>
 
-                        <label for="address">Adresa:</label>
+                        <label for="address">Adresa*:</label>
                         <input type="text" id="address" name="address" maxlength="30">
                         <span class="char-count" id="addrCount">0 / 30</span>
                         <span class="error" id="addressError"></span>
@@ -154,12 +181,12 @@
                 </fieldset>
 
                 <label for="message">Správa:</label>
-                <textarea id="message" name="Dodatocna_sprava" rows="4" cols="30" maxlength="500"></textarea>
+                <textarea id="message" name="additionalMessage" rows="4" cols="30"></textarea>
                 <span class="char-count" id="messageCount">0 / 500</span>
                 <span class="error" id="messageError"></span>
 
                 <button type="button" id="showAuthorBtn">Zobraziť autora formulára</button>
-                        <input type="text" id="authorName" name="author_name" value="Jozef Barčák" readonly hidden>
+                <input type="text" id="authorName" name="authorName" value="Jozef Barčák" readonly hidden>
 
             </section>
         </div>

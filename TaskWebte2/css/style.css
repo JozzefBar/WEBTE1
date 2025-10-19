@@ -142,7 +142,7 @@ textarea {
     font-size: 0.9em;
 }
 
-.valid {    
+.valid {
     border-color: #4caf50;
     outline-color: #4caf50;
 }
@@ -180,7 +180,6 @@ fieldset .error {
 }
 
 legend {
-    font-weight: 600;
     padding: 0 0.5em;
 }
 
@@ -228,6 +227,38 @@ input[type="submit"]:hover {
 
 .column #showAuthorBtn {
     justify-self: start;
+}
+
+/*Card*/
+#cardFields .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    /* ľavý širší, pravý užší stĺpec */
+    grid-template-areas:
+        "number number"
+        "expiry cvv";
+    gap: 12px 16px;
+    align-items: start;
+}
+
+/* číslo karty cez celú šírku */
+#cardFields .card-number {
+    grid-area: number;
+}
+
+/* druhý riadok: expiry vľavo, cvv vpravo */
+#cardFields .card-expiry {
+    grid-area: expiry;
+}
+
+#cardFields .card-cvv {
+    grid-area: cvv;
+}
+
+/* jednotné štýly pre riadky (label, input, error pod sebou) */
+#cardFields .card-row {
+    display: grid;
+    gap: 6px;
 }
 
 /* Modal Styles */
@@ -374,5 +405,13 @@ input[type="submit"]:hover {
 @media (max-width: 480px) {
     .phone-container {
         grid-template-columns: 1fr;
+    }
+
+    #cardFields .card-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "number"
+            "expiry"
+            "cvv";
     }
 }
