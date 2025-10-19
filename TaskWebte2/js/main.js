@@ -8,27 +8,28 @@ const sportData = {
             small_playground: {
                 name: "Malé ihrisko",
                 slots: [
-                    { time: "8:00-10:00", price: 20 },
-                    { time: "10:00-12:00", price: 25 },
-                    { time: "14:00-16:00", price: 30 },
-                    { time: "16:00-18:00", price: 35 }
+                    { time: "14:00-15:00", price: 20 },
+                    { time: "15:00-16:00", price: 20 },
+                    { time: "16:00-17:30", price: 28 },
+                    { time: "17:30-19:30", price: 35 }
                 ]
             },
             big_playground: {
                 name: "Veľké ihrisko",
                 slots: [
-                    { time: "8:00-10:00", price: 35 },
-                    { time: "10:00-12:00", price: 40 },
-                    { time: "14:00-16:00", price: 45 },
-                    { time: "16:00-18:00", price: 50 }
+                    { time: "14:00-15:00", price: 35 },
+                    { time: "15:00-16:00", price: 35 },
+                    { time: "16:00-17:30", price: 48 },
+                    { time: "17:30-19:30", price: 60 }
                 ]
             },
             indoor_hall: {
                 name: "Halová hala",
                 slots: [
-                    { time: "8:00-10:00", price: 40 },
-                    { time: "10:00-12:00", price: 45 },
-                    { time: "14:00-16:00", price: 50 }
+                    { time: "14:00-15:00", price: 40 },
+                    { time: "15:00-16:00", price: 40 },
+                    { time: "16:00-17:30", price: 55 },
+                    { time: "17:30-19:30", price: 70 }
                 ]
             }
         }
@@ -39,26 +40,28 @@ const sportData = {
             hall_a: {
                 name: "Hala A",
                 slots: [
-                    { time: "9:00-11:00", price: 30 },
-                    { time: "11:00-13:00", price: 35 },
-                    { time: "15:00-17:00", price: 40 },
-                    { time: "17:00-19:00", price: 45 }
+                    { time: "13:00-14:00", price: 30 },
+                    { time: "14:00-15:00", price: 30 },
+                    { time: "15:00-16:30", price: 42 },
+                    { time: "16:30-18:30", price: 55 }
                 ]
             },
             hall_b: {
                 name: "Hala B",
                 slots: [
-                    { time: "9:00-11:00", price: 25 },
-                    { time: "11:00-13:00", price: 30 },
-                    { time: "15:00-17:00", price: 35 }
+                    { time: "13:00-14:00", price: 25 },
+                    { time: "14:00-15:00", price: 25 },
+                    { time: "15:00-16:30", price: 35 },
+                    { time: "16:30-18:30", price: 45 }
                 ]
             },
             outdoor_playground: {
                 name: "Vonkajšie ihrisko",
                 slots: [
-                    { time: "8:00-10:00", price: 15 },
-                    { time: "10:00-12:00", price: 20 },
-                    { time: "14:00-16:00", price: 25 }
+                    { time: "14:00-15:00", price: 15 },
+                    { time: "15:00-16:00", price: 15 },
+                    { time: "16:00-17:30", price: 22 },
+                    { time: "17:30-19:30", price: 30 }
                 ]
             }
         }
@@ -69,27 +72,28 @@ const sportData = {
             court_1: {
                 name: "Kurt 1 (antuka)",
                 slots: [
-                    { time: "7:00-8:00", price: 12 },
-                    { time: "8:00-9:00", price: 15 },
-                    { time: "9:00-10:00", price: 15 },
-                    { time: "10:00-11:00", price: 18 },
-                    { time: "17:00-18:00", price: 20 }
+                    { time: "14:00-15:00", price: 15 },
+                    { time: "15:00-16:00", price: 15 },
+                    { time: "16:00-17:30", price: 22 },
+                    { time: "17:30-19:30", price: 30 }
                 ]
             },
             court_2: {
                 name: "Kurt 2 (antuka)",
                 slots: [
-                    { time: "7:00-8:00", price: 12 },
-                    { time: "8:00-9:00", price: 15 },
-                    { time: "9:00-10:00", price: 15 }
+                    { time: "14:00-15:00", price: 12 },
+                    { time: "15:00-16:00", price: 12 },
+                    { time: "16:00-17:30", price: 18 },
+                    { time: "17:30-19:30", price: 25 }
                 ]
             },
             court_3: {
                 name: "Kurt 3 (tvrdý povrch)",
                 slots: [
-                    { time: "8:00-9:00", price: 18 },
-                    { time: "9:00-10:00", price: 18 },
-                    { time: "10:00-11:00", price: 20 }
+                    { time: "13:00-14:00", price: 18 },
+                    { time: "14:00-15:00", price: 18 },
+                    { time: "15:00-16:30", price: 26 },
+                    { time: "16:30-18:30", price: 35 }
                 ]
             }
         }
@@ -100,26 +104,28 @@ const sportData = {
             pool_25m: {
                 name: "Bazén 25m (dráha)",
                 slots: [
-                    { time: "6:00-7:00", price: 8 },
-                    { time: "7:00-8:00", price: 10 },
-                    { time: "12:00-13:00", price: 12 },
-                    { time: "18:00-19:00", price: 15 }
+                    { time: "14:00-15:00", price: 10 },
+                    { time: "15:00-16:00", price: 10 },
+                    { time: "16:00-17:30", price: 15 },
+                    { time: "17:30-19:30", price: 20 }
                 ]
             },
             pool_50m: {
                 name: "Bazén 50m (olympijský)",
                 slots: [
-                    { time: "6:00-7:00", price: 12 },
-                    { time: "7:00-8:00", price: 15 },
-                    { time: "12:00-13:00", price: 18 }
+                    { time: "14:00-15:00", price: 15 },
+                    { time: "15:00-16:00", price: 15 },
+                    { time: "16:00-17:30", price: 22 },
+                    { time: "17:30-19:30", price: 30 }
                 ]
             },
             recreational_pool: {
                 name: "Rekreačný bazén",
                 slots: [
-                    { time: "10:00-12:00", price: 20 },
-                    { time: "14:00-16:00", price: 25 },
-                    { time: "16:00-18:00", price: 30 }
+                    { time: "13:00-14:00", price: 20 },
+                    { time: "14:00-15:00", price: 20 },
+                    { time: "15:00-16:30", price: 28 },
+                    { time: "16:30-18:30", price: 38 }
                 ]
             }
         }
@@ -184,12 +190,14 @@ const errors = {
 function validateFirstName(value) {
     if (!value.trim()) return "Meno je povinné";
     if (value.length < 3) return "Meno musí mať aspoň 3 znaky";
+    if (value.length > 40) return "Pole môže mať maximálne 40 znakov";
     return "";
 }
 
 function validateLastName(value) {
     if (!value.trim()) return "Priezvisko je povinné";
     if (value.length < 3) return "Priezvisko musí mať aspoň 3 znaky";
+    if (value.length > 40) return "Pole môže mať maximálne 40 znakov";
     return "";
 }
 
@@ -205,14 +213,26 @@ function validateEmail(value) {
     const pattern = /^[^\s@]{3,}@[^\s@]+\.[a-zA-Z]{2,4}$/;
 
     if (!pattern.test(value)) return "Neplatný formát emailu";
+    if (value.length > 50) return "Pole môže mať maximálne 50 znakov";
     return "";
 }
 
-function validatePhone(prefix, number) {
-    if (prefix && !number.trim()) return "Telefónne číslo je povinné";
-    if (number.trim() && !prefix) return "Predvoľba je povinná";
+function validatePhonePrefix(prefix, number) {
     if (!prefix && !number.trim()) return "";
-    if (prefix && (number.length < 6 || number.length > 15)) return "Telefónne číslo musí mať 6-15 číslic";
+    if (prefix && !number.trim()) return "";
+    if (!prefix && number.trim() && number.length >= 6 && number.length <= 15) {
+        return "Predvoľba je povinná";
+    }
+    return "";
+}
+
+// Prepísaná validácia pre phone number
+function validatePhone(prefix, number) {
+    if (!prefix && !number.trim()) return "";
+    if (!number.trim() && prefix) return "Telefónne číslo je povinné";
+    if (number.trim() && (number.length < 6 || number.length > 15)) {
+        return "Telefónne číslo musí mať 6-15 číslic";
+    }
     return "";
 }
 
@@ -224,6 +244,7 @@ function validateDob(value) {
 
     const age = calculateAgeFromDob(dob);
     if (age < 15) return "Musíte mať aspoň 15 rokov";
+    if (age > 100) return "Neplatný dátum narodenia (vek nesmie presiahnuť 100 rokov)";
 
     return "";
 }
@@ -238,6 +259,10 @@ function validateBookingDate(value) {
     const min = new Date(today);
     min.setDate(today.getDate() + 1);
     if (chosen < min) return "Neplatný dátum rezervácie, rezervovať sa dá najskôr na zajtra";
+
+    const max = new Date(today);
+    max.setMonth(today.getMonth() + 3);
+    if (chosen > max) return "Rezervácia je možná maximálne 3 mesiace dopredu";
 
     return "";
 }
@@ -320,7 +345,7 @@ function validatePayment() {
 function validateCardNumber(value, isCardPayment) {
     const digits = digitsOnly(value);
     if (!digits && isCardPayment) return "Číslo karty je povinné";
-    if ((digits.length < 13 || digits.length > 19) && isCardPayment) return "Číslo karty musí mať 13–19 číslic";
+    if ((digits.length !== 16) && isCardPayment) return "Číslo karty musí mať 16 číslic";
     if (!luhnCheck(value) && isCardPayment) return "Neplatné číslo karty";
     return "";
 }
@@ -334,7 +359,7 @@ function validateCardExpiry(value, isCardPayment) {
 function validateCardCvv(value, isCardPayment) {
     const d = digitsOnly(value);
     if (!d && isCardPayment) return "CVV je povinné";
-    if ((d.length < 3 || d.length > 4) && isCardPayment) return "CVV musí mať 3 alebo 4 čísla";
+    if ((d.length !== 3) && isCardPayment) return "CVV musí mať 3 čísla";
     return "";
 }
 
@@ -357,6 +382,7 @@ function validateDIC(value, isInvoicePayment) {
 
 function validateAddress(value, isInvoicePayment) {
     if (isInvoicePayment && !value.trim()) return "Adresa je povinná pri platbe faktúrou";
+    if (isInvoicePayment && value.length > 60) return "Pole môže mať maximálne 60 znakov";
     return "";
 }
 
@@ -369,6 +395,23 @@ function calculateAgeFromDob(dobValue) {
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobValue.getDate()))
         age--;
     return age;
+}
+
+// Sync Age with the DOB
+function syncAgeField(dobValue, dobError) {
+    if (!dobError && dobValue) {
+        const age = calculateAgeFromDob(new Date(dobValue));
+        inputs.age.value = age;
+        inputs.age.classList.remove('error');
+        inputs.age.classList.add('valid');
+    } else if (dobError) {
+        inputs.age.value = "";
+        inputs.age.classList.remove('valid');
+        inputs.age.classList.add('error');
+    } else {
+        inputs.age.value = "";
+        inputs.age.classList.remove('valid', 'error');
+    }
 }
 
 // function to show/hide error
@@ -419,17 +462,21 @@ function clearCardFields() {
     inputs.cardCvv.classList.remove('error', 'valid');
 }
 
+function resetCharCount(inputElement, counterElement, maxLength, isExactMatch) {
+    updateCharCount(inputElement, counterElement, maxLength, isExactMatch);
+}
+
 function updateRadioGroupState(radioGroup, errorElement, hasError) {
     errorElement.textContent = hasError;
-    radioGroup.forEach(radio => {
-        if (hasError) {
-            radio.classList.add('error');
-            radio.classList.remove('valid');
-        } else {
-            radio.classList.remove('error');
-            radio.classList.add('valid');
-        }
-    });
+    const fieldset = radioGroup[0].closest('fieldset');
+
+    if (hasError) {
+        if (fieldset) fieldset.classList.add('error');
+        if (fieldset) fieldset.classList.remove('valid');
+    } else {
+        if (fieldset) fieldset.classList.remove('error');
+        if (fieldset) fieldset.classList.add('valid');
+    }
 }
 
 // Sport selection
@@ -438,15 +485,15 @@ inputs.sport.addEventListener('change', function () {
     const errorMessage = validateSport(selectedSport);
     showError(inputs.sport, errors.sport, errorMessage);
 
-    inputs.space.innerHTML = '<option value="">Najprv vyberte šport</option>';
-    inputs.time.innerHTML = '<option value="">Najprv vyberte priestor</option>';
+    inputs.space.innerHTML = '<option value="">--Najprv vyberte šport--</option>';
+    inputs.time.innerHTML = '<option value="">--Najprv vyberte priestor--</option>';
     inputs.space.disabled = true;
     inputs.time.disabled = true;
     clearFieldState(inputs.space, errors.space);
     clearFieldState(inputs.time, errors.time);
 
     if (selectedSport && sportData[selectedSport]) {
-        inputs.space.innerHTML = '<option value="">Vyberte priestor</option>';
+        inputs.space.innerHTML = '<option value="">--Vyberte priestor--</option>';
         const spaces = sportData[selectedSport].spaces;
         for (const [key, space] of Object.entries(spaces)) {
             const option = document.createElement('option');
@@ -469,7 +516,7 @@ inputs.space.addEventListener('change', function () {
     clearFieldState(inputs.time, errors.time);
 
     if (selectedSpace && sportData[selectedSport]) {
-        inputs.time.innerHTML = '<option value="">Vyberte čas</option>';
+        inputs.time.innerHTML = '<option value="">--Vyberte čas--</option>';
         const slots = sportData[selectedSport].spaces[selectedSpace].slots;
         slots.forEach(slot => {
             const option = document.createElement('option');
@@ -505,12 +552,58 @@ inputs.otherEquipmentCheckbox.addEventListener('change', function () {
         otherEquipmentContainer.style.display = 'none';
         inputs.otherEquipmentInput.value = '';
         clearFieldState(inputs.otherEquipmentInput, errors.otherEquipment);
+        resetCharCount(inputs.otherEquipmentInput, document.getElementById('otherEquipmentCount'), 60, false);
     }
 });
 
+// Equipment checkboxes validation
+const equipmentCheckboxes = document.querySelectorAll('input[name^="equipment"]');
+equipmentCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function () {
+        const equipmentFieldset = this.closest('fieldset');
+
+        const anyChecked = Array.from(equipmentCheckboxes).some(cb => cb.checked);
+        const otherChecked = inputs.otherEquipmentCheckbox.checked;
+        const otherText = inputs.otherEquipmentInput.value.trim();
+
+        const isValid = anyChecked && (!otherChecked || otherText);
+
+        if (equipmentFieldset) {
+            if (isValid) {
+                equipmentFieldset.classList.remove('error');
+                equipmentFieldset.classList.add('valid');
+            } else if (otherChecked && !otherText) {
+                equipmentFieldset.classList.add('error');
+                equipmentFieldset.classList.remove('valid');
+            } else {
+                equipmentFieldset.classList.remove('error', 'valid');
+            }
+        }
+    });
+});
+
+// Other equipment Input
 inputs.otherEquipmentInput.addEventListener('input', function () {
     const err = validateOtherEquipment(this.value, inputs.otherEquipmentCheckbox.checked);
     showError(this, errors.otherEquipment, err);
+
+    const equipmentFieldset = this.closest('fieldset');
+    const anyChecked = Array.from(document.querySelectorAll('input[name^="equipment"]')).some(cb => cb.checked);
+    const otherChecked = inputs.otherEquipmentCheckbox.checked;
+    const otherText = this.value.trim();
+    const isValid = anyChecked && (!otherChecked || otherText);
+
+    if (equipmentFieldset) {
+        if (isValid) {
+            equipmentFieldset.classList.remove('error');
+            equipmentFieldset.classList.add('valid');
+        } else if (otherChecked && !otherText) {
+            equipmentFieldset.classList.add('error');
+            equipmentFieldset.classList.remove('valid');
+        } else {
+            equipmentFieldset.classList.remove('error', 'valid');
+        }
+    }
 });
 
 // Payment method selection
@@ -518,42 +611,102 @@ const paymentRadio = document.querySelectorAll('input[name="payment"]');
 const invoiceFields = document.getElementById('invoiceFields');
 const cardFields = document.getElementById('cardFields');
 
-function hide(el) { if (el) el.style.display = 'none'; }
-function show(el) { if (el) el.style.display = 'block'; }
+const paymentFieldsetEl = document.querySelector('input[name="payment"]')?.closest('fieldset');
+
+// Jediná pomocná funkcia na prefarbenie fieldsetu podľa aktuálnych chýb
+function recalcPaymentState() {
+  if (!paymentFieldsetEl) return;
+
+  const isCardPayment = inputs.paymentCard.checked;
+  const isInvoicePayment = inputs.paymentInvoice.checked;
+
+  // 1) chyba ak žiadna možnosť nie je zvolená
+  const payErr = validatePayment();
+  errors.payment.textContent = payErr || "";
+
+  // 2) nazbieraj chyby podľa zvolenej možnosti
+  const errs = [];
+  if (payErr) errs.push(payErr);
+
+  if (isCardPayment) {
+    errs.push(validateCardNumber(inputs.cardNumber.value.trim(), true));
+    errs.push(validateCardExpiry(inputs.cardExpiry.value.trim(), true));
+    errs.push(validateCardCvv(inputs.cardCvv.value.trim(), true));
+  }
+
+  if (isInvoicePayment) {
+    errs.push(validateCompanyName(inputs.companyName.value.trim(), true));
+    errs.push(validateICO(inputs.ico.value.trim(), true));
+    errs.push(validateDIC(inputs.dic.value.trim(), true));
+    errs.push(validateAddress(inputs.address.value.trim(), true));
+  }
+
+  const hasError = errs.some(Boolean);
+
+  // prepni farbu celého fieldsetu
+  if (hasError) {
+    paymentFieldsetEl.classList.add('error');
+    paymentFieldsetEl.classList.remove('valid');
+  } else {
+    paymentFieldsetEl.classList.remove('error');
+    paymentFieldsetEl.classList.add('valid');
+  }
+}
 
 function handlePaymentChange() {
+    const selected = document.querySelector('input[name="payment"]:checked')?.value;
+
     const err = validatePayment();
     updateRadioGroupState(paymentRadio, errors.payment, err);
 
-    // dôležité: zober hodnotu vybraného rádia
-    const selected = document.querySelector('input[name="payment"]:checked')?.value;
-
     if (selected === 'invoice') {
-        show(invoiceFields);
-        hide(cardFields);
+        invoiceFields.style.display = 'block';
+        cardFields.style.display = 'none';
         clearCardFields();
+        resetCharCount(inputs.cardNumber, document.getElementById('cardNumberCount'), 16, true);
+        resetCharCount(inputs.cardCvv, document.getElementById('cardCvvCount'), 3, true);
 
     } else if (selected === 'card') {
-        show(cardFields);
-        hide(invoiceFields);
+        cardFields.style.display = 'block';
+        invoiceFields.style.display = 'none';
         clearInvoiceFields();
+        resetCharCount(inputs.companyName, document.getElementById('compNameCount'), 50, false);
+        resetCharCount(inputs.ico, document.getElementById('icoCount'), 8, true);
+        resetCharCount(inputs.dic, document.getElementById('dicCount'), 10, true);
+        resetCharCount(inputs.address, document.getElementById('addrCount'), 30, false);
 
-    } else { // napr. 'cash' alebo nič  
-        hide(invoiceFields); clearInvoiceFields();
-        hide(cardFields); clearCardFields();
+    } else {
+        cardFields.style.display = 'none'; clearInvoiceFields();
+        invoiceFields.style.display = 'none'; clearCardFields();
+        resetCharCount(inputs.cardNumber, document.getElementById('cardNumberCount'), 16, true);
+        resetCharCount(inputs.cardCvv, document.getElementById('cardCvvCount'), 3, true);
+        resetCharCount(inputs.companyName, document.getElementById('compNameCount'), 50, false);
+        resetCharCount(inputs.ico, document.getElementById('icoCount'), 8, true);
+        resetCharCount(inputs.dic, document.getElementById('dicCount'), 10, true);
+        resetCharCount(inputs.address, document.getElementById('addrCount'), 30, false);
     }
+    recalcPaymentState();
 }
 paymentRadio.forEach(r => r.addEventListener('change', handlePaymentChange));
+paymentRadio.forEach(r => r.addEventListener('change', recalcPaymentState));
+
+['cardNumber','cardExpiry','cardCvv'].forEach(k => {
+  if (inputs[k]) inputs[k].addEventListener('input', recalcPaymentState);
+});
+
+['companyName','ico','dic','address'].forEach(k => {
+  if (inputs[k]) inputs[k].addEventListener('input', recalcPaymentState);
+});
 
 // Author name toggle
 const showAuthorBtn = document.getElementById('showAuthorBtn');
 showAuthorBtn.addEventListener('click', function () {
     const authorName = inputs.authorName;
-    if (authorName.style.display === 'none') {
-        authorName.style.display = 'block';
+    if (authorName.hidden) {
+        authorName.hidden = false;
         showAuthorBtn.textContent = 'Skryť autora formulára';
     } else {
-        authorName.style.display = 'none';
+        authorName.hidden = true;
         showAuthorBtn.textContent = 'Zobraziť autora formulára';
     }
 });
@@ -563,13 +716,90 @@ const validationHandlers = {
     firstName: (value) => validateFirstName(value),
     lastName: (value) => validateLastName(value),
     email: (value) => validateEmail(value),
-    phonePrefix: (value) => validatePhone(value, inputs.phoneNumber.value),
-    phoneNumber: (value) => validatePhone(inputs.phonePrefix.value, value),
+    phonePrefix: (value) => {
+        const errorMsg = validatePhonePrefix(value, inputs.phoneNumber.value);
+
+        if (errorMsg) {
+            errors.phone.textContent = errorMsg;
+            inputs.phonePrefix.classList.add('error');
+            inputs.phonePrefix.classList.remove('valid');
+        } else {
+            const phoneError = validatePhone(value, inputs.phoneNumber.value);
+            if (phoneError) {
+                errors.phone.textContent = phoneError;
+            } else {
+                errors.phone.textContent = "";
+            }
+
+            if (value) {
+                inputs.phonePrefix.classList.remove('error');
+                inputs.phonePrefix.classList.add('valid');
+            } else {
+                inputs.phonePrefix.classList.remove('error', 'valid');
+            }
+        }
+
+        const phoneError = validatePhone(value, inputs.phoneNumber.value);
+        const phoneValue = inputs.phoneNumber.value.trim();
+
+        if (!value && !phoneValue) {
+            inputs.phoneNumber.classList.remove('error');
+            inputs.phoneNumber.classList.add('valid');
+        }
+        else if (value && !phoneValue) {
+            inputs.phoneNumber.classList.add('error');
+            inputs.phoneNumber.classList.remove('valid');
+        }
+        else if (phoneValue && phoneValue.length >= 6 && phoneValue.length <= 15) {
+            inputs.phoneNumber.classList.remove('error');
+            inputs.phoneNumber.classList.add('valid');
+        }
+        else if (phoneError && phoneValue) {
+            inputs.phoneNumber.classList.add('error');
+            inputs.phoneNumber.classList.remove('valid');
+        }
+        else {
+            inputs.phoneNumber.classList.remove('error', 'valid');
+        }
+
+        return errorMsg;
+    },
+    phoneNumber: (value) => {
+        const errorMsg = validatePhone(inputs.phonePrefix.value, value);
+
+        errors.phone.textContent = errorMsg || "";
+
+        if (errorMsg && value.trim()) {
+            inputs.phoneNumber.classList.add('error');
+            inputs.phoneNumber.classList.remove('valid');
+        } else if (!errorMsg && value.trim() && value.length >= 6 && value.length <= 15 && inputs.phonePrefix.value) {
+            inputs.phoneNumber.classList.remove('error');
+            inputs.phoneNumber.classList.add('valid');
+        } else {
+            inputs.phoneNumber.classList.remove('error', 'valid');
+        }
+
+        const prefixError = validatePhonePrefix(inputs.phonePrefix.value, value);
+
+        if (!value.trim() && !inputs.phonePrefix.value) {
+            inputs.phonePrefix.classList.remove('error');
+            inputs.phonePrefix.classList.add('valid');
+        } else if (prefixError) {
+            errors.phone.textContent = prefixError;
+            inputs.phonePrefix.classList.add('error');
+            inputs.phonePrefix.classList.remove('valid');
+        } else if (inputs.phonePrefix.value) {
+            inputs.phonePrefix.classList.remove('error');
+            inputs.phonePrefix.classList.add('valid');
+        } else {
+            inputs.phonePrefix.classList.remove('error', 'valid');
+        }
+
+        return errorMsg;
+    },
     dob: (value) => {
         const errorMsg = validateDob(value);
-        if (!errorMsg && value) {
-            inputs.age.value = calculateAgeFromDob(new Date(value));
-        }
+        syncAgeField(value, errorMsg);
         return errorMsg;
     },
     bookingDate: (value) => validateBookingDate(value),
@@ -595,41 +825,53 @@ Object.keys(validationHandlers).forEach(key => {
 });
 
 // function to update character count
-function updateCharCount(inputElement, countElement, maxLength) {
+function updateCharCount(inputElement, countElement, maxLength, isExactMatch) {
     if (!countElement) return;
 
     const currentLength = inputElement.value.length;
     countElement.textContent = `${currentLength} / ${maxLength}`;
 
-    if (currentLength >= maxLength)
-        countElement.style.color = 'red';
-    else if (currentLength >= maxLength * 0.85)
-        countElement.style.color = 'orange';
-    else
-        countElement.style.color = '#666';
+    if (isExactMatch) {
+        // For specific number (ICO, DIC, CVV, cardNumber)
+        if (currentLength === maxLength)
+            countElement.style.color = 'green';
+        else if (currentLength > maxLength)
+            countElement.style.color = 'red';
+        else
+            countElement.style.color = 'red';
+    }
+    else {
+        // For others
+        if (currentLength > maxLength)
+            countElement.style.color = 'red';
+        else if (currentLength >= maxLength * 0.85)
+            countElement.style.color = 'orange';
+        else
+            countElement.style.color = '#666';
+    }
 }
 
 const charCounters = [
-    { input: inputs.firstName, counter: document.getElementById('firstNameCount'), max: 40 },
-    { input: inputs.lastName, counter: document.getElementById('lastNameCount'), max: 40 },
-    { input: inputs.email, counter: document.getElementById('emailCount'), max: 50 },
-    { input: inputs.phoneNumber, counter: document.getElementById('phoneNumberCount'), max: 15 },
-    { input: inputs.message, counter: document.getElementById('messageCount'), max: 500 },
-    { input: inputs.ico, counter: document.getElementById('icoCount'), max: 8 },
-    { input: inputs.dic, counter: document.getElementById('dicCount'), max: 10 },
-    { input: inputs.address, counter: document.getElementById('addrCount'), max: 30 },
-    { input: inputs.companyName, counter: document.getElementById('compNameCount'), max: 50 },
-    { input: inputs.otherEquipmentInput, counter: document.getElementById('otherEquipmentCount'), max: 60 },
-    { input: inputs.cardNumber, counter: document.getElementById('cardNumberCount'), max: 16 },
-    { input: inputs.cardCvv, counter: document.getElementById('cardCvvCount'), max: 3 }
+    { input: inputs.firstName, counter: document.getElementById('firstNameCount'), max: 40, exact: false },
+    { input: inputs.lastName, counter: document.getElementById('lastNameCount'), max: 40, exact: false },
+    { input: inputs.email, counter: document.getElementById('emailCount'), max: 50, exact: false },
+    { input: inputs.phoneNumber, counter: document.getElementById('phoneNumberCount'), max: 15, exact: false },
+    { input: inputs.message, counter: document.getElementById('messageCount'), max: 500, exact: false },
+    { input: inputs.ico, counter: document.getElementById('icoCount'), max: 8, exact: true },
+    { input: inputs.dic, counter: document.getElementById('dicCount'), max: 10, exact: true },
+    { input: inputs.address, counter: document.getElementById('addrCount'), max: 30, exact: false },
+    { input: inputs.companyName, counter: document.getElementById('compNameCount'), max: 50, exact: false },
+    { input: inputs.otherEquipmentInput, counter: document.getElementById('otherEquipmentCount'), max: 60, exact: false },
+    { input: inputs.cardNumber, counter: document.getElementById('cardNumberCount'), max: 16, exact: true },
+    { input: inputs.cardCvv, counter: document.getElementById('cardCvvCount'), max: 3, exact: true }
 ]
 
 charCounters.forEach(item => {
     if (item.input && item.counter) {
-        updateCharCount(item.input, item.counter, item.max);
+        updateCharCount(item.input, item.counter, item.max, item.exact);
 
         item.input.addEventListener('input', () => {
-            updateCharCount(item.input, item.counter, item.max);
+            updateCharCount(item.input, item.counter, item.max, item.exact);
         });
     }
 });
@@ -688,7 +930,7 @@ function generateOrderSummary() {
         summary += `<div class="summary-item"><strong>Cena:</strong><span>${price} €</span></div>`;
     }
 
-    const checkedEquipment = document.querySelectorAll('.equipment-checkbox:checked');
+    const checkedEquipment = document.querySelectorAll('input[name^="equipment"]:checked');
     if (checkedEquipment.length > 0) {
         summary += '<h3>Požičané vybavenie</h3>';
         checkedEquipment.forEach(checkbox => {
@@ -741,6 +983,93 @@ function generateOrderSummary() {
 }
 
 
+// Function for highlighting fieldsets during validation
+function highlightFieldsets(validateErrors, isOtherEquipmentChecked) {
+    // Gender fieldset
+    const genderRadios = document.querySelectorAll('input[name="gender"]');
+    const genderFieldset = genderRadios[0]?.closest('fieldset');
+    if (genderFieldset) {
+        if (validateErrors.gender) {
+            genderFieldset.classList.add('error');
+            genderFieldset.classList.remove('valid');
+        } else {
+            genderFieldset.classList.remove('error');
+            genderFieldset.classList.add('valid');
+        }
+    }
+
+    // Payment fieldset
+    const paymentRadios = document.querySelectorAll('input[name="payment"]');
+    const paymentFieldset = paymentRadios[0]?.closest('fieldset');
+    if (paymentFieldset) {
+        if (validateErrors.payment) {
+            paymentFieldset.classList.add('error');
+            paymentFieldset.classList.remove('valid');
+        } else {
+            paymentFieldset.classList.remove('error');
+            paymentFieldset.classList.add('valid');
+        }
+    }
+
+    // Equipment fieldset
+    const equipmentCheckboxes = document.querySelectorAll('input[name^="equipment"]');
+    const equipmentFieldset = equipmentCheckboxes[0]?.closest('fieldset');
+    if (equipmentFieldset) {
+        if (isOtherEquipmentChecked && validateErrors.otherEquipment) {
+            equipmentFieldset.classList.add('error');
+            equipmentFieldset.classList.remove('valid');
+        } else {
+            equipmentFieldset.classList.remove('error');
+            equipmentFieldset.classList.add('valid');
+        }
+    }
+}
+
+function syncPhoneFields(phonePrefix, phoneNumber, prefixError, phoneError) {
+    if (!phonePrefix && !phoneNumber.trim()) {
+        inputs.phonePrefix.classList.remove('error');
+        inputs.phonePrefix.classList.add('valid');
+        inputs.phoneNumber.classList.remove('error');
+        inputs.phoneNumber.classList.add('valid');
+        return;
+    }
+
+    if (!prefixError && phonePrefix) {
+        inputs.phonePrefix.classList.add('valid');
+        inputs.phonePrefix.classList.remove('error');
+    } else if (prefixError) {
+        inputs.phonePrefix.classList.add('error');
+        inputs.phonePrefix.classList.remove('valid');
+    } else {
+        inputs.phonePrefix.classList.remove('error', 'valid');
+    }
+
+    if (!phoneError && phoneNumber && !prefixError) {
+        inputs.phoneNumber.classList.add('valid');
+        inputs.phoneNumber.classList.remove('error');
+    } else if (phoneError) {
+        inputs.phoneNumber.classList.add('error');
+        inputs.phoneNumber.classList.remove('valid');
+    } else {
+        inputs.phoneNumber.classList.remove('error', 'valid');
+    }
+}
+
+function clearInactivePaymentFields(isCardPayment, isInvoicePayment) {
+    if (!isCardPayment) {
+        inputs.cardNumber.classList.remove('valid', 'error');
+        inputs.cardExpiry.classList.remove('valid', 'error');
+        inputs.cardCvv.classList.remove('valid', 'error');
+    }
+
+    if (!isInvoicePayment) {
+        inputs.companyName.classList.remove('valid', 'error');
+        inputs.ico.classList.remove('valid', 'error');
+        inputs.dic.classList.remove('valid', 'error');
+        inputs.address.classList.remove('valid', 'error');
+    }
+}
+
 // Form submission
 form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -772,6 +1101,7 @@ form.addEventListener('submit', (event) => {
         firstName: validateFirstName(firstName),
         lastName: validateLastName(lastName),
         email: validateEmail(email),
+        phonePrefix: validatePhonePrefix(phonePrefix, phoneNumber),
         phone: validatePhone(phonePrefix, phoneNumber),
         dob: validateDob(dob),
         bookingDate: validateBookingDate(bookingDate),
@@ -793,6 +1123,23 @@ form.addEventListener('submit', (event) => {
 
     let hasError = false;
     Object.keys(validateErrors).forEach(key => {
+        if (key === 'phonePrefix') {
+            if (validateErrors.phonePrefix) {
+                errors.phone.textContent = validateErrors.phonePrefix;
+                if (inputs.phonePrefix) {
+                    inputs.phonePrefix.classList.add('error');
+                    inputs.phonePrefix.classList.remove('valid');
+                }
+                hasError = true;
+            } else if (!validateErrors.phone) {
+                if (inputs.phonePrefix) {
+                    inputs.phonePrefix.classList.remove('error');
+                    if (phonePrefix) inputs.phonePrefix.classList.add('valid');
+                }
+            }
+            return;
+        }
+
         if (validateErrors[key]) {
             errors[key].textContent = validateErrors[key];
             if (inputs[key]) {
@@ -800,8 +1147,7 @@ form.addEventListener('submit', (event) => {
                 inputs[key].classList.remove('valid');
             }
             hasError = true;
-        }
-        else {
+        } else {
             errors[key].textContent = "";
             if (inputs[key]) {
                 inputs[key].classList.remove('error');
@@ -810,14 +1156,36 @@ form.addEventListener('submit', (event) => {
         }
     });
 
+    syncAgeField(dob, validateErrors.dob);
+    highlightFieldsets(validateErrors, isOtherEquipmentChecked);
+    syncPhoneFields(phonePrefix, phoneNumber, validateErrors.phonePrefix, validateErrors.phone);
+    recalcPaymentState();
+
     if (!hasError) {
         generateOrderSummary();
         modal.style.display = 'block';
     }
 });
 
+function toggleEquipmentFieldsDisabled(disabled) {
+  document.querySelectorAll('input[name^="equipment_"], #otherEquipmentInput').forEach(el => { el.disabled = disabled; });
+}
+
 // Modal button event listeners
 confirmBtn.addEventListener('click', function () {
+    // pre istotu ešte raz vytvor aktuálny súhrn vybavenia
+    const checkedEquipment = [];
+    document.querySelectorAll('input[name^="equipment_"]:checked').forEach(cb => {
+        if (cb.id !== 'otherEquipmentCheckbox') checkedEquipment.push(cb.value);
+    });
+    if (inputs.otherEquipmentCheckbox.checked && inputs.otherEquipmentInput.value.trim()) {
+        checkedEquipment.push(inputs.otherEquipmentInput.value.trim());
+    }
+    document.getElementById('equipmentSummary').value = checkedEquipment.join(', ');
+
+    // zablokuj (disable) jednotlivé equipment polia, aby sa neposlali
+    toggleEquipmentFieldsDisabled(true);
+
     modal.style.display = 'none';
     form.submit();
 });

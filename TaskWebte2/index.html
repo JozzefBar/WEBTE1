@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>TaskWebte1 - Formular</title>
     <link rel="stylesheet" href="css/style.css">
     <script async src="js/main.js"></script>
 </head>
@@ -21,26 +21,24 @@
         <input type="hidden" name="sender" value="Jozef Barcak">
         <input type="hidden" name="to" value="jojobarcak@gmail.com">
         <input type="hidden" name="subject" value="Data formularu">
-        <input type="hidden" name="redirectOk" value="https://www.fei.stuba.sk/">
-        <!--- "https://webte.fei.stuba.sk/~xbarcakj/indexSuccess.html" --->
-        <input type="hidden" name="redirectFalse" value="https://www.stuba.sk/">
-        <!--- "https://webte.fei.stuba.sk/~xbarcakj/indexFail.html" --->
+        <input type="hidden" name="redirectOk" value="https://www.webte1.fei.stuba.sk/~xbarcakj/TaskWebte/TaskWebte2/indexSuccess.html">
+        <input type="hidden" name="redirectFalse" value="https://www.webte1.fei.stuba.sk/~xbarcakj/TaskWebte/TaskWebte2/indexFail.html">
 
         <div class="form-columns">
             <section class="column">
                 <label for="firstName"><strong>Meno*:</strong></label>
-                <input type="text" id="firstName" name="firstName" maxlength="40">
+                <input type="text" id="firstName" name="firstName">
                 <span class="char-count" id="firstNameCount">0 / 40</span>
                 <span class="error" id="firstNameError"></span>
 
                 <label for="lastName"><strong>Priezvisko*:</strong></label>
-                <input type="text" id="lastName" name="lastName" maxlength="40">
+                <input type="text" id="lastName" name="lastName">
                 <span class="char-count" id="lastNameCount">0 / 40</span>
                 <span class="error" id="lastNameError"></span>
 
                 <label for="email"><strong>Email*:</strong></label>
-                <input type="email" id="email" name="email" maxlength="50">
-                <span class="char-count" id="emailCount">0 / 80</span>
+                <input type="email" id="email" name="email">
+                <span class="char-count" id="emailCount">0 / 50</span>
                 <span class="error" id="emailError"></span>
 
                 <label for="phonePrefix">Telefónne číslo:</label>
@@ -61,13 +59,17 @@
                 </div>
                 <span class="error" id="phoneError"></span>
 
-                <label for="dob"><strong>Dátum narodenia*:</strong></label>
-                <input type="date" id="dob" name="dateOfBirth">
-                <span class="error" id="dobError"></span>
+                <div class="dob-age">
+                    <label for="dob"><strong>Dátum narodenia*:</strong></label>
+                    <input type="date" id="dob" name="dateOfBirth">
+                    <span class="error" id="dobError"></span>
 
-                <label for="age">Vek:</label>
-                <input type="number" id="age" name="age" readonly>
-                <span class="error" id="ageError"></span>
+                    <div class="age-line">
+                        <label for="age">Vek:</label>
+                        <input type="number" id="age" name="age" class="output" readonly>
+                        <span class="error" id="ageError"></span>
+                    </div>
+                </div>
 
                 <fieldset>
                     <legend><strong>Pohlavie*</strong></legend>
@@ -108,13 +110,13 @@
 
                 <fieldset>
                     <legend>Športové vybavenie</legend>
-                    <label><input type="checkbox" name="equipment" value="ball"> Lopta</label>
-                    <label><input type="checkbox" name="equipment" value="rackets"> Rakety</label>
-                    <label><input type="checkbox" name="equipment" value="tennis_balls"> Tenisové lopty</label>
-                    <label><input type="checkbox" name="equipment" value="swimming_goggles"> Plavecké okuliare</label>
-                    <label><input type="checkbox" name="equipment" value="sports_shoes"> Športová obuv</label>
-                    <label><input type="checkbox" name="equipment" value="jerseys"> Dresy</label>
-                    <label><input type="checkbox" id="otherEquipmentCheckbox" name="equipment" value="other"> Iné,
+                    <label><input type="checkbox" name="equipment_ball" value="ball"> Lopta</label>
+                    <label><input type="checkbox" name="equipment_rackets" value="rackets"> Rakety</label>
+                    <label><input type="checkbox" name="equipment_tennis_balls" value="tennis_balls"> Tenisové lopty</label>
+                    <label><input type="checkbox" name="equipment_swimming_goggles" value="swimming_goggles"> Plavecké okuliare</label>
+                    <label><input type="checkbox" name="equipment_sports_shoes" value="sports_shoes"> Športová obuv</label>
+                    <label><input type="checkbox" name="equipment_jerseys" value="jerseys"> Dresy</label>
+                    <label><input type="checkbox" id="otherEquipmentCheckbox" name="equipment_other" value="other"> Iné,
                         uveďte aké</label>
 
                     <div id="otherEquipmentContainer" style="display:none;">
@@ -124,6 +126,8 @@
                         <span class="error" id="otherEquipmentError"></span>
                     </div>
                     <span class="error" id="equipmentError"></span>
+
+                    <input type="hidden" name="equipment" id="equipmentSummary" value="">
                 </fieldset>
 
                 <fieldset>
@@ -139,7 +143,8 @@
                         <div class="card-grid">
                             <div class="card-row card-number">
                                 <label for="cardNumber">Číslo karty*:</label>
-                                <input type="number" id="cardNumber" name="cardNumber" maxlength="16" placeholder="xxxx xxxx xxxx xxxx">
+                                <input type="number" id="cardNumber" name="cardNumber"
+                                    placeholder="xxxx xxxx xxxx xxxx">
                                 <span class="char-count" id="cardNumberCount">0 / 16</span>
                                 <span class="error" id="cardNumberError"></span>
                             </div>
@@ -150,7 +155,7 @@
                             </div>
                             <div class="card-row card-cvv">
                                 <label for="cardCvv">CVV*:</label>
-                                <input type="number" id="cardCvv" name="cardCvv" maxlength="3">
+                                <input type="number" id="cardCvv" name="cardCvv">
                                 <span class="char-count" id="cardCvvCount">0 / 3</span>
                                 <span class="error" id="cardCvvError"></span>
                             </div>
@@ -159,7 +164,7 @@
                     </div>
                     <div id="invoiceFields" style="display:none;">
                         <label for="companyName">Názov firmy*:</label>
-                        <input type="text" id="companyName" name="companyName" maxlength="50">
+                        <input type="text" id="companyName" name="companyName">
                         <span class="char-count" id="compNameCount">0 / 50</span>
                         <span class="error" id="companyNameError"></span>
 
@@ -174,7 +179,7 @@
                         <span class="error" id="dicError"></span>
 
                         <label for="address">Adresa*:</label>
-                        <input type="text" id="address" name="address" maxlength="30">
+                        <input type="text" id="address" name="address">
                         <span class="char-count" id="addrCount">0 / 30</span>
                         <span class="error" id="addressError"></span>
                     </div>
@@ -196,12 +201,10 @@
 
     </form>
 
-    <!-- Modal -->
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <h2>Náhľad objednávky</h2>
             <div id="orderSummary">
-                <!-- Order summary will be there -->
             </div>
 
             <div class="modal-total">

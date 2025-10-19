@@ -147,6 +147,28 @@ textarea {
     outline-color: #4caf50;
 }
 
+form select.valid,
+form input.valid:not([type="checkbox"]):not([type="radio"]),
+form textarea.valid {
+    border-color: #4caf50;
+    color: #222;
+}
+
+form select.error,
+form input.error:not([type="checkbox"]):not([type="radio"]),
+form textarea.error {
+    border-color: #d74d3e;
+    color: #222;
+}
+
+fieldset.error {
+    border-color: #d74d3e;
+}
+
+fieldset.valid {
+    border-color: #4caf50;
+}
+
 /* phone number container */
 .phone-container {
     display: grid;
@@ -171,6 +193,7 @@ fieldset label {
     align-items: center;
     gap: 0.5em;
     margin: 0.35em 0;
+    color: #222;
 }
 
 fieldset .error {
@@ -179,8 +202,9 @@ fieldset .error {
     margin-top: 0.4em;
 }
 
-legend {
+fieldset legend {
     padding: 0 0.5em;
+    color: #222;
 }
 
 /* buttons for submit and show author */
@@ -229,11 +253,35 @@ input[type="submit"]:hover {
     justify-self: start;
 }
 
-/*Card*/
+/* DOB-Age */
+
+.dob-age {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 1.2em;
+}
+
+.age-line {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    font-style: italic;
+}
+
+input.output[readonly] {
+    border: none;
+    background: transparent;
+    padding: 0;
+    pointer-events: none;
+    font-style: italic;
+    font-weight: 500;
+    color: #222;
+}
+
+/*Card inputs style*/
 #cardFields .card-grid {
     display: grid;
-    grid-template-columns: 1fr 200px;
-    /* ľavý širší, pravý užší stĺpec */
+    grid-template-columns: 1fr 1fr;
     grid-template-areas:
         "number number"
         "expiry cvv";
@@ -241,12 +289,10 @@ input[type="submit"]:hover {
     align-items: start;
 }
 
-/* číslo karty cez celú šírku */
 #cardFields .card-number {
     grid-area: number;
 }
 
-/* druhý riadok: expiry vľavo, cvv vpravo */
 #cardFields .card-expiry {
     grid-area: expiry;
 }
@@ -255,7 +301,6 @@ input[type="submit"]:hover {
     grid-area: cvv;
 }
 
-/* jednotné štýly pre riadky (label, input, error pod sebou) */
 #cardFields .card-row {
     display: grid;
     gap: 6px;
@@ -397,7 +442,6 @@ input[type="submit"]:hover {
     }
 
     .modal-content {
-        width: 90%;
         padding: 1.2rem;
     }
 }
@@ -413,5 +457,21 @@ input[type="submit"]:hover {
             "number"
             "expiry"
             "cvv";
+    }
+
+    .modal-total {
+        font-size: 1em;
+    }
+
+    .summary-item {
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .btn-confirm,
+    .btn-cancel {
+        padding: 8px 20px;
+        font-size: 0.8em;
+        flex: 1 1 45%;
     }
 }
