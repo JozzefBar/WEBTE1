@@ -42,24 +42,6 @@ body {
     max-width: min(1100px, 92vw);
 }
 
-/*
-footer {
-    text-align: center;
-    background: #333;
-    padding: 10px 0 10px 0;
-    color: rgb(217, 217, 217);
-    width: 100%;
-}
-*/
-
-a {
-    color: #06c;
-}
-
-a:visited {
-    color: #a0c;
-}
-
 h1 {
     text-align: center;
     margin-bottom: 1.5em;
@@ -467,7 +449,7 @@ input.output[readonly] {
         flex-direction: column;
         gap: 2px;
     }
-    
+
     .btn-confirm,
     .btn-cancel {
         padding: 8px 20px;

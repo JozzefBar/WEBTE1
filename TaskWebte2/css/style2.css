@@ -31,6 +31,14 @@ body {
   margin-top: 100px;
 }
 
+a {
+    color: #06c;
+}
+
+a:visited {
+    color: #a0c;
+}
+
 .success {
   background-color: #e9f9ee;
   color: #1a472a;
