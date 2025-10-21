@@ -235,12 +235,6 @@ function isAnyEquipmentCheckboxChecked() {
     const equipmentCheckboxes = document.querySelectorAll('[name^="equipment_"]');
     const result = Array.from(equipmentCheckboxes).some(cb => cb.checked);
 
-    console.log('isAnyEquipmentCheckboxChecked called:', {
-        checkboxes: equipmentCheckboxes.length,
-        checked: Array.from(equipmentCheckboxes).filter(cb => cb.checked).map(cb => cb.id),
-        result
-    });
-
     return result;
 }
 
@@ -964,22 +958,6 @@ inputs.otherEquipmentInput.addEventListener('input', function () {
         }
     }
 });
-
-function showError(element, errorElement, errorMessage) {
-    console.log('showError called:', { element: element?.id, errorMessage });
-
-    if (errorElement) errorElement.textContent = errorMessage || "";
-
-    if (errorMessage) {
-        element.classList.add('error');
-        element.classList.remove('valid');
-        console.log('→ Added error class');
-    } else {
-        element.classList.remove('error');
-        element.classList.add('valid');
-        console.log('→ Added valid class');
-    }
-}
 
 // ==================== REAL-TIME VALIDATION HANDLERS ====================
 
