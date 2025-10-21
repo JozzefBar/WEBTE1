@@ -34,17 +34,28 @@ body {
     margin: 0;
     padding: 0;
     font-family: "Roboto", sans-serif;
-    background: #fff;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     color: #222;
     line-height: 1.5;
     margin-inline: auto;
     padding: clamp(16px, 3vw, 32px);
     max-width: min(1100px, 92vw);
+    min-height: 100vh;
 }
 
 h1 {
     text-align: center;
+    margin-bottom: 0.4em;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
+    color: #7f8c8d;
     margin-bottom: 1.5em;
+    font-weight: 400;
 }
 
 /* Form Styles */
@@ -52,6 +63,10 @@ form {
     display: flex;
     flex-direction: column;
     gap: 1.5em;
+    background: white;
+    padding: clamp(24px, 4vw, 40px);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
 }
 
 .form-columns {
@@ -70,6 +85,7 @@ form {
 label {
     font-weight: 500;
     margin-top: 0.3em;
+    font-size: 0.95rem;
 }
 
 form input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
@@ -87,9 +103,9 @@ form select {
 form input:focus:not([type="checkbox"]):not([type="radio"]),
 form textarea:focus,
 form select:focus {
-    border-color: #06c;
-    outline: 2px solid #06c;
-    outline-offset: 2px;
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
 input[type="checkbox"],
@@ -117,6 +133,7 @@ textarea {
     color: #666;
     display: block;
     margin-top: 2px;
+    font-style: italic;
 }
 
 .error {
@@ -154,7 +171,7 @@ fieldset.valid {
 /* phone number container */
 .phone-container {
     display: grid;
-    grid-template-columns: 150px 1fr;
+    grid-template-columns: 130px 1fr;
     gap: 10px;
 }
 
@@ -175,6 +192,7 @@ fieldset label {
     align-items: center;
     gap: 0.5em;
     margin: 0.35em 0;
+    padding: 0.3em 0;
     color: #222;
 }
 
@@ -195,17 +213,20 @@ input[type="submit"] {
     font-size: 1.3em;
     font-weight: 700;
     padding: 0.9em 2.5em;
-    background-color: #4caf50;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
     border-radius: 0.5em;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 button:hover,
 input[type="submit"]:hover {
     background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .form-actions {
@@ -222,12 +243,14 @@ input[type="submit"]:hover {
     border: none;
     border-radius: 0.4em;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
     width: auto;
     margin-top: 0.5em;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 
     & :hover {
-        background-color: #1976d2;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
     }
 }
 
@@ -290,28 +313,6 @@ input.output[readonly] {
 
 /* Modal Styles */
 .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background: white;
-    padding: 20px;
-    border: 1px solid #ccc;
-}
-
-.modal.show {
-    display: flex;
-}
-
-.modal {
     z-index: 1000;
     display: none;
     position: fixed;
@@ -319,8 +320,15 @@ input.output[readonly] {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
     overflow: auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
 }
 
 .modal-content {
@@ -336,12 +344,11 @@ input.output[readonly] {
 
 @keyframes slideDown {
     from {
-        transform: translateY(-50px);
+        transform: translateY(-80px) scale(0.95);
         opacity: 0;
     }
-
     to {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
         opacity: 1;
     }
 }
@@ -351,6 +358,7 @@ input.output[readonly] {
     color: #333;
     border-bottom: 2px solid #4CAF50;
     padding-bottom: 10px;
+    font-size: 1.6em;
 }
 
 #orderSummary {
@@ -376,10 +384,11 @@ input.output[readonly] {
 .modal-total {
     margin-top: 20px;
     padding: 15px;
-    background-color: #f0f0f0;
+    background: linear-gradient(135deg, #8896d4 0%, #a884cd 100%);
     font-size: 1.2em;
     text-align: right;
     border-radius: 5px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .modal-buttons {
@@ -396,24 +405,28 @@ input.output[readonly] {
     border-radius: 5px;
     font-size: 1em;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
 }
 
 .btn-confirm {
-    background-color: #4CAF50;
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
     color: white;
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
 
     & :hover {
-        background-color: #45a049;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
     }
 }
 
 .btn-cancel {
-    background-color: #f44336;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
     color: white;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
 
     & :hover {
-        background-color: #da190b;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
     }
 }
 

@@ -120,7 +120,7 @@ const sportData = {
     }
 };
 
-// Inicializácia - DOM prvky
+// Inicializácia prvkov
 const form = document.getElementById('myForm');
 const inputs = {
     firstName: document.getElementById('firstName'),
@@ -176,17 +176,20 @@ const errors = {
     address: document.getElementById('addressError')
 };
 
-// ==================== HELPER FUNKCIE ====================
+// Utility funkcie
 
+// Extract only digits from string
 function digitsOnly(str) {
     return (str || "").replace(/\D/g, "");
 }
 
+// Clear field validation state
 function clearFieldState(element, errorElement) {
     errorElement.textContent = "";
     element.classList.remove('error', 'valid');
 }
 
+// Show validation error or success on a field
 function showError(element, errorElement, errorMessage) {
     if (errorElement) errorElement.textContent = errorMessage || "";
 
@@ -199,6 +202,7 @@ function showError(element, errorElement, errorMessage) {
     }
 }
 
+// Update validation state for radio button groups (gender, payment)
 function updateRadioGroupState(radioGroup, errorElement, hasError) {
     errorElement.textContent = hasError || "";
     const fieldset = radioGroup[0].closest('fieldset');
@@ -216,6 +220,7 @@ function updateRadioGroupState(radioGroup, errorElement, hasError) {
     }
 }
 
+// Calculate age from date of birth
 function calculateAgeFromDob(dobValue) {
     if (!dobValue) return "";
     const today = new Date();
@@ -225,15 +230,37 @@ function calculateAgeFromDob(dobValue) {
     return age;
 }
 
+// Check if any equipment checkbox is checked (including "Other")
+function isAnyEquipmentCheckboxChecked() {
+    const equipmentCheckboxes = document.querySelectorAll('[name^="equipment_"]');
+    const result = Array.from(equipmentCheckboxes).some(cb => cb.checked);
+
+    console.log('isAnyEquipmentCheckboxChecked called:', {
+        checkboxes: equipmentCheckboxes.length,
+        checked: Array.from(equipmentCheckboxes).filter(cb => cb.checked).map(cb => cb.id),
+        result
+    });
+
+    return result;
+}
+
+// Check if equipment selection is valid (checkboxes checked + "Other" text filled if needed)
 function isAnyEquipmentSelected() {
     const equipmentCheckboxes = document.querySelectorAll('[name^="equipment_"]');
-    const anyChecked = Array.from(equipmentCheckboxes).some(cb => cb.checked);
+
+    const anyOtherChecked = Array.from(equipmentCheckboxes).some(cb =>
+        cb.id !== 'otherEquipmentCheckbox' && cb.checked
+    );
+
     const otherChecked = inputs.otherEquipmentCheckbox?.checked;
     const otherText = inputs.otherEquipmentInput?.value.trim();
     const otherValid = !!(otherChecked && otherText);
-    return anyChecked || otherValid;
+    const otherInvalid = otherChecked && !otherText;
+
+    return (anyOtherChecked || otherValid) && !otherInvalid;
 }
 
+// Update character counter with color coding
 function updateCharCount(inputElement, counterElement, maxLength, isExactMatch) {
     if (!counterElement) return;
     const currentLength = inputElement.value.length;
@@ -248,12 +275,14 @@ function updateCharCount(inputElement, counterElement, maxLength, isExactMatch) 
     }
 }
 
+// Reset character counter to initial state
 function resetCharCount(inputElement, counterElement, maxLength, isExactMatch) {
     updateCharCount(inputElement, counterElement, maxLength, isExactMatch);
 }
 
-// ==================== VALIDAČNÉ FUNKCIE ====================
+// VALIDATION FUNCTIONS
 
+// Validate first name (required, 3-40 chars)
 function validateFirstName(value) {
     if (!value.trim()) return "Meno je povinné";
     if (value.length < 3) return "Meno musí mať aspoň 3 znaky";
@@ -261,6 +290,7 @@ function validateFirstName(value) {
     return "";
 }
 
+// Validate last name (required, 3-40 chars)
 function validateLastName(value) {
     if (!value.trim()) return "Priezvisko je povinné";
     if (value.length < 3) return "Priezvisko musí mať aspoň 3 znaky";
@@ -268,6 +298,7 @@ function validateLastName(value) {
     return "";
 }
 
+// Validate email (required, valid format, max 50 chars)
 function validateEmail(value) {
     if (!value.trim()) return "Email je povinný";
     const pattern = /^[^\s@]{3,}@[^\s@]+\.[a-zA-Z]{2,4}$/;
@@ -276,6 +307,7 @@ function validateEmail(value) {
     return "";
 }
 
+// Validate phone prefix (required only if number is filled)
 function validatePhonePrefix(prefix, number) {
     if (!prefix && !number.trim()) return "";
     if (prefix && !number.trim()) return "";
@@ -283,6 +315,7 @@ function validatePhonePrefix(prefix, number) {
     return "";
 }
 
+// Validate phone number (required only if prefix is selected, 7-15 digits)
 function validatePhoneNumber(prefix, number) {
     if (!prefix && !number.trim()) return "";
     if (!number.trim() && prefix) return "Telefónne číslo je povinné";
@@ -292,6 +325,7 @@ function validatePhoneNumber(prefix, number) {
     return "";
 }
 
+// Validate date of birth (required, must be past, age 15-100)
 function validateDob(value) {
     if (!value.trim()) return "Dátum narodenia je povinný";
     const dob = new Date(value);
@@ -303,6 +337,7 @@ function validateDob(value) {
     return "";
 }
 
+// Validate booking date (required, tomorrow to 3 months ahead)
 function validateBookingDate(value) {
     if (!value) return "Dátum rezervácie je povinný";
     const chosen = new Date(value);
@@ -317,6 +352,74 @@ function validateBookingDate(value) {
     return "";
 }
 
+// Validate sport selection (required)
+function validateSport(value) {
+    return !value ? "Musíte vybrať šport" : "";
+}
+
+// Validate space selection (required)
+function validateSpace(value) {
+    return !value ? "Musíte vybrať priestor" : "";
+}
+
+// Validate time slot selection (required)
+function validateTime(value) {
+    return !value ? "Musíte vybrať čas a cenu" : "";
+}
+
+// Validate gender selection (required)
+function validateGender() {
+    const genderRadio = document.querySelectorAll('input[name="gender"]');
+    const checked = Array.from(genderRadio).some(radio => radio.checked);
+    return !checked ? "Musíte vybrať pohlavie" : "";
+}
+
+// Validate "Other equipment" text field (max 60 chars, required if checkbox checked)
+function validateOtherEquipment(value, isOtherChecked) {
+    if (value.length > 60) return "Správa nesmie presiahnuť 60 znakov";
+    if (isOtherChecked && !value.trim()) return "Musíte uviesť aké iné vybavenie potrebujete";
+    return "";
+}
+
+// Validate member count field (complex validation based on equipment selection)
+function validateMemberCount(value, anyEquipmentCheckboxChecked, isEquipmentValid) {
+    const v = String(value ?? "").trim();
+    const n = v === "" ? null : Number(v);
+    const isEmpty = v === "" || v === "0" || n === 0;
+
+    if (!anyEquipmentCheckboxChecked && isEmpty)
+        return "";
+
+    if (anyEquipmentCheckboxChecked && isEmpty)
+        return "Zadajte počet osôb";
+
+    if (!anyEquipmentCheckboxChecked && !isEmpty)
+        return "Vyberte aspoň jedno vybavenie";
+
+    if (!/^\d+$/.test(v)) return "Zadajte celé kladné číslo";       //???
+    if (!Number.isInteger(n)) return "Zadajte celé číslo";
+    if (n < 1) return "Počet musí byť aspoň 1";
+    if (n > 30) return "Nevieme zabezpečiť vybavenie pre viac ako 30 ľudí";
+
+    if (anyEquipmentCheckboxChecked && !isEquipmentValid)
+        return "Najprv vyplňte všetky polia vybavenia";
+
+    return "";
+}
+
+// Validate message field (max 500 chars)
+function validateMessage(value) {
+    return value.length > 500 ? "Správa nesmie presiahnuť 500 znakov" : "";
+}
+
+// Validate payment method selection (required)
+function validatePayment() {
+    const paymentRadios = document.querySelectorAll('input[name="payment"]');
+    const checked = Array.from(paymentRadios).some(radio => radio.checked);
+    return !checked ? "Musíte vybrať spôsob platby" : "";
+}
+
+// Luhn algorithm check for card number validation
 function luhnCheck(cardNumStr) {
     const s = digitsOnly(cardNumStr);
     let sum = 0;
@@ -333,6 +436,16 @@ function luhnCheck(cardNumStr) {
     return s.length >= 12 && sum % 10 === 0;
 }
 
+// Validate card number (required if card payment, 16 digits, Luhn check)
+function validateCardNumber(value, isCardPayment) {
+    const digits = digitsOnly(value);
+    if (!digits && isCardPayment) return "Číslo karty je povinné";
+    if (digits.length !== 16 && isCardPayment) return "Číslo karty musí mať 16 číslic";
+    if (!luhnCheck(value) && isCardPayment) return "Neplatné číslo karty";
+    return "";
+}
+
+// Check if card expiry date is not expired
 function isExpiryValid(value) {
     if (!value) return false;
     const [y, m] = value.split('-').map(Number);
@@ -343,68 +456,14 @@ function isExpiryValid(value) {
     return true;
 }
 
-function validateSport(value) {
-    return !value ? "Musíte vybrať šport" : "";
-}
-
-function validateSpace(value) {
-    return !value ? "Musíte vybrať priestor" : "";
-}
-
-function validateTime(value) {
-    return !value ? "Musíte vybrať čas a cenu" : "";
-}
-
-function validateGender() {
-    const genderRadio = document.querySelectorAll('input[name="gender"]');
-    const checked = Array.from(genderRadio).some(radio => radio.checked);
-    return !checked ? "Musíte vybrať pohlavie" : "";
-}
-
-function validateOtherEquipment(value, isOtherChecked) {
-    if (value.length > 60) return "Správa nesmie presiahnuť 60 znakov";
-    if (isOtherChecked && !value.trim()) return "Musíte uviesť aké iné vybavenie potrebujete";
-    return "";
-}
-
-function validateMemberCount(value, anyEquipmentSelected) {
-    const v = String(value ?? "").trim();
-
-    if (!anyEquipmentSelected && v === "") return "";
-    if (anyEquipmentSelected && v === "") return "Zadajte počet osôb";
-    if (!anyEquipmentSelected && v !== "") return "Vyberte aspoň jedno vybavenie";
-    if (!/^\d+$/.test(v)) return "Zadajte celé kladné číslo";
-    const n = Number(v);
-    if (!Number.isInteger(n)) return "Zadajte celé číslo";
-    if (n < 1) return "Počet musí byť aspoň 1";
-    if (n > 30) return "Nevieme zabezpečiť vybavenie pre viac ako 30 ľudí";
-    return "";
-}
-
-function validateMessage(value) {
-    return value.length > 500 ? "Správa nesmie presiahnuť 500 znakov" : "";
-}
-
-function validatePayment() {
-    const paymentRadios = document.querySelectorAll('input[name="payment"]');
-    const checked = Array.from(paymentRadios).some(radio => radio.checked);
-    return !checked ? "Musíte vybrať spôsob platby" : "";
-}
-
-function validateCardNumber(value, isCardPayment) {
-    const digits = digitsOnly(value);
-    if (!digits && isCardPayment) return "Číslo karty je povinné";
-    if (digits.length !== 16 && isCardPayment) return "Číslo karty musí mať 16 číslic";
-    if (!luhnCheck(value) && isCardPayment) return "Neplatné číslo karty";
-    return "";
-}
-
+// Validate card expiry date (required if card payment, must not be expired)
 function validateCardExpiry(value, isCardPayment) {
     if (!value && isCardPayment) return "Dátum platnosti je povinný";
     if (!isExpiryValid(value) && isCardPayment) return "Karta je expirovaná alebo dátum je neplatný";
     return "";
 }
 
+// Validate card CVV (required if card payment, exactly 3 digits)
 function validateCardCvv(value, isCardPayment) {
     const d = digitsOnly(value);
     if (!d && isCardPayment) return "CVV je povinné";
@@ -412,30 +471,35 @@ function validateCardCvv(value, isCardPayment) {
     return "";
 }
 
+// Validate company name (required if invoice payment)
 function validateCompanyName(value, isInvoicePayment) {
     return isInvoicePayment && !value.trim() ? "Názov spoločnosti je povinný pri platbe faktúrou" : "";
 }
 
+// Validate ICO (required if invoice payment, exactly 8 digits)
 function validateICO(value, isInvoicePayment) {
     if (isInvoicePayment && !value.trim()) return "IČO je povinné pri platbe faktúrou";
     if (isInvoicePayment && !/^\d{8}$/.test(value)) return "IČO musí mať 8 číslic";
     return "";
 }
 
+// Validate DIČ (required if invoice payment, exactly 10 digits)
 function validateDIC(value, isInvoicePayment) {
     if (isInvoicePayment && !value.trim()) return "DIČ je povinné pri platbe faktúrou";
     if (isInvoicePayment && !/^\d{10}$/.test(value)) return "DIČ musí mať 10 číslic";
     return "";
 }
 
+// Validate address (required if invoice payment, max 60 chars)
 function validateAddress(value, isInvoicePayment) {
     if (isInvoicePayment && !value.trim()) return "Adresa je povinná pri platbe faktúrou";
     if (isInvoicePayment && value.length > 60) return "Pole môže mať maximálne 60 znakov";
     return "";
 }
 
-// ==================== DYNAMICKÉ UPDATERY ====================
+// DYNAMIC FIELD UPDATES
 
+// Synchronize age field based on date of birth validation
 function syncAgeField(dobValue, dobError) {
     if (!dobError && dobValue) {
         const age = calculateAgeFromDob(new Date(dobValue));
@@ -452,6 +516,7 @@ function syncAgeField(dobValue, dobError) {
     }
 }
 
+// Synchronize phone fields validation states (both fields are required together or empty)
 function syncPhoneFields(phonePrefix, phoneNumber, prefixError, phoneError) {
     if (!phonePrefix && !phoneNumber.trim()) {
         inputs.phonePrefix.classList.remove('error');
@@ -482,6 +547,7 @@ function syncPhoneFields(phonePrefix, phoneNumber, prefixError, phoneError) {
     }
 }
 
+// Clear validation states for inactive payment fields
 function clearInactivePaymentFields(isCardPayment, isInvoicePayment) {
     if (!isCardPayment) {
         inputs.cardNumber.classList.remove('valid', 'error');
@@ -496,6 +562,7 @@ function clearInactivePaymentFields(isCardPayment, isInvoicePayment) {
     }
 }
 
+// Clear all card payment fields
 function clearCardFields() {
     inputs.cardNumber.value = '';
     inputs.cardExpiry.value = '';
@@ -508,6 +575,7 @@ function clearCardFields() {
     inputs.cardCvv.classList.remove('error', 'valid');
 }
 
+// Clear all invoice payment fields
 function clearInvoiceFields() {
     inputs.companyName.value = '';
     inputs.ico.value = '';
@@ -523,12 +591,9 @@ function clearInvoiceFields() {
     inputs.address.classList.remove('error', 'valid');
 }
 
-function resetCharCount(inputElement, counterElement, maxLength, isExactMatch) {
-    updateCharCount(inputElement, counterElement, maxLength, isExactMatch);
-}
+// SPORT/SPACE/TIME DROPDOWNS
 
-// ==================== SPORT, PRIESTOR, ČAS SELECTY ====================
-
+// Populate space dropdown based on selected sport
 function populateSpaces(sportKey) {
     inputs.space.innerHTML = '<option value="">--Vyberte priestor--</option>';
     inputs.time.innerHTML = '<option value="">--Najprv vyberte priestor--</option>';
@@ -550,6 +615,7 @@ function populateSpaces(sportKey) {
     }
 }
 
+// Populate time dropdown based on selected sport and space
 function populateTimes(sportKey, spaceKey) {
     inputs.time.innerHTML = '<option value="">--Vyberte čas--</option>';
     inputs.time.disabled = true;
@@ -567,8 +633,9 @@ function populateTimes(sportKey, spaceKey) {
     }
 }
 
-// ==================== PAYMENT STATE ====================
+//PAYMENT STATE MANAGEMENT
 
+// Recalculate and update payment fieldset validation state
 function recalcPaymentState() {
     const paymentFieldsetEl = document.querySelector('input[name="payment"]')?.closest('fieldset');
     if (!paymentFieldsetEl) return;
@@ -606,6 +673,7 @@ function recalcPaymentState() {
     }
 }
 
+// Handle payment method change (show/hide relevant fields)
 function handlePaymentChange() {
     const selected = document.querySelector('input[name="payment"]:checked')?.value;
     const paymentRadio = document.querySelectorAll('input[name="payment"]');
@@ -646,54 +714,120 @@ function handlePaymentChange() {
     recalcPaymentState();
 }
 
-// ==================== EQUIPMENT ====================
+// EQUIPMENT STATE MANAGEMENT
 
+// Update equipment fieldset validation state based on checkboxes and member count
 function updateEquipmentFieldsetState() {
     const equipmentFieldset = document.querySelector('input[name^="equipment_"]')?.closest('fieldset');
     if (!equipmentFieldset) return;
 
-    const anySel = isAnyEquipmentSelected();
+    const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
+    const isEquipmentValid = isAnyEquipmentSelected();
     const membersVal = inputs.membersCount?.value.trim() || "";
-    const membersErr = validateMemberCount(membersVal, anySel);
+
+    const membersIsEmpty = membersVal === "" || membersVal === "0";
+
+    const membersErr = validateMemberCount(membersVal, anyCheckboxChecked, isEquipmentValid);
     const otherErr = validateOtherEquipment(inputs.otherEquipmentInput.value.trim(), inputs.otherEquipmentCheckbox.checked);
 
-    if (!anySel && membersVal !== "") {
+    if (!anyCheckboxChecked && membersIsEmpty) {
+        equipmentFieldset.classList.remove('error');
+        equipmentFieldset.classList.add('valid');
+    }
+    else if (!anyCheckboxChecked && !membersIsEmpty) {
         equipmentFieldset.classList.add('error');
         equipmentFieldset.classList.remove('valid');
-    } else if (anySel && (otherErr || membersErr)) {
+    }
+    else if (anyCheckboxChecked && (otherErr || membersErr)) {
         equipmentFieldset.classList.add('error');
         equipmentFieldset.classList.remove('valid');
-    } else {
+    }
+    else {
         equipmentFieldset.classList.remove('error');
         equipmentFieldset.classList.add('valid');
     }
 }
 
-function handleEquipmentCheckboxChange() {
-    updateEquipmentFieldsetState();
-    const mErr = validateMemberCount(inputs.membersCount.value, isAnyEquipmentSelected());
-    showError(inputs.membersCount, errors.membersCount, mErr);
+// PHONE FIELDS REAL-TIME VALIDATION
+
+// Highlight phone fields in real-time based on interdependent validation
+function highlightPhoneFieldsRealtime() {
+    const prefixValue = inputs.phonePrefix.value;
+    const numberValue = inputs.phoneNumber.value.trim();
+    const isBothEmpty = !prefixValue && !numberValue;
+
+    if (isBothEmpty) {
+        // Obe prázdne = bez chyby, bez farby
+        errors.phone.textContent = "";
+        inputs.phonePrefix.classList.remove('error', 'valid');
+        inputs.phoneNumber.classList.remove('error', 'valid');
+        return;
+    }
+
+    const prefixError = validatePhonePrefix(prefixValue, numberValue);
+    const numberError = validatePhoneNumber(prefixValue, numberValue);
+    errors.phone.textContent = prefixError || numberError || "";
+
+    // Prefix field
+    if (!prefixValue && numberValue) {
+        inputs.phonePrefix.classList.add('error');
+        inputs.phonePrefix.classList.remove('valid');
+    }
+    else if (prefixValue) {
+        if (prefixError) {
+            inputs.phonePrefix.classList.add('error');
+            inputs.phonePrefix.classList.remove('valid');
+        }
+        else {
+            inputs.phonePrefix.classList.remove('error');
+            inputs.phonePrefix.classList.add('valid');
+        }
+    }
+    else
+        inputs.phonePrefix.classList.remove('error', 'valid');
+
+    // Number field
+    if (numberValue) {
+        if (!numberError) {
+            inputs.phoneNumber.classList.remove('error');
+            inputs.phoneNumber.classList.add('valid');
+        }
+        else if (numberError) {
+            inputs.phoneNumber.classList.add('error');
+            inputs.phoneNumber.classList.remove('valid');
+        }
+    }
+    else if (prefixValue) {
+        inputs.phoneNumber.classList.add('error');
+        inputs.phoneNumber.classList.remove('valid');
+    }
+    else
+        inputs.phoneNumber.classList.remove('error', 'valid');
 }
 
-// ==================== EVENT LISTENERS ====================
+// EVENT LISTENERS
 
+// Handle sport selection change - validate and populate spaces
 inputs.sport.addEventListener('change', function () {
     const errorMessage = validateSport(this.value);
     showError(inputs.sport, errors.sport, errorMessage);
     populateSpaces(this.value);
 });
 
+// Handle space selection change - validate and populate times
 inputs.space.addEventListener('change', function () {
     const errorMessage = validateSpace(this.value);
     showError(inputs.space, errors.space, errorMessage);
     populateTimes(inputs.sport.value, this.value);
 });
 
+// Handle time selection change - validate selected time slot
 inputs.time.addEventListener('change', function () {
     const errorMsg = validateTime(this.value);
     showError(this, errors.time, errorMsg);
 });
 
+// Handle gender radio button change - validate gender selection
 document.querySelectorAll('input[name="gender"]').forEach(radio => {
     radio.addEventListener('change', function () {
         const errorMsg = validateGender();
@@ -702,39 +836,66 @@ document.querySelectorAll('input[name="gender"]').forEach(radio => {
     });
 });
 
+// Handle "Other equipment" checkbox change - show/hide text field and validate
 inputs.otherEquipmentCheckbox.addEventListener('change', function () {
     const otherEquipmentContainer = document.getElementById('otherEquipmentContainer');
     if (this.checked) {
         otherEquipmentContainer.style.display = 'block';
+
+        const membersVal = inputs.membersCount.value.trim();
+        const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
+        const isEquipmentValid = isAnyEquipmentSelected();
+        const membersErr = validateMemberCount(membersVal, anyCheckboxChecked, isEquipmentValid);
+
+        showError(inputs.membersCount, errors.membersCount, membersErr);
+
+        const otherErr = validateOtherEquipment(inputs.otherEquipmentInput.value.trim(), true);
+        showError(inputs.otherEquipmentInput, errors.otherEquipment, otherErr);
+
+        updateEquipmentFieldsetState();
+
     } else {
         otherEquipmentContainer.style.display = 'none';
         inputs.otherEquipmentInput.value = '';
         clearFieldState(inputs.otherEquipmentInput, errors.otherEquipment);
         resetCharCount(inputs.otherEquipmentInput, document.getElementById('otherEquipmentCount'), 60, false);
+
+        const membersVal = inputs.membersCount.value.trim();
+        const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
+        const isEquipmentValid = isAnyEquipmentSelected();
+        const membersErr = validateMemberCount(membersVal, anyCheckboxChecked, isEquipmentValid);
+        showError(inputs.membersCount, errors.membersCount, membersErr);
+
+        updateEquipmentFieldsetState();
     }
-    updateEquipmentFieldsetState();
 });
 
+// Handle equipment checkbox change - validate and update member count field
 document.querySelectorAll('[name^="equipment_"]').forEach(checkbox => {
     checkbox.addEventListener('change', function () {
         const err = validateOtherEquipment(this.value, inputs.otherEquipmentCheckbox.checked);
         showError(this, errors.otherEquipment, err);
         updateEquipmentFieldsetState();
 
-        const mErr = validateMemberCount(inputs.membersCount.value, isAnyEquipmentSelected());
+        const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
+        const isEquipmentValid = isAnyEquipmentSelected();
+        const mErr = validateMemberCount(inputs.membersCount.value, anyCheckboxChecked, isEquipmentValid);
         showError(inputs.membersCount, errors.membersCount, mErr);
     });
 });
 
+// Handle payment method change - validate and show/hide relevant fields
 document.querySelectorAll('input[name="payment"]').forEach(r => {
     r.addEventListener('change', handlePaymentChange);
     r.addEventListener('change', recalcPaymentState);
 });
 
+// Handle payment detail fields input - recalculate payment state
 ['cardNumber', 'cardExpiry', 'cardCvv', 'companyName', 'ico', 'dic', 'address'].forEach(k => {
     if (inputs[k]) inputs[k].addEventListener('input', recalcPaymentState);
 });
 
+// Handle show/hide author button click
 document.getElementById('showAuthorBtn')?.addEventListener('click', function () {
     if (inputs.authorName.hidden) {
         inputs.authorName.hidden = false;
@@ -745,15 +906,91 @@ document.getElementById('showAuthorBtn')?.addEventListener('click', function () 
     }
 });
 
-// ==================== REAL-TIME VALIDATION ====================
+// Handle phone prefix change, number input and member count input
+inputs.phonePrefix.addEventListener('change', highlightPhoneFieldsRealtime);
+inputs.phoneNumber.addEventListener('input', highlightPhoneFieldsRealtime);
+inputs.membersCount.addEventListener('input', function () {
+    const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
+    const isEquipmentValid = isAnyEquipmentSelected();
+    const membersVal = this.value.trim();
 
+    const membersErr = validateMemberCount(membersVal, anyCheckboxChecked, isEquipmentValid);
+    showError(this, errors.membersCount, membersErr);
+
+    const equipmentCheckboxes = document.querySelectorAll('[name^="equipment_"]');
+    const equipmentFieldset = equipmentCheckboxes[0]?.closest('fieldset');
+    if (equipmentFieldset) {
+        const membersIsEmpty = membersVal === "" || membersVal === "0";
+        const equipmentBothEmpty = !anyCheckboxChecked && membersIsEmpty;
+
+        if (equipmentBothEmpty) {
+            equipmentFieldset.classList.remove('error');
+            equipmentFieldset.classList.add('valid');
+        } else {
+            const equipErr = validateOtherEquipment(inputs.otherEquipmentInput.value.trim(), inputs.otherEquipmentCheckbox.checked);
+            const hasError = equipErr || membersErr;
+
+            equipmentFieldset.classList.toggle('error', !!hasError);
+            equipmentFieldset.classList.toggle('valid', !hasError);
+        }
+    }
+});
+
+// Handle Other equipment text input - validate and update states
+inputs.otherEquipmentInput.addEventListener('input', function () {
+    const anySel = isAnyEquipmentSelected();
+    const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
+    const membersVal = inputs.membersCount.value.trim();
+
+    const equipErr = validateOtherEquipment(this.value.trim(), inputs.otherEquipmentCheckbox.checked);
+    showError(this, errors.otherEquipment, equipErr);
+
+    const membersErr = validateMemberCount(membersVal, anyCheckboxChecked, anySel);
+    showError(inputs.membersCount, errors.membersCount, membersErr);
+
+    const equipmentCheckboxes = document.querySelectorAll('[name^="equipment_"]');
+    const equipmentFieldset = equipmentCheckboxes[0]?.closest('fieldset');
+    if (equipmentFieldset) {
+        const membersIsEmpty = membersVal === "" || membersVal === "0";
+        const equipmentBothEmpty = !anyCheckboxChecked && membersIsEmpty;
+
+        if (equipmentBothEmpty) {
+            equipmentFieldset.classList.remove('error');
+            equipmentFieldset.classList.add('valid');
+        } else {
+            const hasError = equipErr || membersErr;
+            equipmentFieldset.classList.toggle('error', !!hasError);
+            equipmentFieldset.classList.toggle('valid', !hasError);
+        }
+    }
+});
+
+function showError(element, errorElement, errorMessage) {
+    console.log('showError called:', { element: element?.id, errorMessage });
+
+    if (errorElement) errorElement.textContent = errorMessage || "";
+
+    if (errorMessage) {
+        element.classList.add('error');
+        element.classList.remove('valid');
+        console.log('→ Added error class');
+    } else {
+        element.classList.remove('error');
+        element.classList.add('valid');
+        console.log('→ Added valid class');
+    }
+}
+
+// ==================== REAL-TIME VALIDATION HANDLERS ====================
+
+// Map of input fields to their validation functions for real-time validation
 const validationHandlers = {
     firstName: (value) => validateFirstName(value),
     lastName: (value) => validateLastName(value),
     email: (value) => validateEmail(value),
     bookingDate: (value) => validateBookingDate(value),
     otherEquipmentInput: (value) => validateOtherEquipment(value, inputs.otherEquipmentCheckbox.checked),
-    membersCount: (value) => validateMemberCount(value, isAnyEquipmentSelected()),
+    membersCount: (value) => validateMemberCount(value, isAnyEquipmentCheckboxChecked(), isAnyEquipmentSelected()),
     message: (value) => validateMessage(value),
     cardNumber: (value) => validateCardNumber(value, inputs.paymentCard.checked),
     cardExpiry: (value) => validateCardExpiry(value, inputs.paymentCard.checked),
@@ -769,6 +1006,7 @@ const validationHandlers = {
     }
 };
 
+// Attach input event listeners for real-time validation
 Object.keys(validationHandlers).forEach(key => {
     if (inputs[key]) {
         inputs[key].addEventListener('input', function () {
@@ -778,137 +1016,9 @@ Object.keys(validationHandlers).forEach(key => {
     }
 });
 
-// ==================== PHONE FIELDS REAL-TIME VALIDATION ====================
+// CHARACTER COUNTERS
 
-function highlightPhoneFieldsRealtime() {
-    const prefixValue = inputs.phonePrefix.value;
-    const numberValue = inputs.phoneNumber.value.trim();
-
-    // Obe prázdne = bez farby (nepovinné)
-    const isBothEmpty = !prefixValue && !numberValue;
-
-    if (isBothEmpty) {
-        // Obe prázdne = bez chyby, bez farby
-        errors.phone.textContent = "";
-        inputs.phonePrefix.classList.remove('error', 'valid');
-        inputs.phoneNumber.classList.remove('error', 'valid');
-        return;
-    }
-
-    // Niečo je vyplnené - overovať chyby
-    const prefixError = validatePhonePrefix(prefixValue, numberValue);
-    const numberError = validatePhoneNumber(prefixValue, numberValue);
-
-    // Zdieľaná chybová správa
-    const hasError = prefixError || numberError;
-    errors.phone.textContent = prefixError || numberError || "";
-
-    // Prefix field
-    if (!prefixValue && numberValue) {
-        // Číslo je vyplnené ALE prefix je prázdny = ERROR
-        inputs.phonePrefix.classList.add('error');
-        inputs.phonePrefix.classList.remove('valid');
-    } else if (prefixValue) {
-        if (prefixError) {
-            inputs.phonePrefix.classList.add('error');
-            inputs.phonePrefix.classList.remove('valid');
-        } else {
-            inputs.phonePrefix.classList.remove('error');
-            inputs.phonePrefix.classList.add('valid');
-        }
-    } else {
-        inputs.phonePrefix.classList.remove('error', 'valid');
-    }
-
-    // Number field
-    if (numberValue) {
-        // Ak je číslo vyplnené a má validnú dĺžku = ZELENÉ (aj bez prefixu)
-        if (!numberError) {
-            inputs.phoneNumber.classList.remove('error');
-            inputs.phoneNumber.classList.add('valid');
-        }
-        // Ak je číslo vyplnené ale má chybu (zla dlzka atd) = CERVENE
-        else if (numberError) {
-            inputs.phoneNumber.classList.add('error');
-            inputs.phoneNumber.classList.remove('valid');
-        }
-    } else if (prefixValue) {
-        // Prefix je vybraný ALE číslo je prázdne = ERROR
-        inputs.phoneNumber.classList.add('error');
-        inputs.phoneNumber.classList.remove('valid');
-    } else {
-        // Obe prázdne = bez farby
-        inputs.phoneNumber.classList.remove('error', 'valid');
-    }
-}
-
-inputs.phonePrefix.addEventListener('change', highlightPhoneFieldsRealtime);
-inputs.phoneNumber.addEventListener('input', highlightPhoneFieldsRealtime);
-
-inputs.membersCount.addEventListener('input', function () {
-    const anySel = isAnyEquipmentSelected();
-    const membersVal = this.value.trim();
-
-    // Skontroluj validáciu
-    const membersErr = validateMemberCount(membersVal, anySel);
-
-    // Aktualizuj farbu poľa
-    showError(this, errors.membersCount, membersErr);
-
-    // Aktualizuj equipment fieldset
-    const equipmentCheckboxes = document.querySelectorAll('[name^="equipment_"]');
-    const equipmentFieldset = equipmentCheckboxes[0]?.closest('fieldset');
-    if (equipmentFieldset) {
-        const equipmentBothEmpty = !anySel && !membersVal;
-
-        if (equipmentBothEmpty) {
-            // Obe prázdne = zelené
-            equipmentFieldset.classList.remove('error');
-            equipmentFieldset.classList.add('valid');
-        } else {
-            // Niečo je vyplnené - skontroluj chyby
-            const equipErr = validateOtherEquipment(inputs.otherEquipmentInput.value.trim(), inputs.otherEquipmentCheckbox.checked);
-            const hasError = equipErr || membersErr;
-
-            equipmentFieldset.classList.toggle('error', !!hasError);
-            equipmentFieldset.classList.toggle('valid', !hasError);
-        }
-    }
-});
-
-// Real-time validácia iného vybavenia
-inputs.otherEquipmentInput.addEventListener('input', function () {
-    const anySel = isAnyEquipmentSelected();
-    const membersVal = inputs.membersCount.value.trim();
-
-    // Skontroluj validáciu
-    const equipErr = validateOtherEquipment(this.value.trim(), inputs.otherEquipmentCheckbox.checked);
-
-    // Aktualizuj farbu poľa
-    showError(this, errors.otherEquipment, equipErr);
-
-    // Aktualizuj equipment fieldset
-    const equipmentCheckboxes = document.querySelectorAll('[name^="equipment_"]');
-    const equipmentFieldset = equipmentCheckboxes[0]?.closest('fieldset');
-    if (equipmentFieldset) {
-        const equipmentBothEmpty = !anySel && !membersVal;
-
-        if (equipmentBothEmpty) {
-            // Obe prázdne = zelené
-            equipmentFieldset.classList.remove('error');
-            equipmentFieldset.classList.add('valid');
-        } else {
-            // Niečo je vyplnené - skontroluj chyby
-            const membersErr = validateMemberCount(membersVal, anySel);
-            const hasError = equipErr || membersErr;
-
-            equipmentFieldset.classList.toggle('error', !!hasError);
-            equipmentFieldset.classList.toggle('valid', !hasError);
-        }
-    }
-});
-
-// Character counters
+// Configuration for all character counter fields
 const charCounters = [
     { input: inputs.firstName, counter: document.getElementById('firstNameCount'), max: 40, exact: false },
     { input: inputs.lastName, counter: document.getElementById('lastNameCount'), max: 40, exact: false },
@@ -924,6 +1034,7 @@ const charCounters = [
     { input: inputs.cardCvv, counter: document.getElementById('cardCvvCount'), max: 3, exact: true }
 ];
 
+// Initialize character counters and attach input listeners
 charCounters.forEach(item => {
     if (item.input && item.counter) {
         updateCharCount(item.input, item.counter, item.max, item.exact);
@@ -933,7 +1044,7 @@ charCounters.forEach(item => {
     }
 });
 
-// ==================== MODAL & SUMMARY ====================
+// ORDER SUMMARY GENERATION
 
 const modal = document.getElementById('orderModal');
 const orderSummary = document.getElementById('orderSummary');
@@ -941,6 +1052,7 @@ const totalPriceElement = document.getElementById('totalPrice');
 const confirmBtn = document.getElementById('confirmOrder');
 const cancelBtn = document.getElementById('cancelOrder');
 
+// Generate order summary for modal display
 function generateOrderSummary() {
     let summary = "";
     let totalPrice = 0;
@@ -989,6 +1101,10 @@ function generateOrderSummary() {
                 summary += `<div class="summary-item"><strong>✓</strong><span>${label}</span></div>`;
             }
         });
+
+        if (inputs.membersCount.value && inputs.membersCount.value.trim() !== '' && inputs.membersCount.value.trim() !== '0') {
+            summary += `<div class="summary-item"><strong>Počet osôb:</strong><span>${inputs.membersCount.value}</span></div>`;
+        }
     }
 
     summary += '<h3>Platba</h3>';
@@ -1022,8 +1138,9 @@ function generateOrderSummary() {
     totalPriceElement.textContent = `${totalPrice.toFixed(2)}`;
 }
 
-// ==================== FORM SUBMISSION ====================
+// FORM SUBMISSION
 
+// Validate all form fields at once (for form submission)
 function validateAllFields() {
     const firstName = inputs.firstName.value.trim();
     const lastName = inputs.lastName.value.trim();
@@ -1037,7 +1154,7 @@ function validateAllFields() {
     const time = inputs.time.value;
     const isOtherEquipmentChecked = inputs.otherEquipmentCheckbox.checked;
     const otherEquipment = inputs.otherEquipmentInput.value.trim();
-    const anyEquipmentSelected = isAnyEquipmentSelected();
+    const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
     const membersCount = inputs.membersCount.value.trim();
     const message = inputs.message.value.trim();
     const isInvoicePayment = inputs.paymentInvoice.checked;
@@ -1063,7 +1180,7 @@ function validateAllFields() {
         time: validateTime(time),
         gender: validateGender(),
         otherEquipment: validateOtherEquipment(otherEquipment, isOtherEquipmentChecked),
-        membersCount: validateMemberCount(membersCount, anyEquipmentSelected),
+        membersCount: validateMemberCount(membersCount, anyCheckboxChecked, isAnyEquipmentSelected()),
         message: validateMessage(message),
         payment: validatePayment(),
         cardNumber: validateCardNumber(cardNumber, isCardPayment),
@@ -1076,11 +1193,11 @@ function validateAllFields() {
     };
 }
 
+// Display validation errors for individual fields
 function displayValidationErrors(validateErrors) {
     let hasError = false;
 
     Object.keys(validateErrors).forEach(key => {
-        // Skip phone fields - budú spracované samostatne
         if (key === 'phonePrefix' || key === 'phone') return;
 
         if (validateErrors[key]) {
@@ -1102,17 +1219,24 @@ function displayValidationErrors(validateErrors) {
     return hasError;
 }
 
+// Display equipment-related field errors
+function displayEquipmentFieldsErrors(validateErrors) {
+    showError(inputs.membersCount, errors.membersCount, validateErrors.membersCount);
+    showError(inputs.otherEquipmentInput, errors.otherEquipment, validateErrors.otherEquipment);
+    
+    return !!(validateErrors.membersCount || validateErrors.otherEquipment);
+}
+
+// Display phone fields validation errors
 function displayPhoneFieldsErrors(validateErrors) {
     const prefixError = validateErrors.phonePrefix;
     const numberError = validateErrors.phone;
     const hasPhoneError = prefixError || numberError;
 
-    // Telefón nie je povinný - ak sú obe prázdne, je to OK
     const isPrefixEmpty = !inputs.phonePrefix.value;
     const isNumberEmpty = !inputs.phoneNumber.value.trim();
     const isBothEmpty = isPrefixEmpty && isNumberEmpty;
 
-    // Spoločná chybová správa pre obe polia
     errors.phone.textContent = (hasPhoneError && !isBothEmpty) ? (prefixError || numberError || "") : "";
 
     // Prefix field
@@ -1140,13 +1264,21 @@ function displayPhoneFieldsErrors(validateErrors) {
     return hasPhoneError && !isBothEmpty;
 }
 
-function highlightPhoneFieldsOnSubmit(validateErrors) {
+// Highlight all fieldsets on form submission
+function highlightFieldsetsOnSubmit(validateErrors) {
+    // Gender fieldset
+    const genderRadios = document.querySelectorAll('input[name="gender"]');
+    const genderFieldset = genderRadios[0]?.closest('fieldset');
+    if (genderFieldset) {
+        genderFieldset.classList.toggle('error', !!validateErrors.gender);
+        genderFieldset.classList.toggle('valid', !validateErrors.gender);
+    }
+
+    // Phone fieldset
     const phoneFieldset = document.querySelector('input[name="phonePrefix"]')?.closest('fieldset');
     if (!phoneFieldset) return;
 
     const hasPhoneError = validateErrors.phonePrefix || validateErrors.phone;
-
-    // Telefón nie je povinný - ak je prázdny, je OK (zelené)
     const isPrefixEmpty = !inputs.phonePrefix.value;
     const isNumberEmpty = !inputs.phoneNumber.value.trim();
     const isBothEmpty = isPrefixEmpty && isNumberEmpty;
@@ -1158,19 +1290,6 @@ function highlightPhoneFieldsOnSubmit(validateErrors) {
         phoneFieldset.classList.remove('error');
         phoneFieldset.classList.add('valid');
     }
-}
-
-function highlightFieldsetsOnSubmit(validateErrors) {
-    // Gender fieldset
-    const genderRadios = document.querySelectorAll('input[name="gender"]');
-    const genderFieldset = genderRadios[0]?.closest('fieldset');
-    if (genderFieldset) {
-        genderFieldset.classList.toggle('error', !!validateErrors.gender);
-        genderFieldset.classList.toggle('valid', !validateErrors.gender);
-    }
-
-    // Phone fieldset
-    highlightPhoneFieldsOnSubmit(validateErrors);
 
     // Payment fieldset
     const paymentRadios = document.querySelectorAll('input[name="payment"]');
@@ -1186,18 +1305,16 @@ function highlightFieldsetsOnSubmit(validateErrors) {
     if (equipmentFieldset) {
         const anySel = isAnyEquipmentSelected();
         const membersVal = inputs.membersCount?.value.trim() || "";
+        
         const equipErr = validateErrors.otherEquipment;
         const membersErr = validateErrors.membersCount;
 
-        // Obe prázdne = bez chyby
         const equipmentBothEmpty = !anySel && !membersVal;
 
-        // Ak sú obe prázdne = OK, zelené
         if (equipmentBothEmpty) {
             equipmentFieldset.classList.remove('error');
             equipmentFieldset.classList.add('valid');
         }
-        // Ak je niečo vyplnené - skontroluj chyby
         else {
             const hasEquipmentError = equipErr || membersErr;
             equipmentFieldset.classList.toggle('error', !!hasEquipmentError);
@@ -1206,6 +1323,7 @@ function highlightFieldsetsOnSubmit(validateErrors) {
     }
 }
 
+// Handle form submission - validate all fields and show modal if valid
 form.addEventListener('submit', (event) => {
     event.preventDefault();
 
@@ -1221,6 +1339,9 @@ form.addEventListener('submit', (event) => {
     const time = inputs.time.value;
     const isOtherEquipmentChecked = inputs.otherEquipmentCheckbox.checked;
     const otherEquipment = inputs.otherEquipmentInput.value.trim();
+    const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
+    const anyEquipmentSelected = isAnyEquipmentSelected();  // ← PRIDAJ TENTO RIADOK!
+    const membersCount = inputs.membersCount.value.trim();
     const message = inputs.message.value.trim();
     const isInvoicePayment = inputs.paymentInvoice.checked;
     const isCardPayment = inputs.paymentCard.checked;
@@ -1245,6 +1366,7 @@ form.addEventListener('submit', (event) => {
         time: validateTime(time),
         gender: validateGender(),
         otherEquipment: validateOtherEquipment(otherEquipment, isOtherEquipmentChecked),
+        membersCount: validateMemberCount(membersCount, anyCheckboxChecked, anyEquipmentSelected),  // ← OPRAVENÉ!
         message: validateMessage(message),
         payment: validatePayment(),
         cardNumber: validateCardNumber(cardNumber, isCardPayment),
@@ -1258,7 +1380,6 @@ form.addEventListener('submit', (event) => {
 
     let hasError = false;
 
-    // Spracovanie všetkých polí okrem phonePrefix, phone, otherEquipment a membersCount
     Object.keys(validateErrors).forEach(key => {
         if (key === 'phonePrefix' || key === 'phone' || key === 'otherEquipment' || key === 'membersCount') return;
 
@@ -1278,19 +1399,19 @@ form.addEventListener('submit', (event) => {
         }
     });
 
-    if (!inputs.membersCount.value.trim() && !isAnyEquipmentSelected()) {
-        inputs.membersCount.classList.remove('error');
-        inputs.membersCount.classList.add('valid');
+    // Process equipment fields
+    if (displayEquipmentFieldsErrors(validateErrors)) {
+        hasError = true;
     }
 
-    // Spracovanie telefónnych polí
+    // process phone fields
     displayPhoneFieldsErrors(validateErrors);
     if (validateErrors.phonePrefix || validateErrors.phone) {
         hasError = true;
     }
 
     syncAgeField(dob, validateErrors.dob);
-    highlightFieldsetsOnSubmit(validateErrors, isOtherEquipmentChecked);
+    highlightFieldsetsOnSubmit(validateErrors);
     clearInactivePaymentFields(isCardPayment, isInvoicePayment);
     recalcPaymentState();
 
@@ -1300,7 +1421,7 @@ form.addEventListener('submit', (event) => {
     }
 });
 
-// Modal listeners
+// MODAL EVENT LISTENERS
 confirmBtn.addEventListener('click', function () {
     const checkedEquipment = [];
     document.querySelectorAll('input[name^="equipment_"]:checked').forEach(cb => {
