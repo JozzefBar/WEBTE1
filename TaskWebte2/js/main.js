@@ -1197,14 +1197,6 @@ function displayValidationErrors(validateErrors) {
     return hasError;
 }
 
-// Display equipment-related field errors
-function displayEquipmentFieldsErrors(validateErrors) {
-    showError(inputs.membersCount, errors.membersCount, validateErrors.membersCount);
-    showError(inputs.otherEquipmentInput, errors.otherEquipment, validateErrors.otherEquipment);
-    
-    return !!(validateErrors.membersCount || validateErrors.otherEquipment);
-}
-
 // Display phone fields validation errors
 function displayPhoneFieldsErrors(validateErrors) {
     const prefixError = validateErrors.phonePrefix;
@@ -1254,19 +1246,19 @@ function highlightFieldsetsOnSubmit(validateErrors) {
 
     // Phone fieldset
     const phoneFieldset = document.querySelector('input[name="phonePrefix"]')?.closest('fieldset');
-    if (!phoneFieldset) return;
+    if (phoneFieldset) {
+        const hasPhoneError = validateErrors.phonePrefix || validateErrors.phone;
+        const isPrefixEmpty = !inputs.phonePrefix.value;
+        const isNumberEmpty = !inputs.phoneNumber.value.trim();
+        const isBothEmpty = isPrefixEmpty && isNumberEmpty;
 
-    const hasPhoneError = validateErrors.phonePrefix || validateErrors.phone;
-    const isPrefixEmpty = !inputs.phonePrefix.value;
-    const isNumberEmpty = !inputs.phoneNumber.value.trim();
-    const isBothEmpty = isPrefixEmpty && isNumberEmpty;
-
-    if (hasPhoneError && !isBothEmpty) {
-        phoneFieldset.classList.add('error');
-        phoneFieldset.classList.remove('valid');
-    } else {
-        phoneFieldset.classList.remove('error');
-        phoneFieldset.classList.add('valid');
+        if (hasPhoneError && !isBothEmpty) {
+            phoneFieldset.classList.add('error');
+            phoneFieldset.classList.remove('valid');
+        } else {
+            phoneFieldset.classList.remove('error');
+            phoneFieldset.classList.add('valid');
+        }
     }
 
     // Payment fieldset
@@ -1281,19 +1273,19 @@ function highlightFieldsetsOnSubmit(validateErrors) {
     const equipmentCheckboxes = document.querySelectorAll('[name^="equipment_"]');
     const equipmentFieldset = equipmentCheckboxes[0]?.closest('fieldset');
     if (equipmentFieldset) {
-        const anySel = isAnyEquipmentSelected();
+        const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
         const membersVal = inputs.membersCount?.value.trim() || "";
-        
-        const equipErr = validateErrors.otherEquipment;
-        const membersErr = validateErrors.membersCount;
+        const membersIsEmpty = membersVal === "" || membersVal === "0";
 
-        const equipmentBothEmpty = !anySel && !membersVal;
+        const equipmentBothEmpty = !anyCheckboxChecked && membersIsEmpty;
 
         if (equipmentBothEmpty) {
             equipmentFieldset.classList.remove('error');
             equipmentFieldset.classList.add('valid');
         }
         else {
+            const equipErr = validateErrors.otherEquipment;
+            const membersErr = validateErrors.membersCount;
             const hasEquipmentError = equipErr || membersErr;
             equipmentFieldset.classList.toggle('error', !!hasEquipmentError);
             equipmentFieldset.classList.toggle('valid', !hasEquipmentError);
@@ -1318,7 +1310,7 @@ form.addEventListener('submit', (event) => {
     const isOtherEquipmentChecked = inputs.otherEquipmentCheckbox.checked;
     const otherEquipment = inputs.otherEquipmentInput.value.trim();
     const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
-    const anyEquipmentSelected = isAnyEquipmentSelected();  // ← PRIDAJ TENTO RIADOK!
+    const anyEquipmentSelected = isAnyEquipmentSelected();
     const membersCount = inputs.membersCount.value.trim();
     const message = inputs.message.value.trim();
     const isInvoicePayment = inputs.paymentInvoice.checked;
@@ -1344,7 +1336,7 @@ form.addEventListener('submit', (event) => {
         time: validateTime(time),
         gender: validateGender(),
         otherEquipment: validateOtherEquipment(otherEquipment, isOtherEquipmentChecked),
-        membersCount: validateMemberCount(membersCount, anyCheckboxChecked, anyEquipmentSelected),  // ← OPRAVENÉ!
+        membersCount: validateMemberCount(membersCount, anyCheckboxChecked, anyEquipmentSelected),
         message: validateMessage(message),
         payment: validatePayment(),
         cardNumber: validateCardNumber(cardNumber, isCardPayment),
@@ -1377,16 +1369,37 @@ form.addEventListener('submit', (event) => {
         }
     });
 
-    // Process equipment fields
-    if (displayEquipmentFieldsErrors(validateErrors)) {
+
+    // Process membersCount
+    if (validateErrors.membersCount) {
+        errors.membersCount.textContent = validateErrors.membersCount;
+        inputs.membersCount.classList.add('error');
+        inputs.membersCount.classList.remove('valid');
         hasError = true;
+    } else {
+        errors.membersCount.textContent = "";
+        inputs.membersCount.classList.remove('error');
+        inputs.membersCount.classList.add('valid');
     }
 
-    // process phone fields
+    // Process otherEquipment
+    if (validateErrors.otherEquipment) {
+        errors.otherEquipment.textContent = validateErrors.otherEquipment;
+        inputs.otherEquipmentInput.classList.add('error');
+        inputs.otherEquipmentInput.classList.remove('valid');
+        hasError = true;
+    } else {
+        errors.otherEquipment.textContent = "";
+        inputs.otherEquipmentInput.classList.remove('error');
+        inputs.otherEquipmentInput.classList.add('valid');
+    }
+
+    // Process phone fields
     displayPhoneFieldsErrors(validateErrors);
     if (validateErrors.phonePrefix || validateErrors.phone) {
         hasError = true;
     }
+
 
     syncAgeField(dob, validateErrors.dob);
     highlightFieldsetsOnSubmit(validateErrors);
