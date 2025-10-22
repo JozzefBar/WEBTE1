@@ -22,8 +22,10 @@
         <input type="hidden" name="sender" value="Jozef Barcak">
         <input type="hidden" name="to" value="jojobarcak@gmail.com">
         <input type="hidden" name="subject" value="Data formularu">
-        <input type="hidden" name="redirectOk" value="https://www.webte1.fei.stuba.sk/~xbarcakj/TaskWebte/TaskWebte2/indexSuccess.html">
-        <input type="hidden" name="redirectFalse" value="https://www.webte1.fei.stuba.sk/~xbarcakj/TaskWebte/TaskWebte2/indexFail.html">
+        <input type="hidden" name="redirectOk"
+            value="https://www.webte1.fei.stuba.sk/~xbarcakj/TaskWebte/TaskWebte2/indexSuccess.html">
+        <input type="hidden" name="redirectFalse"
+            value="https://www.webte1.fei.stuba.sk/~xbarcakj/TaskWebte/TaskWebte2/indexFail.html">
 
         <div class="form-columns">
             <section class="column">
@@ -109,13 +111,20 @@
                 </select>
                 <span class="error" id="timeError"></span>
 
+                <label for="membersCount">Počet osôb*:</label>
+                <input type="number" id="membersCount" name="membersCount">
+                <span class="error" id="membersCountError"></span>
+
                 <fieldset>
                     <legend>Športové vybavenie</legend>
                     <label><input type="checkbox" name="equipment_ball" value="ball"> Lopta</label>
                     <label><input type="checkbox" name="equipment_rackets" value="rackets"> Rakety</label>
-                    <label><input type="checkbox" name="equipment_tennis_balls" value="tennis_balls"> Tenisové lopty</label>
-                    <label><input type="checkbox" name="equipment_swimming_goggles" value="swimming_goggles"> Plavecké okuliare</label>
-                    <label><input type="checkbox" name="equipment_sports_shoes" value="sports_shoes"> Športová obuv</label>
+                    <label><input type="checkbox" name="equipment_tennis_balls" value="tennis_balls"> Tenisové
+                        lopty</label>
+                    <label><input type="checkbox" name="equipment_swimming_goggles" value="swimming_goggles"> Plavecké
+                        okuliare</label>
+                    <label><input type="checkbox" name="equipment_sports_shoes" value="sports_shoes"> Športová
+                        obuv</label>
                     <label><input type="checkbox" name="equipment_jerseys" value="jerseys"> Dresy</label>
                     <label><input type="checkbox" id="otherEquipmentCheckbox" name="equipment_other" value="other"> Iné,
                         uveďte aké</label>
@@ -130,10 +139,6 @@
 
                     <input type="hidden" name="equipment" id="equipmentSummary" value="">
                 </fieldset>
-
-                <label for="membersCount">Počet osôb:</label>
-                <input type="number" id="membersCount" name="membersCount">
-                <span class="error" id="membersCountError"></span>
 
                 <fieldset>
                     <legend><strong>Spôsob platby*</strong></legend>
@@ -178,7 +183,7 @@
                         <span class="char-count" id="icoCount">0 / 8</span>
                         <span class="error" id="icoError"></span>
 
-                        <label for="dic">DIČ*:</label>
+                        <label for="dic">DIČ:</label>
                         <input type="text" id="dic" name="dic">
                         <span class="char-count" id="dicCount">0 / 10</span>
                         <span class="error" id="dicError"></span>

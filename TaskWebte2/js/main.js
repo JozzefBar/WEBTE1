@@ -120,7 +120,7 @@ const sportData = {
     }
 };
 
-// Inicializácia prvkov
+// Element initialization
 const form = document.getElementById('myForm');
 const inputs = {
     firstName: document.getElementById('firstName'),
@@ -176,7 +176,7 @@ const errors = {
     address: document.getElementById('addressError')
 };
 
-// Utility funkcie
+// Utility functions
 
 // Extract only digits from string
 function digitsOnly(str) {
@@ -236,22 +236,6 @@ function isAnyEquipmentCheckboxChecked() {
     const result = Array.from(equipmentCheckboxes).some(cb => cb.checked);
 
     return result;
-}
-
-// Check if equipment selection is valid (checkboxes checked + "Other" text filled if needed)
-function isAnyEquipmentSelected() {
-    const equipmentCheckboxes = document.querySelectorAll('[name^="equipment_"]');
-
-    const anyOtherChecked = Array.from(equipmentCheckboxes).some(cb =>
-        cb.id !== 'otherEquipmentCheckbox' && cb.checked
-    );
-
-    const otherChecked = inputs.otherEquipmentCheckbox?.checked;
-    const otherText = inputs.otherEquipmentInput?.value.trim();
-    const otherValid = !!(otherChecked && otherText);
-    const otherInvalid = otherChecked && !otherText;
-
-    return (anyOtherChecked || otherValid) && !otherInvalid;
 }
 
 // Update character counter with color coding
@@ -375,29 +359,13 @@ function validateOtherEquipment(value, isOtherChecked) {
     return "";
 }
 
-// Validate member count field (complex validation based on equipment selection)
-function validateMemberCount(value, anyEquipmentCheckboxChecked, isEquipmentValid) {
+// ValidateMessage
+function validateMemberCount(value) {
     const v = String(value ?? "").trim();
-    const n = v === "" ? null : Number(v);
-    const isEmpty = v === "" || v === "0" || n === 0;
-
-    if (!anyEquipmentCheckboxChecked && isEmpty)
-        return "";
-
-    if (anyEquipmentCheckboxChecked && isEmpty)
-        return "Zadajte počet osôb";
-
-    if (!anyEquipmentCheckboxChecked && !isEmpty)
-        return "Vyberte aspoň jedno vybavenie";
-
-    if (!/^\d+$/.test(v)) return "Zadajte celé kladné číslo";       //???
-    if (!Number.isInteger(n)) return "Zadajte celé číslo";
-    if (n < 1) return "Počet musí byť aspoň 1";
-    if (n > 30) return "Nevieme zabezpečiť vybavenie pre viac ako 30 ľudí";
-
-    if (anyEquipmentCheckboxChecked && !isEquipmentValid)
-        return "Najprv vyplňte všetky polia vybavenia";
-
+    if (!v) return "Počet osôb je povinný";
+    const n = Number(v);
+    if (!Number.isInteger(n) || n < 1) return "Zadajte kladné celé číslo (min. 1)";
+    if (!Number.isInteger(n) || n > 30) return "Počet ľudí nesmie byť viac ako 30";
     return "";
 }
 
@@ -479,7 +447,7 @@ function validateICO(value, isInvoicePayment) {
 
 // Validate DIČ (required if invoice payment, exactly 10 digits)
 function validateDIC(value, isInvoicePayment) {
-    if (isInvoicePayment && !value.trim()) return "DIČ je povinné pri platbe faktúrou";
+    if (isInvoicePayment && !value) return "";
     if (isInvoicePayment && !/^\d{10}$/.test(value)) return "DIČ musí mať 10 číslic";
     return "";
 }
@@ -507,37 +475,6 @@ function syncAgeField(dobValue, dobError) {
     } else {
         inputs.age.value = "";
         inputs.age.classList.remove('valid', 'error');
-    }
-}
-
-// Synchronize phone fields validation states (both fields are required together or empty)
-function syncPhoneFields(phonePrefix, phoneNumber, prefixError, phoneError) {
-    if (!phonePrefix && !phoneNumber.trim()) {
-        inputs.phonePrefix.classList.remove('error');
-        inputs.phonePrefix.classList.add('valid');
-        inputs.phoneNumber.classList.remove('error');
-        inputs.phoneNumber.classList.add('valid');
-        return;
-    }
-
-    if (!prefixError && phonePrefix) {
-        inputs.phonePrefix.classList.add('valid');
-        inputs.phonePrefix.classList.remove('error');
-    } else if (prefixError) {
-        inputs.phonePrefix.classList.add('error');
-        inputs.phonePrefix.classList.remove('valid');
-    } else {
-        inputs.phonePrefix.classList.remove('error', 'valid');
-    }
-
-    if (!phoneError && phoneNumber && !prefixError) {
-        inputs.phoneNumber.classList.add('valid');
-        inputs.phoneNumber.classList.remove('error');
-    } else if (phoneError) {
-        inputs.phoneNumber.classList.add('error');
-        inputs.phoneNumber.classList.remove('valid');
-    } else {
-        inputs.phoneNumber.classList.remove('error', 'valid');
     }
 }
 
@@ -713,33 +650,26 @@ function handlePaymentChange() {
 // Update equipment fieldset validation state based on checkboxes and member count
 function updateEquipmentFieldsetState() {
     const equipmentFieldset = document.querySelector('input[name^="equipment_"]')?.closest('fieldset');
-    if (!equipmentFieldset) return;
+    const anyCheckboxChecked  = isAnyEquipmentCheckboxChecked();
+    const otherChecked = inputs.otherEquipmentCheckbox.checked;
+    const otherVal = inputs.otherEquipmentInput.value.trim();
 
-    const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
-    const isEquipmentValid = isAnyEquipmentSelected();
-    const membersVal = inputs.membersCount?.value.trim() || "";
-
-    const membersIsEmpty = membersVal === "" || membersVal === "0";
-
-    const membersErr = validateMemberCount(membersVal, anyCheckboxChecked, isEquipmentValid);
-    const otherErr = validateOtherEquipment(inputs.otherEquipmentInput.value.trim(), inputs.otherEquipmentCheckbox.checked);
-
-    if (!anyCheckboxChecked && membersIsEmpty) {
+    if (!anyCheckboxChecked) {
         equipmentFieldset.classList.remove('error');
         equipmentFieldset.classList.add('valid');
     }
-    else if (!anyCheckboxChecked && !membersIsEmpty) {
-        equipmentFieldset.classList.add('error');
-        equipmentFieldset.classList.remove('valid');
-    }
-    else if (anyCheckboxChecked && (otherErr || membersErr)) {
-        equipmentFieldset.classList.add('error');
-        equipmentFieldset.classList.remove('valid');
-    }
-    else {
+    else if (anyCheckboxChecked && !otherChecked) {
         equipmentFieldset.classList.remove('error');
         equipmentFieldset.classList.add('valid');
     }
+    else if (otherChecked && !otherVal) {
+        equipmentFieldset.classList.add('error');
+        equipmentFieldset.classList.remove('valid');
+    }
+    else if (otherChecked && otherVal) {
+        equipmentFieldset.classList.remove('error');
+        equipmentFieldset.classList.add('valid');
+    }   
 }
 
 // PHONE FIELDS REAL-TIME VALIDATION
@@ -751,7 +681,6 @@ function highlightPhoneFieldsRealtime() {
     const isBothEmpty = !prefixValue && !numberValue;
 
     if (isBothEmpty) {
-        // Obe prázdne = bez chyby, bez farby
         errors.phone.textContent = "";
         inputs.phonePrefix.classList.remove('error', 'valid');
         inputs.phoneNumber.classList.remove('error', 'valid');
@@ -835,46 +764,21 @@ inputs.otherEquipmentCheckbox.addEventListener('change', function () {
     const otherEquipmentContainer = document.getElementById('otherEquipmentContainer');
     if (this.checked) {
         otherEquipmentContainer.style.display = 'block';
-
-        const membersVal = inputs.membersCount.value.trim();
-        const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
-        const isEquipmentValid = isAnyEquipmentSelected();
-        const membersErr = validateMemberCount(membersVal, anyCheckboxChecked, isEquipmentValid);
-
-        showError(inputs.membersCount, errors.membersCount, membersErr);
-
         const otherErr = validateOtherEquipment(inputs.otherEquipmentInput.value.trim(), true);
         showError(inputs.otherEquipmentInput, errors.otherEquipment, otherErr);
-
-        updateEquipmentFieldsetState();
-
     } else {
         otherEquipmentContainer.style.display = 'none';
         inputs.otherEquipmentInput.value = '';
         clearFieldState(inputs.otherEquipmentInput, errors.otherEquipment);
         resetCharCount(inputs.otherEquipmentInput, document.getElementById('otherEquipmentCount'), 60, false);
-
-        const membersVal = inputs.membersCount.value.trim();
-        const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
-        const isEquipmentValid = isAnyEquipmentSelected();
-        const membersErr = validateMemberCount(membersVal, anyCheckboxChecked, isEquipmentValid);
-        showError(inputs.membersCount, errors.membersCount, membersErr);
-
-        updateEquipmentFieldsetState();
     }
+    updateEquipmentFieldsetState();
 });
 
-// Handle equipment checkbox change - validate and update member count field
+// Handle equipment checkbox change - validate equipment fieldset
 document.querySelectorAll('[name^="equipment_"]').forEach(checkbox => {
     checkbox.addEventListener('change', function () {
-        const err = validateOtherEquipment(this.value, inputs.otherEquipmentCheckbox.checked);
-        showError(this, errors.otherEquipment, err);
         updateEquipmentFieldsetState();
-
-        const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
-        const isEquipmentValid = isAnyEquipmentSelected();
-        const mErr = validateMemberCount(inputs.membersCount.value, anyCheckboxChecked, isEquipmentValid);
-        showError(inputs.membersCount, errors.membersCount, mErr);
     });
 });
 
@@ -903,63 +807,15 @@ document.getElementById('showAuthorBtn')?.addEventListener('click', function () 
 // Handle phone prefix change, number input and member count input
 inputs.phonePrefix.addEventListener('change', highlightPhoneFieldsRealtime);
 inputs.phoneNumber.addEventListener('input', highlightPhoneFieldsRealtime);
-inputs.membersCount.addEventListener('input', function () {
-    const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
-    const isEquipmentValid = isAnyEquipmentSelected();
-    const membersVal = this.value.trim();
-
-    const membersErr = validateMemberCount(membersVal, anyCheckboxChecked, isEquipmentValid);
-    showError(this, errors.membersCount, membersErr);
-
-    const equipmentCheckboxes = document.querySelectorAll('[name^="equipment_"]');
-    const equipmentFieldset = equipmentCheckboxes[0]?.closest('fieldset');
-    if (equipmentFieldset) {
-        const membersIsEmpty = membersVal === "" || membersVal === "0";
-        const equipmentBothEmpty = !anyCheckboxChecked && membersIsEmpty;
-
-        if (equipmentBothEmpty) {
-            equipmentFieldset.classList.remove('error');
-            equipmentFieldset.classList.add('valid');
-        } else {
-            const equipErr = validateOtherEquipment(inputs.otherEquipmentInput.value.trim(), inputs.otherEquipmentCheckbox.checked);
-            const hasError = equipErr || membersErr;
-
-            equipmentFieldset.classList.toggle('error', !!hasError);
-            equipmentFieldset.classList.toggle('valid', !hasError);
-        }
-    }
-});
 
 // Handle Other equipment text input - validate and update states
 inputs.otherEquipmentInput.addEventListener('input', function () {
-    const anySel = isAnyEquipmentSelected();
-    const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
-    const membersVal = inputs.membersCount.value.trim();
-
     const equipErr = validateOtherEquipment(this.value.trim(), inputs.otherEquipmentCheckbox.checked);
     showError(this, errors.otherEquipment, equipErr);
-
-    const membersErr = validateMemberCount(membersVal, anyCheckboxChecked, anySel);
-    showError(inputs.membersCount, errors.membersCount, membersErr);
-
-    const equipmentCheckboxes = document.querySelectorAll('[name^="equipment_"]');
-    const equipmentFieldset = equipmentCheckboxes[0]?.closest('fieldset');
-    if (equipmentFieldset) {
-        const membersIsEmpty = membersVal === "" || membersVal === "0";
-        const equipmentBothEmpty = !anyCheckboxChecked && membersIsEmpty;
-
-        if (equipmentBothEmpty) {
-            equipmentFieldset.classList.remove('error');
-            equipmentFieldset.classList.add('valid');
-        } else {
-            const hasError = equipErr || membersErr;
-            equipmentFieldset.classList.toggle('error', !!hasError);
-            equipmentFieldset.classList.toggle('valid', !hasError);
-        }
-    }
+    updateEquipmentFieldsetState();
 });
 
-// ==================== REAL-TIME VALIDATION HANDLERS ====================
+// REAL-TIME VALIDATION HANDLERS
 
 // Map of input fields to their validation functions for real-time validation
 const validationHandlers = {
@@ -967,8 +823,8 @@ const validationHandlers = {
     lastName: (value) => validateLastName(value),
     email: (value) => validateEmail(value),
     bookingDate: (value) => validateBookingDate(value),
+    membersCount: (value) => validateMemberCount(value),
     otherEquipmentInput: (value) => validateOtherEquipment(value, inputs.otherEquipmentCheckbox.checked),
-    membersCount: (value) => validateMemberCount(value, isAnyEquipmentCheckboxChecked(), isAnyEquipmentSelected()),
     message: (value) => validateMessage(value),
     cardNumber: (value) => validateCardNumber(value, inputs.paymentCard.checked),
     cardExpiry: (value) => validateCardExpiry(value, inputs.paymentCard.checked),
@@ -1118,85 +974,6 @@ function generateOrderSummary() {
 
 // FORM SUBMISSION
 
-// Validate all form fields at once (for form submission)
-function validateAllFields() {
-    const firstName = inputs.firstName.value.trim();
-    const lastName = inputs.lastName.value.trim();
-    const email = inputs.email.value.trim();
-    const phonePrefix = inputs.phonePrefix.value;
-    const phoneNumber = inputs.phoneNumber.value.trim();
-    const dob = inputs.dob.value.trim();
-    const bookingDate = inputs.bookingDate.value.trim();
-    const sport = inputs.sport.value;
-    const space = inputs.space.value;
-    const time = inputs.time.value;
-    const isOtherEquipmentChecked = inputs.otherEquipmentCheckbox.checked;
-    const otherEquipment = inputs.otherEquipmentInput.value.trim();
-    const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
-    const membersCount = inputs.membersCount.value.trim();
-    const message = inputs.message.value.trim();
-    const isInvoicePayment = inputs.paymentInvoice.checked;
-    const isCardPayment = inputs.paymentCard.checked;
-    const cardNumber = inputs.cardNumber.value.trim();
-    const cardExpiry = inputs.cardExpiry.value.trim();
-    const cardCvv = inputs.cardCvv.value.trim();
-    const companyName = inputs.companyName.value.trim();
-    const ico = inputs.ico.value.trim();
-    const dic = inputs.dic.value.trim();
-    const address = inputs.address.value.trim();
-
-    return {
-        firstName: validateFirstName(firstName),
-        lastName: validateLastName(lastName),
-        email: validateEmail(email),
-        phonePrefix: validatePhonePrefix(phonePrefix, phoneNumber),
-        phone: validatePhoneNumber(phonePrefix, phoneNumber),
-        dob: validateDob(dob),
-        bookingDate: validateBookingDate(bookingDate),
-        sport: validateSport(sport),
-        space: validateSpace(space),
-        time: validateTime(time),
-        gender: validateGender(),
-        otherEquipment: validateOtherEquipment(otherEquipment, isOtherEquipmentChecked),
-        membersCount: validateMemberCount(membersCount, anyCheckboxChecked, isAnyEquipmentSelected()),
-        message: validateMessage(message),
-        payment: validatePayment(),
-        cardNumber: validateCardNumber(cardNumber, isCardPayment),
-        cardExpiry: validateCardExpiry(cardExpiry, isCardPayment),
-        cardCvv: validateCardCvv(cardCvv, isCardPayment),
-        companyName: validateCompanyName(companyName, isInvoicePayment),
-        ico: validateICO(ico, isInvoicePayment),
-        dic: validateDIC(dic, isInvoicePayment),
-        address: validateAddress(address, isInvoicePayment)
-    };
-}
-
-// Display validation errors for individual fields
-function displayValidationErrors(validateErrors) {
-    let hasError = false;
-
-    Object.keys(validateErrors).forEach(key => {
-        if (key === 'phonePrefix' || key === 'phone') return;
-
-        if (validateErrors[key]) {
-            errors[key].textContent = validateErrors[key];
-            if (inputs[key]) {
-                inputs[key].classList.add('error');
-                inputs[key].classList.remove('valid');
-            }
-            hasError = true;
-        } else {
-            errors[key].textContent = "";
-            if (inputs[key]) {
-                inputs[key].classList.remove('error');
-                inputs[key].classList.add('valid');
-            }
-        }
-    });
-
-    return hasError;
-}
-
 // Display phone fields validation errors
 function displayPhoneFieldsErrors(validateErrors) {
     const prefixError = validateErrors.phonePrefix;
@@ -1307,11 +1084,9 @@ form.addEventListener('submit', (event) => {
     const sport = inputs.sport.value;
     const space = inputs.space.value;
     const time = inputs.time.value;
+    const membersCount = inputs.membersCount.value.trim();
     const isOtherEquipmentChecked = inputs.otherEquipmentCheckbox.checked;
     const otherEquipment = inputs.otherEquipmentInput.value.trim();
-    const anyCheckboxChecked = isAnyEquipmentCheckboxChecked();
-    const anyEquipmentSelected = isAnyEquipmentSelected();
-    const membersCount = inputs.membersCount.value.trim();
     const message = inputs.message.value.trim();
     const isInvoicePayment = inputs.paymentInvoice.checked;
     const isCardPayment = inputs.paymentCard.checked;
@@ -1335,8 +1110,8 @@ form.addEventListener('submit', (event) => {
         space: validateSpace(space),
         time: validateTime(time),
         gender: validateGender(),
+        membersCount: validateMemberCount(membersCount),
         otherEquipment: validateOtherEquipment(otherEquipment, isOtherEquipmentChecked),
-        membersCount: validateMemberCount(membersCount, anyCheckboxChecked, anyEquipmentSelected),
         message: validateMessage(message),
         payment: validatePayment(),
         cardNumber: validateCardNumber(cardNumber, isCardPayment),
@@ -1351,7 +1126,7 @@ form.addEventListener('submit', (event) => {
     let hasError = false;
 
     Object.keys(validateErrors).forEach(key => {
-        if (key === 'phonePrefix' || key === 'phone' || key === 'otherEquipment' || key === 'membersCount') return;
+        if (key === 'phonePrefix' || key === 'phone' || key === 'otherEquipment') return;
 
         if (validateErrors[key]) {
             if (errors[key]) errors[key].textContent = validateErrors[key];
@@ -1369,19 +1144,6 @@ form.addEventListener('submit', (event) => {
         }
     });
 
-
-    // Process membersCount
-    if (validateErrors.membersCount) {
-        errors.membersCount.textContent = validateErrors.membersCount;
-        inputs.membersCount.classList.add('error');
-        inputs.membersCount.classList.remove('valid');
-        hasError = true;
-    } else {
-        errors.membersCount.textContent = "";
-        inputs.membersCount.classList.remove('error');
-        inputs.membersCount.classList.add('valid');
-    }
-
     // Process otherEquipment
     if (validateErrors.otherEquipment) {
         errors.otherEquipment.textContent = validateErrors.otherEquipment;
@@ -1395,11 +1157,10 @@ form.addEventListener('submit', (event) => {
     }
 
     // Process phone fields
-    displayPhoneFieldsErrors(validateErrors);
     if (validateErrors.phonePrefix || validateErrors.phone) {
         hasError = true;
     }
-
+    displayPhoneFieldsErrors(validateErrors);
 
     syncAgeField(dob, validateErrors.dob);
     highlightFieldsetsOnSubmit(validateErrors);
