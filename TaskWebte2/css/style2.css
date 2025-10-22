@@ -41,11 +41,11 @@ body {
 }
 
 .success {
-  background: linear-gradient(135deg, #e9f9ee 0%, #d4f1e0 100%);
+  background: linear-gradient(135deg, #e9f9ee 0%, #deefe5 100%);
 }
 
 .fail {
-  background: linear-gradient(135deg, #fdeaea 0%, #fbd5d5 100%);
+  background: linear-gradient(135deg, #fdeaea 0%, #f4dfdf 100%);
 }
 
 .container {
@@ -103,18 +103,18 @@ p {
 a {
   display: inline-block;
   padding: 12px 30px;
-  background-color: #0044cc;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   text-decoration: none;
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 a:hover {
-  background-color: #003399;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 68, 204, 0.3);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 a:visited {
