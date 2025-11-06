@@ -1,0 +1,152 @@
+body {
+  background-color: #8fd3ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.cats {
+  display: flex;
+  gap: 40px;
+}
+
+.cat {
+  position: relative;
+  width: 120px;
+  height: 160px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.body {
+  width: 90px;
+  height: 100px;
+  background: #555;
+  border-radius: 60% 60% 40% 40%;
+  position: absolute;
+  bottom: 0;
+  left: 15px;
+}
+
+.head {
+  width: 80px;
+  height: 80px;
+  background: #555;
+  border-radius: 50%;
+  position: absolute;
+  left: 20px;
+}
+
+.ear {
+  width: 0;
+  height: 0;
+  border-left: 22px solid transparent;
+  border-right: 22px solid transparent;
+  border-bottom: 35px solid #999;
+  position: absolute;
+  top: -15px;
+  border-radius: 8px;
+}
+
+.ear.left {
+  left: 14px;
+  transform: rotate(-25deg);
+}
+
+.ear.right {
+  right: 14px;
+  transform: rotate(25deg);
+}
+
+.eye {
+  width: 18px;
+  height: 26px;
+  background: #a0ff00;
+  border-radius: 50% 50% 50% 50%;
+  position: absolute;
+  top: 24px;
+}
+
+.eye.left {
+  left: 17px;
+  transform: rotate(-35deg);
+}
+
+.eye.right {
+  right: 17px;
+  transform: rotate(35deg);
+}
+
+
+.pupil {
+  width: 10px;
+  height: 10px;
+  background: black;
+  border-radius: 50%;
+  position: absolute;
+  top: 8px;
+  left: 4px;
+}
+
+.tail {
+  position: absolute;
+  right: 7px;
+  bottom: 35px;
+  width: 12px;
+  height: 65px;
+  background: #999;
+  border-radius: 50% 20% 20% 50% / 30% 30% 70% 70%;
+  transform: rotate(20deg) skewY(-5deg);
+  transform-origin: bottom center;
+  z-index: -1;
+}
+
+.tail::after {
+  content: "";
+  position: absolute;
+  top: 38px;
+  right: -2px;
+  width: 18px;
+  height: 35px;
+  background: #999;
+  border-radius: 20% 60% 60% 40%;
+  transform: rotate(25deg);
+}
+
+.cat:hover .body,
+.cat:hover .head {
+  background: #111;
+}
+
+.cat:hover .eye {
+  background: yellow;
+}
+
+.cat:hover .ear.left {
+  transform: rotate(-7deg) translateY(-1px) translateX(11px);
+}
+
+.cat:hover .ear.right {
+  transform: rotate(7deg) translateY(-1px) translateX(-11px);
+}
+
+
+.cat:hover .ear {
+  border-bottom-color: #111;
+}
+
+.cat:hover .tail,
+.cat:hover .tail::after {
+  background: #111;
+  border-color: transparent transparent #111 transparent;
+}
+
+@media (max-width: 480px) {
+  .cats {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+}
