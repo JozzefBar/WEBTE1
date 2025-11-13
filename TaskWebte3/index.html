@@ -1,41 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskWebte3 - City Culture</title>
+    <title>Kultúrny Kompas - Bratislava</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel = "stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
     <link rel="stylesheet" href="css/style.css">
 
 </head>
+
 <body>
 
     <header class="header">
         <div class="container">
-            <h1 class="header-title">
-                <i class="fas fa-theater-masks"></i>City Culture
-            </h1>
-            <p class="header-date" id="currentDate"> </p>
+            <div class="header-content">
+                <div class="header-brand">
+                    <h1 class="header-title">
+                        <i class="fas fa-compass"></i>Kultúrny Kompas
+                    </h1>
+                    <p class="header-date" id="currentDate"></p>
+                </div>
+                <nav class="header-nav">
+                    <a href="#events" class="header-nav-link">
+                        <i class="fas fa-calendar"></i> Podujatia
+                    </a>
+                    <a href="#map" class="header-nav-link">
+                        <i class="fas fa-map-marked-alt"></i> Mapa
+                    </a>
+                    <a href="#statistics" class="header-nav-link">
+                        <i class="fas fa-chart-pie"></i> Štatistiky
+                    </a>
+                    <a href="#contact" class="header-nav-link">
+                        <i class="fas fa-envelope"></i> Kontakt
+                    </a>
+                </nav>
+            </div>
         </div>
     </header>
 
-    <main class="main">         
-        <div class="container">
-            <div class="content">
-                <h2 class="main-heading">Aktuálne podujatia</h2>
-                <div class="events" id="eventsContainer"></div>
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <i class="fas fa-compass"></i> Kultúrny Kompas
+            </h1>
+            <p class="hero-subtitle">
+                Objavte kultúrne bohatstvo Bratislavy. Od koncertov po výstavy, od divadelných predstavení po festivaly
+                - všetko na jednom mieste.
+            </p>
+            <div class="hero-buttons">
+                <a href="#events" class="hero-btn">
+                    <i class="fas fa-calendar-check"></i>
+                    Prezrieť podujatia
+                </a>
+                <a href="#map" class="hero-btn hero-btn--secondary">
+                    <i class="fas fa-map-marked-alt"></i>
+                    Zobraziť mapu
+                </a>
             </div>
+        </div>
+    </section>
+
+    <main class="main">
+        <div class="container">
+            <h2 class="main-heading" id="events">
+                <i class="fas fa-calendar-check"></i> Aktuálne podujatia
+            </h2>
+
+            <div class="filters">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label for="searchInput" class="filters-label">
+                            <i class="fas fa-search"></i> Vyhľadávanie
+                        </label>
+                        <input type="text" class="form-control filters-input" id="searchInput"
+                            placeholder="Hľadať podľa názvu alebo miesta...">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="typeFilter" class="filters-label">
+                            <i class="fas fa-filter"></i> Typ podujatia
+                        </label>
+                        <select class="form-select filters-select" id="typeFilter">
+                            <option value="all">Všetky typy</option>
+                            <option value="koncert">🎵 Koncerty</option>
+                            <option value="vystava">🎨 Výstavy</option>
+                            <option value="divadlo">🎭 Divadlá</option>
+                            <option value="festival">🎉 Festivaly</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label for="dateFromFilter" class="filters-label">
+                            <i class="far fa-calendar"></i> Od dátumu
+                        </label>
+                        <input type="date" class="form-control filters-input" id="dateFromFilter">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label for="dateToFilter" class="filters-label">
+                            <i class="far fa-calendar"></i> Do dátumu
+                        </label>
+                        <input type="date" class="form-control filters-input" id="dateToFilter">
+                    </div>
+
+                    <div class="col-md-1">
+                        <button class="btn btn-outline-secondary w-100 filter-reset" id="resetFilters">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters-results filters-results--hidden" id="resultsCount"></div>
+            </div>
+
+            <div class="events" id="eventsContainer"></div>
+
+            <div class="favorites-section" id="favoritesSection" style="display: none;">
+                <h2 class="main-heading">
+                    <i class="fas fa-heart"></i> Moje obľúbené akcie
+                </h2>
+                <div class="events" id="favoritesContainer"></div>
+            </div>
+
         </div>
     </main>
 
-    <div class ="modal fade" id="eventModal" tabindex="-1">
-        <div class="modal-dialog" modal-lg>
+    <section class="map-section" id="map">
+        <div class="container">
+            <h2 class="main-heading">
+                <i class="fas fa-map-marked-alt"></i> Mapa podujatí
+            </h2>
+
+            <div id="mapContainer"></div>
+        </div>
+    </section>
+
+    <section class="statistics-section" id="statistics">
+        <div class="container">
+            <h2 class="statistics-section-title" data-aos="fade-down">
+                <i class="fas fa-chart-pie"></i>
+                Štatistiky kultúry
+            </h2>
+
+            <div class="stats-cards" id="statsCards">
+            </div>
+
+            <div class="chart-container" data-aos="fade-up">
+                <div class="chart-container-wrapper">
+                    <canvas id="statsChart"></canvas>
+                </div>
+            </div>
+
+            <div class="export-cards">
+                <div class="export-card">
+                    <h4 class="export-card-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        Aktuálne podujatia
+                    </h4>
+                    <div class="export-card-form">
+                        <div class="export-card-date-row">
+                            <div>
+                                <label class="export-card-label" for="exportStartDate">
+                                    <i class="far fa-calendar"></i> Od dátumu:
+                                </label>
+                                <input type="date" id="exportStartDate" class="export-card-input">
+                            </div>
+                            <div>
+                                <label class="export-card-label" for="exportEndDate">
+                                    <i class="far fa-calendar"></i> Do dátumu:
+                                </label>
+                                <input type="date" id="exportEndDate" class="export-card-input">
+                            </div>
+                        </div>
+                        <div class="export-button-row">
+                            <button class="export-card-button" onclick="exportCurrentEvents('csv')">
+                                <i class="fas fa-file-csv"></i>
+                                CSV Export
+                            </button>
+                            <button class="export-card-button" onclick="exportCurrentEvents('json')">
+                                <i class="fas fa-file-code"></i>
+                                JSON Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="export-card">
+                    <h4 class="export-card-title">
+                        <i class="fas fa-heart"></i>
+                        Obľúbené podujatia
+                    </h4>
+                    <div class="export-card-form">
+                        <div class="export-card-date-row">
+                            <div>
+                                <label class="export-card-label" for="exportFavStartDate">
+                                    <i class="far fa-calendar"></i> Od dátumu:
+                                </label>
+                                <input type="date" id="exportFavStartDate" class="export-card-input">
+                            </div>
+                            <div>
+                                <label class="export-card-label" for="exportFavEndDate">
+                                    <i class="far fa-calendar"></i> Do dátumu:
+                                </label>
+                                <input type="date" id="exportFavEndDate" class="export-card-input">
+                            </div>
+                        </div>
+                        <div class="export-button-row">
+                            <button class="export-card-button" onclick="exportFavoriteEvents('csv')">
+                                <i class="fas fa-file-csv"></i>
+                                CSV Export
+                            </button>
+                            <button class="export-card-button" onclick="exportFavoriteEvents('json')">
+                                <i class="fas fa-file-code"></i>
+                                JSON Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <h2 class="contact-section-title">
+                <i class="fas fa-envelope"></i>
+                Napíšte nám
+            </h2>
+            <p class="contact-section-subtitle">
+                Máte otázku alebo návrh? Radi vám odpovieme!
+            </p>
+
+            <form class="contact-form" id="contactForm" novalidate>
+                <div class="contact-form-row">
+                    <div class="contact-form-group">
+                        <label for="contactName" class="contact-form-label">
+                            <i class="fas fa-user"></i> Meno *
+                        </label>
+                        <input type="text" id="contactName" class="contact-form-input" required placeholder="Vaše meno">
+                        <div class="field-error" id="nameError"></div>
+                    </div>
+
+                    <div class="contact-form-group">
+                        <label for="contactEmail" class="contact-form-label">
+                            <i class="fas fa-envelope"></i> E-mail *
+                        </label>
+                        <input type="email" id="contactEmail" class="contact-form-input" required
+                            placeholder="vas.email@priklad.sk">
+                        <div class="field-error" id="emailError"></div>
+                    </div>
+                </div>
+
+                <div class="contact-form-group">
+                    <label for="contactSubject" class="contact-form-label">
+                        <i class="fas fa-tag"></i> Predmet *
+                    </label>
+                    <input type="text" id="contactSubject" class="contact-form-input" required
+                        placeholder="Predmet správy">
+                    <div class="field-error" id="subjectError"></div>
+                </div>
+
+                <div class="contact-form-group">
+                    <label for="contactMessage" class="contact-form-label">
+                        <i class="fas fa-comment"></i> Správa *
+                    </label>
+                    <textarea id="contactMessage" class="contact-form-textarea" required rows="6"
+                        placeholder="Vaša správa alebo návrh..."></textarea>
+                    <div class="field-error" id="messageError"></div>
+                </div>
+
+                <button type="submit" class="contact-form-button">
+                    <i class="fas fa-paper-plane"></i>
+                    Odoslať správu
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <h3 class="footer-title">
+                    <i class="fas fa-compass"></i> Kultúrny Kompas
+                </h3>
+                <p class="footer-text">
+                    Váš sprievodca kultúrnymi podujatiami v Bratislave
+                </p>
+                <p class="footer-copyright">
+                    &copy; 2025 Kultúrny Kompas. Všetky práva vyhradené.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTitle"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavrieť"></button>
                 </div>
                 <div class="modal-body" id="modalBody"></div>
             </div>
@@ -43,8 +317,19 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+
     <script src="js/main.js"></script>
     <script src="js/components/event-card.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/favorites.js"></script>
+    <script src="js/statistics.js"></script>
+    <script src="js/form-validation.js"></script>
 
 </body>
+
 </html>

@@ -4,7 +4,7 @@ class EventCard extends HTMLElement {
     }
 
     static get observedAttributes(){
-        return ["title", "date", "time", "location", "desctiption", "image", "event-id"];
+        return ["title", "date", "time", "location", "description", "image", "event-id"];
     }
 
     connectedCallback(){
@@ -22,14 +22,21 @@ class EventCard extends HTMLElement {
         const location = this.getAttribute('location') || '';
         const description = this.getAttribute('description') || '';
         const image = this.getAttribute('image') || '';
+        const eventId = this.getAttribute('event-id') || '';
 
         const badge = this.getEventBadge(date);
+        const isFavorite = this.isFavorite(eventId);
 
         this.className = 'event-card';
         this.innerHTML = `
             <img src="${image}" alt="${title}" class="event-card-image">
             <div class="event-card-content">
                 ${badge ? `<span class="event-card-badge event-card-badge--${badge.class}">${badge.text}</span>` : ''}
+                
+                <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-event-id="${eventId}" onclick="event.stopPropagation(); toggleFavorite(${eventId})">
+                    <i class="${isFavorite ? 'fas' : 'far'} fa-heart"></i>
+                </button>
+                
                 <h3 class="event-card-title">${title}</h3>
                 <div class="event-card-date">
                     <i class="far fa-calendar-alt"></i>
@@ -42,6 +49,11 @@ class EventCard extends HTMLElement {
                 <p class="event-card-description">${description}</p>
             </div>
         `;
+    }
+
+    isFavorite(eventId) {
+        const favorites = JSON.parse(localStorage.getItem('favoriteEvents') || '[]');
+        return favorites.includes(parseInt(eventId));
     }
 
     getEventBadge(dateString){
