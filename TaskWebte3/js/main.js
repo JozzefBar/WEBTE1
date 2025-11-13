@@ -285,6 +285,42 @@ function initializeSmoothScroll() {
     });
 }
 
+function checkForEventParameter() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('event');
+
+    if (eventId) {
+        // Wait for events to be loaded
+        const checkEvents = setInterval(() => {
+            if (allEvents && allEvents.length > 0) {
+                clearInterval(checkEvents);
+
+                // Scroll to events section
+                const eventsSection = document.getElementById('events');
+                if (eventsSection) {
+                    const headerOffset = 80;
+                    const elementPosition = eventsSection.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+
+                // Open the modal for this event after a short delay
+                setTimeout(() => {
+                    const eventIdNum = parseInt(eventId);
+                    showEventDetail(eventIdNum);
+                }, 500);
+
+                // Remove the parameter from URL without reload
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }, 100);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     displayCurrentDate();
     initializeFilters();
@@ -292,4 +328,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeContactForm();
     initializeSmoothScroll();
     initializeModalFocusManagement();
+    checkForEventParameter();
 });

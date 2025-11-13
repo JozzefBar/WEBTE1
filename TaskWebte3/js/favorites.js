@@ -14,7 +14,6 @@ function toggleFavorite(eventId) {
     updateAllFavoriteButtons();
     displayFavorites();
 
-    // Update map if favorites filter is active
     if (typeof filterMarkersByFavorites === 'function' && typeof favoritesFilterActive !== 'undefined' && favoritesFilterActive) {
         filterMarkersByFavorites();
     }
@@ -74,17 +73,6 @@ function displayFavorites() {
     favoritesSection.style.display = 'block';
     favoritesContainer.innerHTML = '';
     const favoriteEvents = allEvents.filter(event => favorites.includes(event.id));
-
-    if (favoriteEvents.length === 0) {
-        favoritesContainer.innerHTML = `
-            <div class="favorites-empty">
-                <i class="far fa-heart"></i>
-                <h3>Zatiaľ nemáte žiadne obľúbené podujatia</h3>
-                <p>Kliknite na ❤️ pri podujatí, ktoré sa vám páči!</p>
-            </div>
-        `;
-        return;
-    }
 
     favoriteEvents.forEach(event => {
         const eventCard = document.createElement('event-card');

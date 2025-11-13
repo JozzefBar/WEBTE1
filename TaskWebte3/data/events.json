@@ -2,230 +2,134 @@
   "events": [
     {
       "id": 1,
-      "title": "Symfonický orchester - Beethoven",
-      "type": "koncert",
-      "date": "2025-11-12",
-      "time": "19:00",
-      "location": "Slovenská filharmónia",
-      "gps": {
-        "lat": 48.1415,
-        "lng": 17.1093
-      },
-      "shortDescription": "Večer majstrovských symfónií Ludwiga van Beethovena v podaní Slovenského symfonického orchestra.",
-      "longDescription": "Príďte si vychutnať majstrovské diela Ludwiga van Beethovena. Na programe sú Symfónia č. 5 a Symfónia č. 9 s legendárnou Ódou na radosť. Dirigent: Maestro Peter Feranec.",
-      "image": "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=800&h=600&fit=crop",
-      "organizerUrl": "https://filharmonia.sk"
-    },
-    {
-      "id": 2,
-      "title": "Street Art Festival Bratislava",
-      "type": "festival",
-      "date": "2025-11-13",
-      "time": "12:00",
-      "location": "Sad Janka Kráľa",
-      "gps": {
-        "lat": 48.1345,
-        "lng": 17.1045
-      },
-      "shortDescription": "Dva dni plné pouličného umenia, grafitti, živej hudby a kreatívnej atmosféry.",
-      "longDescription": "Festival pouličného umenia prináša do Bratislavy najlepších slovenských a zahraničných street art umelcov. Sledujte ako vznikajú graffiti naživo, počúvajte hip-hop a elektronickú hudbu, a zúčastnite sa workshopov.",
-      "image": "https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=800&h=600&fit=crop",
-      "organizerUrl": "https://streetartfestival.sk"
-    },
-    {
-      "id": 3,
-      "title": "Činohra: Zbojníci",
+      "title": "G. Verdi: La traviata",
       "type": "divadlo",
       "date": "2025-11-14",
-      "time": "19:30",
-      "location": "Slovenské národné divadlo",
-      "gps": {
-        "lat": 48.1405,
-        "lng": 17.1084
-      },
-      "shortDescription": "Klasická slovenská divadelná hra v modernom prevedení.",
-      "longDescription": "Zbojníci sú jedným z najznámejších diel slovenskej dramatickej literatúry. Naša inscenácia prináša moderný pohľad na túto klasiku s dôrazom na vizuálnu stránku a herecké majstrovstvo.",
-      "image": "https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&h=600&fit=crop",
-      "organizerUrl": "https://snd.sk"
-    },
-    {
-      "id": 4,
-      "title": "Electronic Music Night",
-      "type": "koncert",
-      "date": "2025-11-15",
-      "time": "21:00",
-      "location": "Fuga Club",
-      "gps": {
-        "lat": 48.1486,
-        "lng": 17.1089
-      },
-      "shortDescription": "Noc plná elektronickej hudby s najlepšími DJ-ami zo Slovenska.",
-      "longDescription": "Príďte zatancovať na najlepšiu elektronickú hudbu. Vystúpia DJ Mike Sky, Luna Beats a hosť z Česka - DJ Pulse. Techno, house a progressive beats od 21:00 do rána!",
-      "image": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&h=600&fit=crop",
-      "organizerUrl": "https://fuga.sk"
-    },
-    {
-      "id": 5,
-      "title": "Výstava fotografií - Tatry očami fotografov",
-      "type": "vystava",
-      "date": "2025-11-16",
-      "time": "10:00",
-      "location": "Galéria Nedbalka",
-      "gps": {
-        "lat": 48.1442,
-        "lng": 17.1097
-      },
-      "shortDescription": "Jedinečné zábery Vysokých Tatier od renomovaných slovenských fotografov.",
-      "longDescription": "Výstava predstavuje 80 fotografií zachytávajúcich krásu Vysokých Tatier v rôznych ročných obdobiach. Diela 15 fotografov vás prenesú do majestátneho horského prostredia.",
-      "image": "https://images.unsplash.com/photo-1531243269054-5ebf6f34081e?w=800&h=600&fit=crop",
-      "organizerUrl": "https://nedbalka.sk"
-    },
-    {
-      "id": 6,
-      "title": "Bratislavský jazzový festival",
-      "type": "festival",
-      "date": "2025-11-18",
-      "time": "17:00",
-      "location": "Kultúrne centrum Dunaj",
-      "gps": {
-        "lat": 48.1389,
-        "lng": 17.1125
-      },
-      "shortDescription": "Tri dni najlepšieho jazzu z celého sveta.",
-      "longDescription": "Každoročný Bratislavský jazzový festival privíta svetové hviezdy jazzu. Tento rok vystúpia trio Johna Scofielda, Maria Biondi Quartet a ďalší skvelí umelci. Pripravte sa na tri dni hudby na najvyššej úrovni!",
-      "image": "https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=800&h=600&fit=crop",
-      "organizerUrl": "https://bjf.sk"
-    },
-    {
-      "id": 7,
-      "title": "Stand-up komici na scéne",
-      "type": "divadlo",
-      "date": "2025-11-19",
-      "time": "20:00",
-      "location": "Comedy Club Bratislava",
-      "gps": {
-        "lat": 48.1463,
-        "lng": 17.1115
-      },
-      "shortDescription": "Večer plný smiechu s najlepšími slovenskými komikmi.",
-      "longDescription": "Na pódiu sa predstavia: Adam Palider, Michal Hudák, a špeciálny hosť Viktor Vincze. Garantujeme minimálne 2 hodiny zábavy a smiechu! Odporúčaná rezervácia vopred.",
-      "image": "https://images.unsplash.com/photo-1585699324551-f6c309eedeca?w=800&h=600&fit=crop",
-      "organizerUrl": "https://comedyclub.sk"
-    },
-    {
-      "id": 8,
-      "title": "Vianočné trhy na Hlavnom námestí",
-      "type": "festival",
-      "date": "2025-11-22",
-      "time": "10:00",
-      "location": "Hlavné námestie",
-      "gps": {
-        "lat": 48.1441,
-        "lng": 17.1090
-      },
-      "shortDescription": "Tradičné bratislavské vianočné trhy s bohatým programom.",
-      "longDescription": "Najväčšie vianočné trhy na Slovensku! Ochutnajte tradičné špeciality, nakúpte ručnú výrobu, vychutnajte si punč a spoznajte vianočnú atmosféru. Pre deti: stretnutie s Mikulášom, anjeli a čerti.",
-      "image": "https://images.unsplash.com/photo-1512916206820-bd3503d3d0ce?w=800&h=600&fit=crop",
-      "organizerUrl": "https://vianoce.bratislava.sk"
-    },
-    {
-      "id": 9,
-      "title": "Opera: La Traviata - Verdi",
-      "type": "divadlo",
-      "date": "2025-11-20",
       "time": "19:00",
       "location": "Slovenské národné divadlo - Opera",
       "gps": {
         "lat": 48.1405,
         "lng": 17.1084
       },
-      "shortDescription": "Verdiho nesmrteľné majstrovské dielo v podaní operných hviezd.",
-      "longDescription": "Prežite večer s nádhernou operou La Traviata od Giuseppeho Verdiho. V hlavných úlohách: Adriana Kohútková, Pavol Breslik a ďalší špičkoví slovenskí operní speváci. Dirigent: Friedrich Haider.",
-      "image": "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=600&fit=crop",
+      "shortDescription": "Verdiho nesmrteľné majstrovské dielo v podaní Opery SND.",
+      "longDescription": "Repríza slávnej opery La traviata od Giuseppeho Verdiho v Sále opery a baletu SND. Giuseppe Verdi vytvoril s La traviatou jedno z najobľúbenejších operných diel všetkých čias, ktoré rozpráva príbeh Violetty Valéry a jej tragickej lásky. Silná emócia, priezračná a dojímavá hudba. Romantická opera v troch dejstvách v talianskom jazyku, slovenské a anglické titulky.",
+      "image": "images/events/la-traviata.jpg",
       "organizerUrl": "https://snd.sk"
     },
     {
-      "id": 10,
-      "title": "Techno Warehouse Party",
-      "type": "koncert",
-      "date": "2025-11-21",
-      "time": "22:00",
-      "location": "Warehouse Complex",
-      "gps": {
-        "lat": 48.1523,
-        "lng": 17.1234
-      },
-      "shortDescription": "Underground techno párty v industriálnom priestore.",
-      "longDescription": "Najväčšia techno akcia roka! Tri stagey, 12 DJ-ov, najlepší soundsystem na Slovensku. Headliner: Ben Klock. Pripravte sa na nezabudnuteľnú noc plnú tvrdého techna!",
-      "image": "https://images.unsplash.com/photo-1571266028243-d220c6ba4814?w=800&h=600&fit=crop",
-      "organizerUrl": "https://warehouse.sk"
-    },
-    {
-      "id": 11,
-      "title": "Výstava slovenského dizajnu",
-      "type": "vystava",
-      "date": "2025-11-23",
-      "time": "11:00",
-      "location": "Design Factory Bratislava",
-      "gps": {
-        "lat": 48.1472,
-        "lng": 17.1158
-      },
-      "shortDescription": "Najlepšie z moderného slovenského dizajnu a úžitkového umenia.",
-      "longDescription": "Prvá veľká výstava súčasného slovenského dizajnu! Predstavíme práce mladých dizajnérov v oblasti nábytku, módy, produktového dizajnu a grafiky. Možnosť zakúpiť vystavené kusy.",
-      "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
-      "organizerUrl": "https://designfactory.sk"
-    },
-    {
-      "id": 12,
-      "title": "Folk a Country večer",
-      "type": "koncert",
-      "date": "2025-11-24",
-      "time": "19:30",
-      "location": "Randal Club",
-      "gps": {
-        "lat": 48.1398,
-        "lng": 17.1067
-      },
-      "shortDescription": "Akustický koncert s najlepšími slovenskými folk a country kapelami.",
-      "longDescription": "Večer plný akustickej hudby v príjemnej atmosfére. Vystúpia: Hex, Fermata, a mladá nádej slovenskej country scény - skupina Mustang. Vstupenky v predpredaji so zľavou.",
-      "image": "https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?w=800&h=600&fit=crop",
-      "organizerUrl": "https://randal.sk"
-    },
-    {
-      "id": 13,
-      "title": "Filmový festival dokumentov",
+      "id": 2,
+      "title": "Hradby Samoty – Bratislava Intermezzo 2025",
       "type": "festival",
-      "date": "2025-11-25",
+      "date": "2025-11-14",
+      "time": "12:00",
+      "location": "A4 – priestor súčasnej kultúry",
+      "gps": {
+        "lat": 48.1486,
+        "lng": 17.1089
+      },
+      "shortDescription": "Festival experimentálneho audiovizuálneho umenia.",
+      "longDescription": "Festival experimentálneho audiovizuálneho umenia Hradby Samoty sa vracia v roku 2025 s Bratislava Intermezzo. Dvojdňový festival, ktorý sa koná 14.-15. novembra v A4 – priestore súčasnej kultúry. Predstavia sa umelci ako Xiu Xiu, Ordo Rosarius Equilibrio, Trepaneringsritualen, Inade a Troum. Festival sa venuje avantgardnej hudbe a experimentálnym formám umenia.",
+      "image": "images/events/hradby-samoty.jpg",
+      "organizerUrl": "https://a4.sk"
+    },
+    {
+      "id": 3,
+      "title": "Mňága a Žďorp + Slobodná Európa",
+      "type": "koncert",
+      "date": "2025-11-14",
+      "time": "20:00",
+      "location": "Majestic Music Club",
+      "gps": {
+        "lat": 48.1463,
+        "lng": 17.1115
+      },
+      "shortDescription": "Dve legendy česko-slovenskej rockovej scény na spoločnom turné.",
+      "longDescription": "Dve legendy česko-slovenskej rockovej scény, Slobodná Európa a Mňága a Žďorp, sa vydávajú na spoločné mini turné v novembri 2025, vystúpia v troch slovenských mestách – jedno z nich je Bratislava. Očakávajte večer plný hitov a rockovej energie v Majestic Music Club.",
+      "image": "images/events/mnaga-zdorp.jpg",
+      "organizerUrl": "https://majesticmusicclub.sk"
+    },
+    {
+      "id": 4,
+      "title": "Vec & Zverina + Jazzy",
+      "type": "koncert",
+      "date": "2025-11-15",
+      "time": "20:00",
+      "location": "Majestic Music Club",
+      "gps": {
+        "lat": 48.1463,
+        "lng": 17.1115
+      },
+      "shortDescription": "Hip-hopový večer s najlepšími slovenskými interpretmi.",
+      "longDescription": "Koncert slovenských hip-hopových interpretov Vec & Zverina s hosťom Jazzy v Majestic Music Club. Očakávajte kvalitný slovenský rap a nezabudnuteľnú atmosféru. Vec a Zverina patria medzi najúspešnejších slovenských hip-hopových umelcov a ich spoločný koncert je vždy výnimočným zážitkom.",
+      "image": "images/events/vec-zverina.jpg",
+      "organizerUrl": "https://majesticmusicclub.sk"
+    },
+    {
+      "id": 5,
+      "title": "Mladé víno 2025 - Malokarpatské vinárske obce",
+      "type": "festival",
+      "date": "2025-11-15",
       "time": "14:00",
-      "location": "Kino Lumière",
+      "location": "Malokarpatské vinárske obce",
       "gps": {
-        "lat": 48.1449,
-        "lng": 17.1070
+        "lat": 48.2500,
+        "lng": 17.2000
       },
-      "shortDescription": "Týždeň najlepších dokumentárnych filmov z celého sveta.",
-      "longDescription": "Medzinárodný festival dokumentárneho filmu prináša 40 filmov z 25 krajín. Témami sú životné prostredie, spoločnosť, umenie a ľudské príbehy. Hosťami festivalu budú samotní režiséri.",
-      "image": "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=800&h=600&fit=crop",
-      "organizerUrl": "https://dokfest.sk"
+      "shortDescription": "Najznámejšia vínna udalosť na Slovensku s ochutnávkou mladých vín.",
+      "longDescription": "Najznámejšia vínna udalosť na Slovensku sa koná vždy v novembri, aby vinári malokarpatského regiónu mohli predstaviť svoje mladé vína. Viac ako 100 vínnych pivníc býva otvorených, v ktorých návštevníkov privítajú viac ako 100 vinárov zo všetkých 12 malokarpatských vinárskych obcí. Oslava vínnej kultúry v regióne, kde sa minulosť prelína so súčasnosťou.",
+      "image": "images/events/mlade-vino.jpg",
+      "organizerUrl": "https://www.visitbratislava.com"
     },
     {
-      "id": 14,
-      "title": "Muzikál: Cats",
+      "id": 6,
+      "title": "Slovenský Národný Balet: Labutie jazero",
       "type": "divadlo",
-      "date": "2025-11-26",
-      "time": "18:00",
-      "location": "Divadlo Nová scéna",
+      "date": "2025-11-16",
+      "time": "19:00",
+      "location": "Slovenské národné divadlo - Balet",
       "gps": {
-        "lat": 48.1418,
-        "lng": 17.1078
+        "lat": 48.1405,
+        "lng": 17.1084
       },
-      "shortDescription": "Svetoznámy muzikál Andrew Lloyda Webbera v slovenskom prevedení.",
-      "longDescription": "Jeden z najúspešnejších muzikálov všetkých čias! Príbeh mačiek z londýnskej smetiarne, ktoré bojujú o druhú šancu na život. Úžasné kostýmy, choreografia a hudobné čísla.",
-      "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
-      "organizerUrl": "https://novascena.sk"
+      "shortDescription": "Čajkovského nesmrteľný balet Labutie jazero v podaní Slovenského národného baletu.",
+      "longDescription": "Najslávnejší balet všetkých čias - Labutie jazero od P. I. Čajkovského. Príbeh princa Siegfrieda a princeznej Odety zakliateho do podoby labute. Nádherná hudba, klasická choreografia a nezabudnuteľný zážitok pre celú rodinu. Balet SND prináša tradičné spracovanie tohto diela s kvalitnými interpretmi a okázalými kostýmami.",
+      "image": "images/events/labutie-jazero.jpg",
+      "organizerUrl": "https://snd.sk"
     },
     {
-      "id": 15,
+      "id": 7,
+      "title": "Bratislavský jazzový festival",
+      "type": "koncert",
+      "date": "2025-11-20",
+      "time": "19:00",
+      "location": "Rôzne lokality v Bratislave",
+      "gps": {
+        "lat": 48.1486,
+        "lng": 17.1089
+      },
+      "shortDescription": "Prestížny jazzový festival s domácimi i zahraničnými interpretmi.",
+      "longDescription": "Bratislavský jazzový festival je jedným z najdôležitejších festivalov na Slovensku s dlhoročnou tradíciou. Festival, známy aj ako 'Jazzies', je pod záštitou otca slovenského jazzu Petra Lipu. Pravidelne sa na ňom predstavujú svetová jazzová elita aj vynikajúci slovenskí hudobníci. Tento rok vystúpia svetoznámy Avishai Cohen, legendárna Jazzanova a japonský trubkár Takuya Kuroda.",
+      "image": "images/events/jazz-festival.jpg",
+      "organizerUrl": "https://bjd.sk"
+    },
+    {
+      "id": 8,
+      "title": "S. Prokofiev: Romeo a Júlia - premiéra",
+      "type": "divadlo",
+      "date": "2025-11-22",
+      "time": "19:00",
+      "location": "Slovenské národné divadlo - Balet",
+      "gps": {
+        "lat": 48.1405,
+        "lng": 17.1084
+      },
+      "shortDescription": "Shakespearov príbeh milencov z Verony ako epický balet od Prokofieva.",
+      "longDescription": "Premiéra baletu Romeo a Júlia od Sergeja Prokofieva v Sále opery a baletu SND. Shakespearov príbeh milencov z Verony ožije v podaní Baletu SND v spojení s nádhernou Prokofievovou hudbou. Romantický príbeh lásky a tragédie v podaní slovenských baletných umelcov.",
+      "image": "images/events/romeo-julia.jpg",
+      "organizerUrl": "https://snd.sk"
+    },
+    {
+      "id": 9,
       "title": "Rock Legends Tribute Show",
       "type": "koncert",
       "date": "2025-11-27",
@@ -236,45 +140,45 @@
         "lng": 17.1127
       },
       "shortDescription": "Pocta legendám rockovej hudby - Queen, AC/DC, Metallica a viac!",
-      "longDescription": "Najväčšia rocková show roka! Slovenskí hudobníci zahrajú najväčšie hity od Queen, AC/DC, Metallica, Led Zeppelin a ďalších legend. 3 hodiny čistého rocku s orchestrom a špeciálnymi efektmi!",
-      "image": "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&h=600&fit=crop",
-      "organizerUrl": "https://rocklegends.sk"
+      "longDescription": "Najväčšia rocková show roka! Slovenskí hudobníci zahrajú najväčšie hity od Queen, AC/DC, Metallica, Led Zeppelin a ďalších legend. 3 hodiny čistého rocku s orchestrom a špeciálnymi efektmi! Zažite najväčšie rockové hymny v podaní domácich hudobníkov na Zimnom štadióne.",
+      "image": "images/events/rock-legends.jpg",
+      "organizerUrl": "https://onsport.sk"
     },
     {
-      "id": 16,
-      "title": "Street Food Park - Zimná edícia",
+      "id": 10,
+      "title": "Vianočné trhy v Bratislave - otvorenie",
+      "type": "festival",
+      "date": "2025-11-27",
+      "time": "10:00",
+      "location": "Hlavné námestie",
+      "gps": {
+        "lat": 48.1441,
+        "lng": 17.1090
+      },
+      "shortDescription": "Tradičné bratislavské vianočné trhy s bohatým programom.",
+      "longDescription": "Bratislavské vianočné trhy sa konajú od 27. novembra 2025 do 6. januára 2026 na Hlavnom a Hviezdoslavovom námestí. Slávnostné otvorenie s rozsvietením vianočných stromov je 28. novembra o 18:00. Návštevníci sa môžu tešiť na tradičné jedlá, punč, varenú vínečko, remeselnú výrobu a bohatý kultúrny program. Pre deti je pripravená rodinná zóna so šmykľavkou, kolotočom a dreveným betlehemom. Otvorené denne 10:00-22:00.",
+      "image": "images/events/vianocne-trhy.jpg",
+      "organizerUrl": "https://www.visitbratislava.com"
+    },
+    {
+      "id": 11,
+      "title": "Wonderland - Svetelný zábavný park",
       "type": "festival",
       "date": "2025-11-28",
-      "time": "12:00",
-      "location": "Stará Tržnica",
+      "time": "17:00",
+      "location": "Dostihová dráha Petržalka",
       "gps": {
-        "lat": 48.1444,
-        "lng": 17.1105
+        "lat": 48.1108,
+        "lng": 17.1036
       },
-      "shortDescription": "Obľúbený street food festival prichádza so zimným špeciálom.",
-      "longDescription": "Zimná edícia Street Food Parku pred Starou Tržnicou. Príďte ochutnať varené víno, punč, a najlepšie pouličné jedlá. Vykurované stany a živá hudba zaručená.",
-      "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=600&fit=crop",
-      "organizerUrl": "https://staratrznica.sk"
+      "shortDescription": "Rozprávkový svetelný park plný zábavy pre celú rodinu.",
+      "longDescription": "Wonderland je svetelný zábavný park, ktorý ponúka jedinečný zážitok pre celú rodinu. Park je otvorený od 27. septembra 2025 do 11. januára 2026. Návštevníci sa môžu tešiť na nádherné svetelné inštalácie, atrakcie a zábavné prvky v rozprávkovej atmosfére. Ideálne miesto pre rodinné výlety počas adventného obdobia.",
+      "image": "images/events/wonderland.jpg",
+      "organizerUrl": "https://wonderland.sk"
     },
     {
-      "id": 17,
-      "title": "Bibliotéka - Medzinárodný knižný veľtrh",
-      "type": "vystava",
-      "date": "2025-11-29",
-      "time": "09:00",
-      "location": "Incheba Expo Bratislava",
-      "gps": {
-        "lat": 48.1347,
-        "lng": 17.1009
-      },
-      "shortDescription": "Najväčší knižný veľtrh na Slovensku.",
-      "longDescription": "Medzinárodný knižný veľtrh Bibliotéka 2025. Stretnutia s autormi, krsty kníh, autogramiády a tisíce titulov za akciové ceny. Ideálne miesto na nákup vianočných darčekov.",
-      "image": "https://images.unsplash.com/photo-1532012197267-5a3f71b1b40c?w=800&h=600&fit=crop",
-      "organizerUrl": "https://incheba.sk"
-    },
-    {
-      "id": 18,
-      "title": "Veľký vianočný koncert: Hity 90. rokov",
+      "id": 12,
+      "title": "VeľkýVianočný koncert: Hity 90. rokov",
       "type": "koncert",
       "date": "2025-11-29",
       "time": "20:00",
@@ -284,13 +188,13 @@
         "lng": 17.1197
       },
       "shortDescription": "Veľkolepá live show s najväčšími hitmi 90. rokov a špeciálnymi hosťami.",
-      "longDescription": "Vráťte sa v čase s najväčšími hitmi 90. rokov! Vystúpia hviezdy ako Dr. Alban, Haddaway a domáce legendy. Veľká audiovizuálna show v NTC aréne.",
-      "image": "https://images.unsplash.com/photo-1540035282780-618f3a3f15f0?w=800&h=600&fit=crop",
-      "organizerUrl": "https://90s-show.sk"
+      "longDescription": "Vráťte sa v čase s najväčšími hitmi 90. rokov! Vystúpia hviezdy ako Dr. Alban, Haddaway a domáce legendy. Veľká audiovizuálna show v NTC aréne. Zažite nostalgiu deväťdesiatych rokov s najlepšími hitmi tej dekády v živom prevedení.",
+      "image": "images/events/90s-show.jpg",
+      "organizerUrl": "https://ntcarena.sk"
     },
     {
-      "id": 19,
-      "title": "Crème de la Crème - Týždeň francúzskeho filmu",
+      "id": 13,
+      "title": "CrèmedelaCrème - Týždeň francúzskeho filmu",
       "type": "festival",
       "date": "2025-11-30",
       "time": "18:00",
@@ -300,12 +204,12 @@
         "lng": 17.1082
       },
       "shortDescription": "Prehliadka najnovších a najoceňovanejších francúzskych filmov.",
-      "longDescription": "Festival Crème de la Crème prináša to najlepšie zo súčasnej francúzskej kinematografie. Všetky filmy sú premietané v originálnom znení so slovenskými titulkami.",
-      "image": "https://images.unsplash.com/photo-1517604931442-7e0c80c0e2c1?w=800&h=600&fit=crop",
+      "longDescription": "Festival Crème de la Crème prináša to najlepšie zo súčasnej francúzskej kinematografie. Všetky filmy sú premietané v originálnom znení so slovenskými titulkami. Týždeň plný francúzskych filmových noviniek a oscarových kandidátov z Francúzska.",
+      "image": "images/events/french-film.jpg",
       "organizerUrl": "https://filmeurope.sk"
     },
     {
-      "id": 20,
+      "id": 14,
       "title": "Výstava: Kelti z Bratislavy",
       "type": "vystava",
       "date": "2025-12-01",
@@ -316,9 +220,105 @@
         "lng": 17.1065
       },
       "shortDescription": "Unikátna výstava o živote Keltov na území dnešnej Bratislavy.",
-      "longDescription": "Objavte históriu keltského oppida, ktoré stálo na mieste dnešného hradu. Výstava prezentuje unikátne archeologické nálezy, mince a rekonštrukcie obydlí.",
-      "image": "https://images.unsplash.com/photo-1583054303428-c1d1d23b70e0?w=800&h=600&fit=crop",
+      "longDescription": "Objavte históriu keltského oppida, ktoré stálo na mieste dnešného hradu. Výstava prezentuje unikátne archeologické nálezy, mince a rekonštrukcie obydlí. Dozviete sa, ako žili Kelti na území dnešnej Bratislavy a aký vplyv mali na formovanie dnešného mesta.",
+      "image": "images/events/kelti.jpg",
       "organizerUrl": "https://snm.sk"
+    },
+    {
+      "id": 15,
+      "title": "Mikuláš na Hrade",
+      "type": "festival",
+      "date": "2025-12-06",
+      "time": "15:00",
+      "location": "Bratislavský hrad - Nádvorie",
+      "gps": {
+        "lat": 48.1422,
+        "lng": 17.1004
+      },
+      "shortDescription": "Tradičné stretnutie s Mikulášom, anjelom a čertom na hradnom nádvorí.",
+      "longDescription": "Príďte s deťmi na magické popoludnie na Bratislavský hrad. Mikuláš prinesie balíčky pre všetky dobré deti. Pripravené sú aj tvorivé dielne a vianočné koledy. Program pre celú rodinu v nádhernom prostredí Bratislavského hradu s výhľadom na mesto.",
+      "image": "images/events/mikulas-hrad.jpg",
+      "organizerUrl": "https://bratislava-hrad.sk"
+    },
+    {
+      "id": 16,
+      "title": "Dobrý Trh - Vianočný špeciál",
+      "type": "festival",
+      "date": "2025-12-07",
+      "time": "10:00",
+      "location": "Jakubovo námestie",
+      "gps": {
+        "lat": 48.1466,
+        "lng": 17.1147
+      },
+      "shortDescription": "Obľúbený trh lokálnych dizajnérov a výrobcov s vianočnou tematikou.",
+      "longDescription": "Posledný Dobrý Trh v roku! Nájdite originálne vianočné darčeky od slovenských dizajnérov, ochutnajte domáce koláče a podporte lokálnu komunitu. Vianočná atmosféra zaručená. Na trhu nájdete ručne vyrobené šperky, keramiku, oblečenie, kozmetiku a mnoho ďalšieho od slovenských tvorcov.",
+      "image": "images/events/dobry-trh.jpg",
+      "organizerUrl": "https://dobrytrh.sk"
+    },
+    {
+      "id": 17,
+      "title": "Tutanchamon - Svetová výstava",
+      "type": "vystava",
+      "date": "2025-11-15",
+      "time": "09:00",
+      "location": "Sport Mall",
+      "gps": {
+        "lat": 48.1347,
+        "lng": 17.1009
+      },
+      "shortDescription": "Jeho hrobka a poklady - svetová výstava o faraónovi Tutanchamonovi.",
+      "longDescription": "Svetová výstava Tutanchamon - Jeho hrobka a poklady v Sport Mall. Výstava je otvorená od 17. októbra 2025 do 19. apríla 2026. Objavte tajomstvá starovekého Egypta a život najznámejšieho faraóna. Repliky pokladov z hrobky, interaktívne exponáty a vzdelávací program pre všetky vekové kategórie.",
+      "image": "images/events/tutanchamon.jpg",
+      "organizerUrl": "https://tutanchamon.sk"
+    },
+    {
+      "id": 18,
+      "title": "Longital - Krst albumu",
+      "type": "koncert",
+      "date": "2025-11-14",
+      "time": "19:00",
+      "location": "Pistoriho palác",
+      "gps": {
+        "lat": 48.1442,
+        "lng": 17.1097
+      },
+      "shortDescription": "Krst nového albumu maďarskej world music kapely Longital.",
+      "longDescription": "Maďarská world music kapela Longital predstaví svoj nový album v Pistoriho paláci. Longital je známa svojím jedinečným mixom tradičnej maďarskej hudby, folku a moderných prvkov. Očakávajte večer plný autentickej hudby a výnimočnej atmosféry v historickom prostredí Pistoriho paláca.",
+      "image": "images/events/longital.jpg",
+      "organizerUrl": "https://gmb.sk"
+    },
+    {
+      "id": 19,
+      "title": "Slovenská filharmónia: Vivaldi a Piazzolla",
+      "type": "koncert",
+      "date": "2025-11-20",
+      "time": "19:00",
+      "location": "Reduta - Koncertná sieň Slovenskej filharmónie",
+      "gps": {
+        "lat": 48.1402,
+        "lng": 17.1092
+      },
+      "shortDescription": "Večer plný temperamentu - Vivaldiho Štyri ročné obdobia a Piazzollovo Tango.",
+      "longDescription": "Slovenská filharmónia prináša koncert plný energie a emócií. Program kombinuje Vivaldiho nesmrteľné Štyri ročné obdobia s tangovými skladbami Astora Piazzollu. Sólistom večera bude renomovaný slovenský violinista. Zažite kontrasty barokového majstra a argentínskeho tango革命cionára v podaní Slovenskej filharmónie.",
+      "image": "images/events/filharmonia.jpg",
+      "organizerUrl": "https://filharmonia.sk"
+    },
+    {
+      "id": 20,
+      "title": "Filmový festival dokumentov",
+      "type": "festival",
+      "date": "2025-11-25",
+      "time": "14:00",
+      "location": "Kino Lumière",
+      "gps": {
+        "lat": 48.1449,
+        "lng": 17.1070
+      },
+      "shortDescription": "Týždeň najlepších dokumentárnych filmov z celého sveta.",
+      "longDescription": "Medzinárodný festival dokumentárneho filmu prináša 40 filmov z 25 krajín. Témami sú životné prostredie, spoločnosť, umenie a ľudské príbehy. Hosťami festivalu budú samotní režiséri. Festival sa koná v Kine Lumière a ponúka jedinečnú príležitosť vidieť najlepšie dokumentárne filmy roku.",
+      "image": "images/events/dokfest.jpg",
+      "organizerUrl": "https://kinolumiere.sk"
     }
   ]
 }

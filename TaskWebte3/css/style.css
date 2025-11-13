@@ -27,7 +27,7 @@ body {
     height: 70vh;
     min-height: 500px;
     background: linear-gradient(rgba(30, 64, 175, 0.7), rgba(59, 130, 246, 0.7)),
-                url('https://images.unsplash.com/photo-1605640840605-14ac1855827b?q=80&w=2000') center/cover no-repeat;
+        url('../images/cover_photo.jpg') center/cover no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -99,6 +99,7 @@ body {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -453,6 +454,7 @@ body {
     align-items: center;
     gap: 0.5rem;
     transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .favorites-toggle-btn {
@@ -470,11 +472,98 @@ body {
 }
 
 .route-toggle-btn.active {
-    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
 }
 
 .favorites-toggle-btn.active {
     background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+}
+
+/* Leaflet Routing Machine Styling */
+.leaflet-routing-container {
+    display: none;
+}
+
+/* Map Page Styles */
+.map-page {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.map-page #mapContainer {
+    height: 100vh;
+    width: 100%;
+}
+
+.map-back-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1001;
+    background: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+    color: #2563eb;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.map-back-button:hover {
+    background: #2563eb;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.map-page-title {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1001;
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.map-page-title:hover {
+    background: #2563eb;
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.map-page-title h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #2563eb;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.map-page-title:hover h1 {
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .map-page-title {
+        display: none;
+    }
+
+    .map-back-button {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
 }
 
 /* Map Marker Styles */
@@ -1145,23 +1234,24 @@ body {
     }
 
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2rem;
     }
 
     .hero-subtitle {
-        font-size: 1.2rem;
+        font-size: 1rem;
+        margin-bottom: 2rem;
     }
 
     .hero-btn {
-        padding: 0.9rem 2rem;
-        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+        font-size: 0.95rem;
     }
 
     .container {
         padding: 0 10px;
     }
 
-    .header{
+    .header {
         padding: 1rem 0;
     }
 
@@ -1247,25 +1337,42 @@ body {
     }
 
     .modal-dialog {
-        max-width: 85%;
-        margin: 0.5rem auto;
+        max-width: 75%;
+        margin: 1rem auto;
     }
 
     .modal-body {
-        padding: 1rem;
+        padding: 0.8rem;
     }
 
     .modal-title {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
     .modal-header {
-        padding: 0.9rem 1rem;
+        padding: 0.7rem 0.9rem;
     }
 
     .modal-body .img-fluid {
         width: 100%;
         height: auto;
+        max-height: 180px;
+        object-fit: cover;
+    }
+
+    .modal-body h6 {
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .modal-body p {
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-body .btn-primary {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
     }
 
     .chart-container-wrapper {
@@ -1305,12 +1412,12 @@ body {
     }
 
     .hero-title {
-        font-size: 2rem;
+        font-size: 1.6rem;
     }
 
     .hero-subtitle {
-        font-size: 1.1rem;
-        margin-bottom: 2rem;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
     }
 
     .hero-buttons {
@@ -1321,8 +1428,8 @@ body {
     .hero-btn {
         width: 100%;
         justify-content: center;
-        padding: 0.9rem 2rem;
-        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
     }
 
     .export-cards {
@@ -1351,39 +1458,48 @@ body {
     }
 
     .modal-dialog {
-        max-width: 92%;
-        margin: 0.3rem auto;
+        max-width: 85%;
+        margin: 0.5rem auto;
     }
 
     .modal-body {
-        padding: 0.8rem;
+        padding: 0.6rem;
     }
 
     .modal-title {
-        font-size: 0.95rem;
+        font-size: 0.85rem;
     }
 
     .modal-header {
-        padding: 0.8rem;
+        padding: 0.6rem 0.7rem;
     }
 
     .modal-body h6 {
-        font-size: 0.9rem;
-        margin-top: 0.6rem;
+        font-size: 0.8rem;
+        margin-top: 0.4rem;
+        margin-bottom: 0.3rem;
     }
 
     .modal-body p {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
+        margin-bottom: 0.4rem;
+        line-height: 1.3;
     }
 
     .modal-body .btn-primary {
-        padding: 0.5rem 1rem;
-        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
     }
 
     .modal-body .img-fluid {
         width: 100%;
         height: auto;
+        max-height: 150px;
+        object-fit: cover;
+    }
+
+    .modal-body .mb-3 {
+        margin-bottom: 0.5rem !important;
     }
 
     .header-title {

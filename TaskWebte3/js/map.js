@@ -1,9 +1,12 @@
 let map;
 let markersLayer;
 let allMarkers;
-let routeLine = null;
+let allEvents;
+let routingControl = null;
 let routeVisible = false;
 let favoritesFilterActive = false;
+let selectedStartEvent = null;
+let selectedEndEvent = null;
 
 function initMap() {
     if (typeof L === 'undefined') {
@@ -38,7 +41,12 @@ function loadEventsOnMap() {
         const icon = createCustomIcon(event.type);
         const marker = L.marker([event.gps.lat, event.gps.lng], { icon: icon });
         marker.eventId = event.id;
-        
+
+        // Add click event for route selection
+        marker.on('click', function() {
+            handleMarkerClick(event);
+        });
+
         const popupContent = `
             <div class="popup-content">
                 <h5>${event.title}</h5>
@@ -50,7 +58,7 @@ function loadEventsOnMap() {
                 </button>
             </div>
         `;
-        
+
         marker.bindPopup(popupContent);
         allMarkers.push({
             marker: marker,
@@ -129,7 +137,8 @@ function filterMapMarkers(type, searchText = '', dateFrom = '', dateTo = '') {
 }
 
 window.showEventDetailFromMap = function(eventId) {
-    window.showEventDetail(eventId);
+    // Redirect to index.html with event parameter
+    window.location.href = `index.html?event=${eventId}`;
 };
 
 function formatDate(dateString) {
@@ -161,40 +170,163 @@ function addRouteControl() {
     document.getElementById('mapContainer').appendChild(controlDiv);
 }
 
-function toggleRoute() {
-    if (routeVisible) {
-        if (routeLine) {
-            map.removeLayer(routeLine);
-            routeLine = null;
+function handleMarkerClick(event) {
+    if (!selectedStartEvent) {
+        // Set as start point
+        selectedStartEvent = event;
+        if (typeof showToast === 'function') {
+            showToast(`ŠTART: ${event.title}`, 'success');
         }
-        routeVisible = false;
+        updateRouteInfoDisplay();
+    } else if (!selectedEndEvent) {
+        // Set as end point
+        if (selectedStartEvent.id === event.id) {
+            if (typeof showToast === 'function') {
+                showToast('Štart a cieľ nemôžu byť rovnaké!', 'info');
+            }
+            return;
+        }
+        selectedEndEvent = event;
+        if (typeof showToast === 'function') {
+            showToast(`CIEĽ: ${event.title}`, 'success');
+        }
+        updateRouteInfoDisplay();
+        createRoute();
     } else {
-        drawRoute();
-        routeVisible = true;
+        // Reset and start over
+        clearRoute();
+        selectedStartEvent = event;
+        if (typeof showToast === 'function') {
+            showToast(`Nový ŠTART: ${event.title}`, 'info');
+        }
+        updateRouteInfoDisplay();
     }
 }
 
-function drawRoute() {
-    const sortedEvents = [...allEvents].sort((a, b) => {
-        return new Date(a.date) - new Date(b.date);
-    });
+function createRoute() {
+    if (!selectedStartEvent || !selectedEndEvent) {
+        return;
+    }
 
-    const coordinates = sortedEvents.map(event => [event.gps.lat, event.gps.lng]);
+    // Remove existing route if any
+    if (routingControl) {
+        map.removeControl(routingControl);
+    }
 
-    if (coordinates.length < 2) {
+    try {
+        routingControl = L.Routing.control({
+            waypoints: [
+                L.latLng(selectedStartEvent.gps.lat, selectedStartEvent.gps.lng),
+                L.latLng(selectedEndEvent.gps.lat, selectedEndEvent.gps.lng)
+            ],
+            routeWhileDragging: false,
+            showAlternatives: false,
+            addWaypoints: false,
+            show: false,
+            lineOptions: {
+                styles: [{ color: '#2563eb', opacity: 0.8, weight: 5 }]
+            },
+            createMarker: function(i, waypoint, n) {
+                return L.marker(waypoint.latLng, {
+                    draggable: false,
+                    icon: L.icon({
+                        iconUrl: i === 0
+                            ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png'
+                            : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    })
+                });
+            },
+            router: L.Routing.osrmv1({
+                serviceUrl: 'https://router.project-osrm.org/route/v1'
+            })
+        }).addTo(map);
+
+        // Hide the routing panel completely
+        setTimeout(() => {
+            const routingContainer = document.querySelector('.leaflet-routing-container');
+            if (routingContainer) {
+                routingContainer.style.display = 'none';
+            }
+        }, 100);
+
+        routeVisible = true;
+        updateRouteButton();
+
         if (typeof showToast === 'function') {
-            showToast('Nedostatok podujatí pre vytvorenie trasy', 'info');
+            showToast('Trasa vytvorená!', 'success');
+        }
+    } catch (error) {
+        console.log('Routing error (ignorované):', error);
+        if (typeof showToast === 'function') {
+            showToast('Nepodarilo sa vytvoriť trasu. Skúste to znova.', 'info');
+        }
+    }
+}
+
+function toggleRoute() {
+    if (!routingControl) {
+        if (typeof showToast === 'function') {
+            showToast('Najprv vyberte 2 podujatia na mape!', 'info');
         }
         return;
     }
 
-    routeLine = L.polyline(coordinates, {
-        color: '#2563eb',
-        weight: 4,
-        opacity: 0.7,
-        smoothFactor: 1,
-        dashArray: '10, 10'
-    }).addTo(map);
+    if (routeVisible) {
+        map.removeControl(routingControl);
+        routeVisible = false;
+    } else {
+        createRoute();
+        routeVisible = true;
+    }
+    updateRouteButton();
+}
+
+function clearRoute() {
+    if (routingControl) {
+        map.removeControl(routingControl);
+        routingControl = null;
+    }
+    selectedStartEvent = null;
+    selectedEndEvent = null;
+    routeVisible = false;
+    updateRouteButton();
+    updateRouteInfoDisplay();
+}
+
+function updateRouteButton() {
+    const button = document.querySelector('.route-toggle-btn');
+    if (button) {
+        if (routeVisible && routingControl) {
+            button.innerHTML = '<i class="fas fa-route"></i> Skryť trasu';
+            button.classList.add('active');
+        } else {
+            button.innerHTML = '<i class="fas fa-route"></i> Zobraziť trasu';
+            button.classList.remove('active');
+        }
+    }
+}
+
+function updateRouteInfoDisplay() {
+    const button = document.querySelector('.route-toggle-btn');
+    if (button) {
+        let infoText = '';
+        if (selectedStartEvent && selectedEndEvent) {
+            infoText = ` (${selectedStartEvent.title.substring(0, 15)}... → ${selectedEndEvent.title.substring(0, 15)}...)`;
+        } else if (selectedStartEvent) {
+            infoText = ` (Štart: ${selectedStartEvent.title.substring(0, 20)}...)`;
+        }
+
+        if (routeVisible && routingControl) {
+            button.innerHTML = `<i class="fas fa-route"></i> Skryť trasu${infoText}`;
+        } else {
+            button.innerHTML = `<i class="fas fa-route"></i> ${selectedStartEvent && selectedEndEvent ? 'Zobraziť trasu' : 'Vyber 2 podujatia'}${infoText}`;
+        }
+    }
 }
 
 function addFavoritesControl() {
@@ -244,7 +376,6 @@ function filterMarkersByFavorites() {
             return;
         }
 
-        // Remove non-favorite markers, add favorite markers
         allMarkers.forEach(item => {
             if (!favorites.includes(item.event.id)) {
                 if (markersLayer.hasLayer(item.marker)) {
@@ -257,7 +388,6 @@ function filterMarkersByFavorites() {
             }
         });
     } else {
-        // Show all markers
         allMarkers.forEach(item => {
             if (!markersLayer.hasLayer(item.marker)) {
                 markersLayer.addLayer(item.marker);
@@ -266,11 +396,25 @@ function filterMarkersByFavorites() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const checkEvents = setInterval(() => {
-        if (allEvents && allEvents.length > 0) {
-            clearInterval(checkEvents);
+document.addEventListener('DOMContentLoaded', async () => {
+    const isStandalone = document.body.classList.contains('map-page');
+
+    if (isStandalone && (!allEvents || allEvents.length === 0)) {
+        try {
+            const response = await fetch('data/events.json');
+            if (!response.ok) throw new Error('Nepodarilo sa načítať podujatia');
+            const data = await response.json();
+            allEvents = data.events;
             initMap();
+        } catch (error) {
+            console.error('Chyba pri načítavaní podujatí:', error);
         }
-    }, 100);
+    } else {
+        const checkEvents = setInterval(() => {
+            if (allEvents && allEvents.length > 0) {
+                clearInterval(checkEvents);
+                initMap();
+            }
+        }, 100);
+    }
 });

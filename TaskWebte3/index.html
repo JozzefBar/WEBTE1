@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+
     <link rel="stylesheet" href="css/style.css">
 
 </head>
@@ -26,7 +28,7 @@
             <div class="header-content">
                 <div class="header-brand">
                     <h1 class="header-title">
-                        <i class="fas fa-compass"></i>Kultúrny Kompas
+                        <i class="fas fa-compass"></i>Kultúrny Kompas - Bratislava
                     </h1>
                     <p class="header-date" id="currentDate"></p>
                 </div>
@@ -34,14 +36,14 @@
                     <a href="#events" class="header-nav-link">
                         <i class="fas fa-calendar"></i> Podujatia
                     </a>
-                    <a href="#map" class="header-nav-link">
-                        <i class="fas fa-map-marked-alt"></i> Mapa
-                    </a>
                     <a href="#statistics" class="header-nav-link">
                         <i class="fas fa-chart-pie"></i> Štatistiky
                     </a>
                     <a href="#contact" class="header-nav-link">
                         <i class="fas fa-envelope"></i> Kontakt
+                    </a>
+                    <a href="map.html" class="header-nav-link">
+                        <i class="fas fa-map-marked-alt"></i> Mapa
                     </a>
                 </nav>
             </div>
@@ -62,7 +64,7 @@
                     <i class="fas fa-calendar-check"></i>
                     Prezrieť podujatia
                 </a>
-                <a href="#map" class="hero-btn hero-btn--secondary">
+                <a href="map.html" class="hero-btn hero-btn--secondary">
                     <i class="fas fa-map-marked-alt"></i>
                     Zobraziť mapu
                 </a>
@@ -134,16 +136,6 @@
 
         </div>
     </main>
-
-    <section class="map-section" id="map">
-        <div class="container">
-            <h2 class="main-heading">
-                <i class="fas fa-map-marked-alt"></i> Mapa podujatí
-            </h2>
-
-            <div id="mapContainer"></div>
-        </div>
-    </section>
 
     <section class="statistics-section" id="statistics">
         <div class="container">
@@ -304,7 +296,7 @@
         </div>
     </footer>
 
-    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="modalTitle">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -320,12 +312,12 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 
     <script src="js/main.js"></script>
     <script src="js/components/event-card.js"></script>
-    <script src="js/map.js"></script>
     <script src="js/favorites.js"></script>
     <script src="js/statistics.js"></script>
     <script src="js/form-validation.js"></script>
