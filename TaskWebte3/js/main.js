@@ -223,6 +223,7 @@ function applyFilters() {
 
     updateResultsCount(filteredEvents.length, allEvents.length);
     displayEvents(filteredEvents);
+    updateMapLinks();
 
     if (typeof filterMapMarkers === 'function') {
         filterMapMarkers(currentFilters.type, currentFilters.search, currentFilters.dateFrom, currentFilters.dateTo);
@@ -241,6 +242,33 @@ function updateResultsCount(filteredCount, totalCount) {
     } else {
         resultsCountElement.classList.add("filters-results--hidden");
     }
+}
+
+// Update map links based on current filters
+function updateMapLinks() {
+    const params = new URLSearchParams();
+
+    if (currentFilters.search) {
+        params.set('search', currentFilters.search);
+    }
+    if (currentFilters.type !== 'all') {
+        params.set('type', currentFilters.type);
+    }
+    if (currentFilters.dateFrom) {
+        params.set('dateFrom', currentFilters.dateFrom);
+    }
+    if (currentFilters.dateTo) {
+        params.set('dateTo', currentFilters.dateTo);
+    }
+
+    const queryString = params.toString();
+    const mapUrl = queryString ? `map.html?${queryString}` : 'map.html';
+
+    const mapNavLink = document.getElementById('mapNavLink');
+    const mapHeroLink = document.getElementById('mapHeroLink');
+
+    if (mapNavLink) mapNavLink.href = mapUrl;
+    if (mapHeroLink) mapHeroLink.href = mapUrl;
 }
 
 function initializeModalFocusManagement() {
@@ -263,6 +291,7 @@ function initializeModalFocusManagement() {
     }
 }
 
+// Smooth scrolling for anchor links
 function initializeSmoothScroll() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -285,6 +314,7 @@ function initializeSmoothScroll() {
     });
 }
 
+// Check for "event" parameter in URL to open modal
 function checkForEventParameter() {
     const urlParams = new URLSearchParams(window.location.search);
     const eventId = urlParams.get('event');

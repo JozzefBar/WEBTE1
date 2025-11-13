@@ -11,6 +11,7 @@ function updateStatistics() {
     createChart(stats);
 }
 
+// Calculate statistics from the events data
 function calculateStatistics(events) {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -88,6 +89,7 @@ function displayStatisticsCards(stats) {
     `;
 }
 
+// Create or update the statistics chart
 function createChart(stats) {
     const ctx = document.getElementById('statsChart');
 
@@ -154,6 +156,7 @@ function createChart(stats) {
     });
 }
 
+// Initialize date pickers with default values
 function initializeDatePickers() {
     const today = new Date().toISOString().split('T')[0];
 
@@ -177,6 +180,7 @@ function initializeDatePickers() {
     }
 }
 
+// Export current events within the selected date range
 function exportCurrentEvents(format = 'csv') {
     const startDate = document.getElementById('exportStartDate');
     const endDate = document.getElementById('exportEndDate');
@@ -206,6 +210,7 @@ function exportCurrentEvents(format = 'csv') {
     }
 }
 
+// Export favorite events within the selected date range
 function exportFavoriteEvents(format = 'csv') {
     const startDate = document.getElementById('exportFavStartDate').value;
     const endDate = document.getElementById('exportFavEndDate').value;
@@ -238,6 +243,7 @@ function exportFavoriteEvents(format = 'csv') {
     }
 }
 
+// Export events to CSV format
 function exportToCSV(events, filename) {
     const headers = ['Názov', 'Typ', 'Dátum', 'Čas', 'Miesto', 'Popis'];
     
@@ -272,6 +278,7 @@ function exportToCSV(events, filename) {
     showToast(`Export úspešný! Stiahnutých ${events.length} podujatí`, 'success');
 }
 
+// Export events to JSON format
 function exportToJSON(events, filename) {
     const jsonContent = JSON.stringify(events, null, 2);
 

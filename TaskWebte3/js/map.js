@@ -8,6 +8,13 @@ let favoritesFilterActive = false;
 let selectedStartEvent = null;
 let selectedEndEvent = null;
 
+let currentMapFilters = {
+    search: '',
+    type: 'all',
+    dateFrom: '',
+    dateTo: ''
+};
+
 function initMap() {
     if (typeof L === 'undefined') {
         console.error('Leaflet knižnica sa nenačítala!');
@@ -95,6 +102,7 @@ function createCustomIcon(type) {
     });
 }
 
+// Filter map markers based on criteria
 function filterMapMarkers(type, searchText = '', dateFrom = '', dateTo = '') {
     markersLayer.clearLayers();
 
@@ -136,8 +144,8 @@ function filterMapMarkers(type, searchText = '', dateFrom = '', dateTo = '') {
     });
 }
 
+// Redirect to index.html with event parameter
 window.showEventDetailFromMap = function(eventId) {
-    // Redirect to index.html with event parameter
     window.location.href = `index.html?event=${eventId}`;
 };
 
@@ -153,15 +161,15 @@ function addRouteControl() {
 
     const button = document.createElement('button');
     button.className = 'route-toggle-btn';
-    button.innerHTML = '<i class="fas fa-route"></i> Zobraziť trasu';
+    button.innerHTML = '<i class="fas fa-route"></i><span class="btn-text"> Zobraziť trasu</span>';
 
     button.addEventListener('click', () => {
         toggleRoute();
         if (routeVisible) {
-            button.innerHTML = '<i class="fas fa-route"></i> Skryť trasu';
+            button.innerHTML = '<i class="fas fa-route"></i><span class="btn-text"> Skryť trasu</span>';
             button.classList.add('active');
         } else {
-            button.innerHTML = '<i class="fas fa-route"></i> Zobraziť trasu';
+            button.innerHTML = '<i class="fas fa-route"></i><span class="btn-text"> Zobraziť trasu</span>';
             button.classList.remove('active');
         }
     });
@@ -172,14 +180,11 @@ function addRouteControl() {
 
 function handleMarkerClick(event) {
     if (!selectedStartEvent) {
-        // Set as start point
         selectedStartEvent = event;
         if (typeof showToast === 'function') {
             showToast(`ŠTART: ${event.title}`, 'success');
         }
-        updateRouteInfoDisplay();
     } else if (!selectedEndEvent) {
-        // Set as end point
         if (selectedStartEvent.id === event.id) {
             if (typeof showToast === 'function') {
                 showToast('Štart a cieľ nemôžu byť rovnaké!', 'info');
@@ -190,7 +195,6 @@ function handleMarkerClick(event) {
         if (typeof showToast === 'function') {
             showToast(`CIEĽ: ${event.title}`, 'success');
         }
-        updateRouteInfoDisplay();
         createRoute();
     } else {
         // Reset and start over
@@ -199,7 +203,6 @@ function handleMarkerClick(event) {
         if (typeof showToast === 'function') {
             showToast(`Nový ŠTART: ${event.title}`, 'info');
         }
-        updateRouteInfoDisplay();
     }
 }
 
@@ -208,7 +211,6 @@ function createRoute() {
         return;
     }
 
-    // Remove existing route if any
     if (routingControl) {
         map.removeControl(routingControl);
     }
@@ -246,7 +248,6 @@ function createRoute() {
             })
         }).addTo(map);
 
-        // Hide the routing panel completely
         setTimeout(() => {
             const routingContainer = document.querySelector('.leaflet-routing-container');
             if (routingContainer) {
@@ -295,55 +296,37 @@ function clearRoute() {
     selectedEndEvent = null;
     routeVisible = false;
     updateRouteButton();
-    updateRouteInfoDisplay();
 }
 
 function updateRouteButton() {
     const button = document.querySelector('.route-toggle-btn');
     if (button) {
         if (routeVisible && routingControl) {
-            button.innerHTML = '<i class="fas fa-route"></i> Skryť trasu';
+            button.innerHTML = '<i class="fas fa-route"></i><span class="btn-text"> Skryť trasu</span>';
             button.classList.add('active');
         } else {
-            button.innerHTML = '<i class="fas fa-route"></i> Zobraziť trasu';
+            button.innerHTML = '<i class="fas fa-route"></i><span class="btn-text"> Zobraziť trasu</span>';
             button.classList.remove('active');
         }
     }
 }
 
-function updateRouteInfoDisplay() {
-    const button = document.querySelector('.route-toggle-btn');
-    if (button) {
-        let infoText = '';
-        if (selectedStartEvent && selectedEndEvent) {
-            infoText = ` (${selectedStartEvent.title.substring(0, 15)}... → ${selectedEndEvent.title.substring(0, 15)}...)`;
-        } else if (selectedStartEvent) {
-            infoText = ` (Štart: ${selectedStartEvent.title.substring(0, 20)}...)`;
-        }
-
-        if (routeVisible && routingControl) {
-            button.innerHTML = `<i class="fas fa-route"></i> Skryť trasu${infoText}`;
-        } else {
-            button.innerHTML = `<i class="fas fa-route"></i> ${selectedStartEvent && selectedEndEvent ? 'Zobraziť trasu' : 'Vyber 2 podujatia'}${infoText}`;
-        }
-    }
-}
-
+// Add favorites filter control
 function addFavoritesControl() {
     const controlDiv = document.createElement('div');
     controlDiv.className = 'leaflet-control-favorites';
 
     const button = document.createElement('button');
     button.className = 'favorites-toggle-btn';
-    button.innerHTML = '<i class="fas fa-heart"></i> Obľúbené';
+    button.innerHTML = '<i class="fas fa-heart"></i><span class="btn-text"> Obľúbené</span>';
 
     button.addEventListener('click', () => {
         toggleFavoritesFilter();
         if (favoritesFilterActive) {
-            button.innerHTML = '<i class="fas fa-heart"></i> Všetky';
+            button.innerHTML = '<i class="fas fa-heart"></i><span class="btn-text"> Všetky</span>';
             button.classList.add('active');
         } else {
-            button.innerHTML = '<i class="fas fa-heart"></i> Obľúbené';
+            button.innerHTML = '<i class="fas fa-heart"></i><span class="btn-text"> Obľúbené</span>';
             button.classList.remove('active');
         }
     });
@@ -357,6 +340,7 @@ function toggleFavoritesFilter() {
     filterMarkersByFavorites();
 }
 
+// Filter markers to show only favorites
 function filterMarkersByFavorites() {
     const favorites = getFavorites();
 
@@ -396,6 +380,73 @@ function filterMarkersByFavorites() {
     }
 }
 
+function initializeMapFilters() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const searchInput = document.getElementById('mapSearchInput');
+    const typeFilter = document.getElementById('mapTypeFilter');
+    const dateFromFilter = document.getElementById('mapDateFromFilter');
+    const dateToFilter = document.getElementById('mapDateToFilter');
+    const resetButton = document.getElementById('mapResetFilters');
+
+    // Apply filters from URL parameters
+    if (urlParams.has('search')) {
+        currentMapFilters.search = urlParams.get('search');
+        searchInput.value = currentMapFilters.search;
+    }
+    if (urlParams.has('type')) {
+        currentMapFilters.type = urlParams.get('type');
+        typeFilter.value = currentMapFilters.type;
+    }
+    if (urlParams.has('dateFrom')) {
+        currentMapFilters.dateFrom = urlParams.get('dateFrom');
+        dateFromFilter.value = currentMapFilters.dateFrom;
+    }
+    if (urlParams.has('dateTo')) {
+        currentMapFilters.dateTo = urlParams.get('dateTo');
+        dateToFilter.value = currentMapFilters.dateTo;
+    }
+
+    applyMapFilters();
+
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            currentMapFilters.search = e.target.value.toLowerCase();
+            applyMapFilters();
+        }, 300);
+    });
+
+    typeFilter.addEventListener('change', (e) => {
+        currentMapFilters.type = e.target.value;
+        applyMapFilters();
+    });
+
+    dateFromFilter.addEventListener('change', (e) => {
+        currentMapFilters.dateFrom = e.target.value;
+        applyMapFilters();
+    });
+
+    dateToFilter.addEventListener('change', (e) => {
+        currentMapFilters.dateTo = e.target.value;
+        applyMapFilters();
+    });
+
+    resetButton.addEventListener('click', () => {
+        searchInput.value = '';
+        typeFilter.value = 'all';
+        dateFromFilter.value = '';
+        dateToFilter.value = '';
+        currentMapFilters = { search: '', type: 'all', dateFrom: '', dateTo: '' };
+        applyMapFilters();
+    });
+}
+
+function applyMapFilters() {
+    filterMapMarkers(currentMapFilters.type, currentMapFilters.search, currentMapFilters.dateFrom, currentMapFilters.dateTo);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const isStandalone = document.body.classList.contains('map-page');
 
@@ -406,6 +457,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await response.json();
             allEvents = data.events;
             initMap();
+            initializeMapFilters();
         } catch (error) {
             console.error('Chyba pri načítavaní podujatí:', error);
         }
@@ -414,6 +466,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (allEvents && allEvents.length > 0) {
                 clearInterval(checkEvents);
                 initMap();
+                initializeMapFilters();
             }
         }, 100);
     }

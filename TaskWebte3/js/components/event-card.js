@@ -73,7 +73,9 @@ class EventCard extends HTMLElement {
             return { text: '⭐ ZAJTRA', class: 'tomorrow' };
         else if (eventDay > today)
             return { text: '📅 ČOSKORO', class: 'upcoming' };
-        
+        else if (eventDay < today)
+            return { text: '✓ UKONČENÉ', class: 'past' };
+
         return null;
     }
 

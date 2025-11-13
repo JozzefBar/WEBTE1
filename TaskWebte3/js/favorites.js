@@ -14,6 +14,10 @@ function toggleFavorite(eventId) {
     updateAllFavoriteButtons();
     displayFavorites();
 
+    if (typeof updateStatistics === 'function') {
+        updateStatistics();
+    }
+
     if (typeof filterMarkersByFavorites === 'function' && typeof favoritesFilterActive !== 'undefined' && favoritesFilterActive) {
         filterMarkersByFavorites();
     }
@@ -61,9 +65,14 @@ function updateAllFavoriteButtons() {
 }
 
 function displayFavorites() {
-    const favorites = getFavorites();
     const favoritesSection = document.getElementById('favoritesSection');
     const favoritesContainer = document.getElementById('favoritesContainer');
+
+    if (!favoritesSection || !favoritesContainer) {
+        return;
+    }
+
+    const favorites = getFavorites();
 
     if (favorites.length === 0) {
         favoritesSection.style.display = 'none';
@@ -84,7 +93,7 @@ function displayFavorites() {
         eventCard.setAttribute('description', event.shortDescription);
         eventCard.setAttribute('image', event.image);
         eventCard.setAttribute('event-id', event.id);
-        
+
         favoritesContainer.appendChild(eventCard);
     });
 }

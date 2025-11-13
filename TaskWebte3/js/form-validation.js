@@ -84,7 +84,6 @@ function validateEmail() {
     const emailInput = document.getElementById('contactEmail');
     const errorDiv = document.getElementById('emailError');
     const value = emailInput.value.trim();
-    // Strict email validation - only ASCII characters, no diacritics
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!emailRegex.test(value)) {
