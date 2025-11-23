@@ -27,15 +27,19 @@ const GanttRow = ({
   renderMode = 'both', // 'table', 'chart', or 'both'
   linkingFromTask,
   onStartLink,
-  onCompleteLink
+  onCompleteLink,
+  isHovered,
+  onHover,
+  columnWidths = { name: 180, date: 90, duration: 50, progress: 50, actions: 50 }
 }) => {
   const isLinking = linkingFromTask !== null;
-  const isLinkSource = linkingFromTask === task.id;
   const [localEditData, setLocalEditData] = useState(null);
+  const [newTagInput, setNewTagInput] = useState('');
 
   // Start inline editing
   const handleStartEdit = () => {
-    setLocalEditData({ ...task });
+    setLocalEditData({ ...task, tags: task.tags || [] });
+    setNewTagInput('');
     onStartEdit(task.id);
   };
 
@@ -45,18 +49,40 @@ const GanttRow = ({
       onUpdate(task.id, localEditData);
     }
     setLocalEditData(null);
+    setNewTagInput('');
     onStopEdit();
   };
 
   // Cancel editing
   const handleCancel = () => {
     setLocalEditData(null);
+    setNewTagInput('');
     onStopEdit();
   };
 
   // Handle input change
   const handleChange = (field, value) => {
     setLocalEditData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Add a new tag
+  const handleAddTag = () => {
+    const tag = newTagInput.trim();
+    if (tag && localEditData) {
+      const currentTags = localEditData.tags || [];
+      if (!currentTags.includes(tag)) {
+        setLocalEditData(prev => ({ ...prev, tags: [...currentTags, tag] }));
+      }
+      setNewTagInput('');
+    }
+  };
+
+  // Remove a tag
+  const handleRemoveTag = (tagToRemove) => {
+    if (localEditData) {
+      const currentTags = localEditData.tags || [];
+      setLocalEditData(prev => ({ ...prev, tags: currentTags.filter(t => t !== tagToRemove) }));
+    }
   };
 
   // Handle duration change - recalculate end date
@@ -82,14 +108,16 @@ const GanttRow = ({
   if (renderMode === 'table') {
     return (
       <div
-        className={`gantt__table-row ${isDragging ? 'gantt__table-row--dragging' : ''} ${isHighlighted ? 'gantt__table-row--highlighted' : ''}`}
+        className={`gantt__table-row ${isDragging ? 'gantt__table-row--dragging' : ''} ${isHighlighted ? 'gantt__table-row--highlighted' : ''} ${isHovered ? 'gantt__table-row--hovered' : ''}`}
         draggable={!isEditing}
         onDragStart={handleRowDragStart}
         onDragOver={onDragOver}
         onDrop={(e) => onDrop(e, task.id)}
+        onMouseEnter={() => onHover(task.id)}
+        onMouseLeave={() => onHover(null)}
       >
         {/* Name cell */}
-        <div className="gantt__cell gantt__cell--name" style={{ paddingLeft: `${depth * 16 + 8}px` }}>
+        <div className="gantt__cell gantt__cell--name" style={{ width: `${columnWidths.name}px`, paddingLeft: `${depth * 16 + 8}px` }}>
           {hasChildren ? (
             <button
               className="gantt__expand-btn"
@@ -103,33 +131,77 @@ const GanttRow = ({
 
           <span
             className="gantt__cell-color"
-            style={{ backgroundColor: task.color }}
+            style={{ backgroundColor: isRoot ? '#10b981' : '#3b82f6' }}
           />
 
           {isEditing ? (
-            <input
-              type="text"
-              className="gantt__cell-input"
-              value={currentData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              autoFocus
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSave();
-                if (e.key === 'Escape') handleCancel();
-              }}
-            />
+            <div className="gantt__cell-edit-content">
+              <input
+                type="text"
+                className="gantt__cell-input"
+                value={currentData.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSave();
+                  if (e.key === 'Escape') handleCancel();
+                }}
+              />
+              {/* Tag editor */}
+              <div className="gantt__tag-editor">
+                <div className="gantt__tag-list">
+                  {(currentData.tags || []).map(tag => (
+                    <span key={tag} className="gantt__tag gantt__tag--editable">
+                      {tag}
+                      <button
+                        className="gantt__tag-remove"
+                        onClick={() => handleRemoveTag(tag)}
+                        title="Odstrániť štítok"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  className="gantt__tag-input"
+                  placeholder="+ štítok"
+                  value={newTagInput}
+                  onChange={(e) => setNewTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddTag();
+                    }
+                  }}
+                />
+              </div>
+            </div>
           ) : (
-            <span
-              className="gantt__cell-text"
-              onDoubleClick={handleStartEdit}
-            >
-              {task.name}
-            </span>
+            <>
+              <span
+                className="gantt__cell-text"
+                onDoubleClick={handleStartEdit}
+              >
+                {task.name}
+              </span>
+              {task.tags && task.tags.length > 0 && (
+                <div className="gantt__tags">
+                  {task.tags.slice(0, 2).map(tag => (
+                    <span key={tag} className="gantt__tag">{tag}</span>
+                  ))}
+                  {task.tags.length > 2 && (
+                    <span className="gantt__tag">+{task.tags.length - 2}</span>
+                  )}
+                </div>
+              )}
+            </>
           )}
         </div>
 
         {/* Start date cell */}
-        <div className="gantt__cell gantt__cell--date">
+        <div className="gantt__cell gantt__cell--date" style={{ width: `${columnWidths.date}px` }}>
           {isEditing ? (
             <input
               type="date"
@@ -143,7 +215,7 @@ const GanttRow = ({
         </div>
 
         {/* Duration cell - editable */}
-        <div className="gantt__cell gantt__cell--duration">
+        <div className="gantt__cell gantt__cell--duration" style={{ width: `${columnWidths.duration}px` }}>
           {isEditing ? (
             <input
               type="number"
@@ -158,7 +230,7 @@ const GanttRow = ({
         </div>
 
         {/* Progress cell */}
-        <div className="gantt__cell gantt__cell--progress">
+        <div className="gantt__cell gantt__cell--progress" style={{ width: `${columnWidths.progress}px` }}>
           {isEditing ? (
             <input
               type="number"
@@ -174,41 +246,14 @@ const GanttRow = ({
         </div>
 
         {/* Actions cell */}
-        <div className="gantt__cell gantt__cell--actions">
+        <div className="gantt__cell gantt__cell--actions" style={{ width: `${columnWidths.actions}px` }}>
           {isEditing ? (
             <>
               <button className="gantt__btn gantt__btn--save" onClick={handleSave} title="Uložiť">✓</button>
               <button className="gantt__btn gantt__btn--cancel" onClick={handleCancel} title="Zrušiť">✕</button>
             </>
-          ) : isLinking ? (
-            <>
-              {isLinkSource ? (
-                <button
-                  className="gantt__btn gantt__btn--cancel"
-                  onClick={() => onStartLink(null)}
-                  title="Zrušiť spájanie"
-                >
-                  ✕
-                </button>
-              ) : (
-                <button
-                  className="gantt__btn gantt__btn--link-target"
-                  onClick={() => onCompleteLink(task.id)}
-                  title="Spojiť sem"
-                >
-                  ⤵
-                </button>
-              )}
-            </>
           ) : (
             <>
-              <button
-                className="gantt__btn gantt__btn--link"
-                onClick={() => onStartLink(task.id)}
-                title="Vytvoriť spojenie"
-              >
-                🔗
-              </button>
               <button
                 className="gantt__btn gantt__btn--add"
                 onClick={() => onAddChild(task.id)}
@@ -233,7 +278,11 @@ const GanttRow = ({
   // Render only chart part
   if (renderMode === 'chart') {
     return (
-      <div className={`gantt__chart-row ${isHighlighted ? 'gantt__chart-row--highlighted' : ''}`}>
+      <div
+        className={`gantt__chart-row ${isHighlighted ? 'gantt__chart-row--highlighted' : ''} ${isHovered ? 'gantt__chart-row--hovered' : ''}`}
+        onMouseEnter={() => onHover(task.id)}
+        onMouseLeave={() => onHover(null)}
+      >
         <GanttBar
           task={task}
           position={position}
@@ -241,6 +290,10 @@ const GanttRow = ({
           onUpdate={onUpdate}
           onDoubleClick={handleStartEdit}
           isParent={isRoot}
+          isLinking={isLinking}
+          linkingFromTask={linkingFromTask}
+          onStartLink={onStartLink}
+          onCompleteLink={onCompleteLink}
         />
         {/* Today marker in row */}
         {todayPosition !== null && (
@@ -279,7 +332,7 @@ const GanttRow = ({
 
           <span
             className="gantt__cell-color"
-            style={{ backgroundColor: task.color }}
+            style={{ backgroundColor: isRoot ? '#10b981' : '#3b82f6' }}
           />
 
           {isEditing ? (

@@ -10,7 +10,7 @@ const translations = {
     from: 'Od',
     to: 'Do',
     search: 'Hľadať...',
-    zoom: 'Zoom',
+    zoom: 'Priblíženie',
     export: 'Export',
     import: 'Import',
     taskName: 'Názov úlohy',
@@ -25,7 +25,16 @@ const translations = {
     legend: 'Legenda',
     today: 'Dnes',
     undo: 'Späť',
-    redo: 'Dopredu'
+    redo: 'Dopredu',
+    mainTask: 'Hlavná úloha',
+    task: 'Úloha',
+    day: 'Deň',
+    week: 'Týždeň',
+    month: 'Mesiac',
+    quarter: 'Štvrťrok',
+    dayNames: ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'],
+    monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'Máj', 'Jún', 'Júl', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'],
+    weekPrefix: 'T'
   },
   en: {
     title: 'Gantt Chart',
@@ -47,7 +56,16 @@ const translations = {
     legend: 'Legend',
     today: 'Today',
     undo: 'Undo',
-    redo: 'Redo'
+    redo: 'Redo',
+    mainTask: 'Summary task',
+    task: 'Task',
+    day: 'Day',
+    week: 'Week',
+    month: 'Month',
+    quarter: 'Quarter',
+    dayNames: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    weekPrefix: 'W'
   }
 };
 
@@ -111,7 +129,7 @@ function App() {
       <header className="app__header">
         <h1 className="app__title">{t.title}</h1>
         <div className="app__header-right">
-          <span className="app__date">{getCurrentDateFormatted()}</span>
+          <span className="app__date">{getCurrentDateFormatted(language)}</span>
           <button
             className="app__theme-btn"
             onClick={toggleTheme}

@@ -72,13 +72,18 @@ export const generateMonths = (dateRange) => {
 };
 
 // Generate timeline units based on zoom level
-export const generateTimelineUnits = (dateRange, zoomLevel) => {
+export const generateTimelineUnits = (dateRange, zoomLevel, translations = {}) => {
   const units = [];
   const rangeStart = new Date(dateRange.start);
   const rangeEnd = new Date(dateRange.end);
   const totalDays = (rangeEnd - rangeStart) / (1000 * 60 * 60 * 24);
 
   const current = new Date(rangeStart);
+
+  // Default translations
+  const dayNames = translations.dayNames || ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
+  const monthNames = translations.monthNames || ['Jan', 'Feb', 'Mar', 'Apr', 'Máj', 'Jún', 'Júl', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
+  const weekPrefix = translations.weekPrefix || 'T';
 
   if (zoomLevel === 'day') {
     while (current <= rangeEnd) {
@@ -87,9 +92,14 @@ export const generateTimelineUnits = (dateRange, zoomLevel) => {
       const left = (startOffset / totalDays) * 100;
       const width = (1 / totalDays) * 100;
 
+      // Get day of week (0 = Sunday, 1 = Monday, ...)
+      const dayOfWeek = current.getDay();
+      // Convert to Monday-first index (0 = Monday, 6 = Sunday)
+      const dayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
       units.push({
         label: current.getDate().toString(),
-        sublabel: current.toLocaleDateString('sk-SK', { weekday: 'short' }),
+        sublabel: dayNames[dayIndex],
         left,
         width
       });
@@ -110,7 +120,7 @@ export const generateTimelineUnits = (dateRange, zoomLevel) => {
       const width = (7 / totalDays) * 100;
 
       units.push({
-        label: `T${weekNum}`,
+        label: `${weekPrefix}${weekNum}`,
         sublabel: `${current.getDate()}.${current.getMonth() + 1}`,
         left,
         width
@@ -131,7 +141,7 @@ export const generateTimelineUnits = (dateRange, zoomLevel) => {
       const width = ((endOffset - startOffset + 1) / totalDays) * 100;
 
       units.push({
-        label: current.toLocaleDateString('sk-SK', { month: 'short' }),
+        label: monthNames[current.getMonth()],
         sublabel: current.getFullYear().toString(),
         left,
         width
@@ -165,9 +175,10 @@ export const generateTimelineUnits = (dateRange, zoomLevel) => {
   return units;
 };
 
-export const getCurrentDateFormatted = () => {
+export const getCurrentDateFormatted = (language = 'sk') => {
   const today = new Date();
-  return today.toLocaleDateString('sk-SK', {
+  const locale = language === 'en' ? 'en-US' : 'sk-SK';
+  return today.toLocaleDateString(locale, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',

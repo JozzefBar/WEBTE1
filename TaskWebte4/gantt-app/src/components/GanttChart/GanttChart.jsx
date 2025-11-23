@@ -1,14 +1,14 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import GanttRow from './GanttRow';
 import DependencyArrows from './DependencyArrows';
 import { generateTimelineUnits } from '../../utils/dateUtils';
 import { useTasks } from '../../hooks/useTasks';
 
 const ZOOM_LEVELS = [
-  { id: 'day', label: 'Deň', days: 1 },
-  { id: 'week', label: 'Týždeň', days: 7 },
-  { id: 'month', label: 'Mesiac', days: 30 },
-  { id: 'quarter', label: 'Štvrťrok', days: 90 }
+  { id: 'day', days: 1 },
+  { id: 'week', days: 7 },
+  { id: 'month', days: 30 },
+  { id: 'quarter', days: 90 }
 ];
 
 const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExport, onImport, translations: t }) => {
@@ -41,26 +41,41 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
   const [tableWidth, setTableWidth] = useState(420); // Default table width in pixels
   const [isResizingSplit, setIsResizingSplit] = useState(false);
   const [linkingFromTask, setLinkingFromTask] = useState(null); // Task ID we're linking FROM
+  const [hoveredTaskId, setHoveredTaskId] = useState(null); // Track hovered row for sync highlight
+  const [columnWidths, setColumnWidths] = useState({
+    name: 180,
+    date: 90,
+    duration: 50,
+    progress: 50,
+    actions: 50
+  });
+  const [resizingColumn, setResizingColumn] = useState(null);
   const chartBodyRef = useRef(null);
   const timelineRef = useRef(null);
   const containerRef = useRef(null);
+  const tableHeaderRef = useRef(null);
+  const tableBodyRef = useRef(null);
+
+  // Click outside to cancel editing
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (editingTaskId && !e.target.closest('.gantt__table-row')) {
+        stopEditing();
+      }
+    };
+
+    if (editingTaskId) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [editingTaskId, stopEditing]);
 
   // Generate timeline based on zoom level
-  const timelineUnits = generateTimelineUnits(dateRange, zoomLevel);
+  const timelineUnits = generateTimelineUnits(dateRange, zoomLevel, t);
   const visibleTasks = getVisibleTasks();
-
-  // Get unique colors for legend
-  const getUniqueColors = () => {
-    const colorMap = new Map();
-    visibleTasks.forEach(task => {
-      if (!colorMap.has(task.color)) {
-        colorMap.set(task.color, task.name);
-      }
-    });
-    return Array.from(colorMap.entries());
-  };
-
-  const uniqueColors = getUniqueColors();
 
   // Filter tasks by search and tags
   const filteredTasks = visibleTasks.filter(task => {
@@ -157,6 +172,36 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
     }
   };
 
+  // Sync scroll between table header and body (body -> header)
+  const handleTableScroll = (e) => {
+    if (tableHeaderRef.current) {
+      tableHeaderRef.current.scrollLeft = e.target.scrollLeft;
+    }
+  };
+
+  // Handle column resize
+  const handleColumnResize = (column, e) => {
+    e.preventDefault();
+    setResizingColumn(column);
+    const startX = e.clientX;
+    const startWidth = columnWidths[column];
+
+    const handleMouseMove = (e) => {
+      const deltaX = e.clientX - startX;
+      const newWidth = Math.max(30, startWidth + deltaX);
+      setColumnWidths(prev => ({ ...prev, [column]: newWidth }));
+    };
+
+    const handleMouseUp = () => {
+      setResizingColumn(null);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
   // Get zoom multiplier for timeline width
   const getZoomMultiplier = () => {
     const level = ZOOM_LEVELS.find(l => l.id === zoomLevel);
@@ -169,35 +214,22 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
 
   return (
     <div className={`gantt ${isResizingSplit ? 'gantt--resizing' : ''}`} ref={containerRef}>
-      {/* Toolbar */}
-      <div className="gantt__toolbar">
+      {/* Sticky top section */}
+      <div className="gantt__sticky-top">
+        {/* Toolbar */}
+        <div className="gantt__toolbar">
         <div className="gantt__zoom">
-          <span className="gantt__zoom-label">{t?.zoom || 'Zoom'}:</span>
+          <span className="gantt__zoom-label">{t?.zoom || 'Priblíženie'}:</span>
           {ZOOM_LEVELS.map(level => (
             <button
               key={level.id}
               className={`gantt__zoom-btn ${zoomLevel === level.id ? 'gantt__zoom-btn--active' : ''}`}
               onClick={() => setZoomLevel(level.id)}
             >
-              {level.label}
+              {t?.[level.id] || level.id}
             </button>
           ))}
         </div>
-        {/* Tag filter */}
-        {allTags.length > 0 && (
-          <div className="gantt__tag-filter">
-            <span className="gantt__tag-filter-label">{t?.tags || 'Štítky'}:</span>
-            {allTags.map(tag => (
-              <button
-                key={tag}
-                className={`gantt__tag-btn ${selectedTags.includes(tag) ? 'gantt__tag-btn--active' : ''}`}
-                onClick={() => onTagToggle(tag)}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-        )}
         <div className="gantt__actions">
           <button
             className="gantt__action-btn"
@@ -233,14 +265,42 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
         </div>
       </div>
 
+      {/* Tag filter row */}
+      {allTags.length > 0 && (
+        <div className="gantt__tags-row">
+          <span className="gantt__tags-label">{t?.tags || 'Štítky'}:</span>
+          {allTags.map(tag => (
+            <button
+              key={tag}
+              className={`gantt__tag-btn ${selectedTags.includes(tag) ? 'gantt__tag-btn--active' : ''}`}
+              onClick={() => onTagToggle(tag)}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Header */}
-      <div className="gantt__header">
-        <div className="gantt__header-table" style={{ width: `${tableWidth}px` }}>
-          <div className="gantt__header-cell gantt__header-cell--name">{t?.taskName || 'Názov úlohy'}</div>
-          <div className="gantt__header-cell gantt__header-cell--date">{t?.startDate || 'Začiatok'}</div>
-          <div className="gantt__header-cell gantt__header-cell--duration">{t?.days || 'Dni'}</div>
-          <div className="gantt__header-cell gantt__header-cell--progress">%</div>
-          <div className="gantt__header-cell gantt__header-cell--actions">
+      <div className={`gantt__header ${resizingColumn ? 'gantt__header--resizing' : ''}`}>
+        <div className="gantt__header-table" style={{ width: `${tableWidth}px` }} ref={tableHeaderRef}>
+          <div className="gantt__header-cell gantt__header-cell--name" style={{ width: `${columnWidths.name}px` }}>
+            {t?.taskName || 'Názov úlohy'}
+            <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('name', e)} />
+          </div>
+          <div className="gantt__header-cell gantt__header-cell--date" style={{ width: `${columnWidths.date}px` }}>
+            {t?.startDate || 'Začiatok'}
+            <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('date', e)} />
+          </div>
+          <div className="gantt__header-cell gantt__header-cell--duration" style={{ width: `${columnWidths.duration}px` }}>
+            {t?.days || 'Dni'}
+            <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('duration', e)} />
+          </div>
+          <div className="gantt__header-cell gantt__header-cell--progress" style={{ width: `${columnWidths.progress}px` }}>
+            %
+            <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('progress', e)} />
+          </div>
+          <div className="gantt__header-cell gantt__header-cell--actions" style={{ width: `${columnWidths.actions}px` }}>
             <button
               className="gantt__btn gantt__btn--add-root"
               onClick={() => addTask(null)}
@@ -274,6 +334,7 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
           </div>
         </div>
       </div>
+      </div>
 
       {/* Body */}
       <div className="gantt__body" onDragEnd={handleDragEnd}>
@@ -292,7 +353,7 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
         ) : (
           <div className="gantt__content">
             {/* Table column - fixed */}
-            <div className="gantt__table-column" style={{ width: `${tableWidth}px` }}>
+            <div className="gantt__table-column" style={{ width: `${tableWidth}px` }} ref={tableBodyRef} onScroll={handleTableScroll}>
               {filteredTasks.map(task => {
                 const taskHasChildren = hasChildren(task.id);
                 const isExpanded = task.expanded !== false;
@@ -332,6 +393,9 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
                       }
                       setLinkingFromTask(null);
                     }}
+                    isHovered={hoveredTaskId === task.id}
+                    onHover={setHoveredTaskId}
+                    columnWidths={columnWidths}
                   />
                 );
               })}
@@ -388,7 +452,8 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
                         }
                         setLinkingFromTask(null);
                       }}
-                      availableDependencies={getAvailableDependencies(task.id)}
+                      isHovered={hoveredTaskId === task.id}
+                      onHover={setHoveredTaskId}
                     />
                   );
                 })}
@@ -399,25 +464,25 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
       </div>
 
       {/* Legend */}
-      {uniqueColors.length > 0 && (
-        <div className="gantt__legend">
-          <span className="gantt__legend-title">{t?.legend || 'Legenda'}:</span>
-          <div className="gantt__legend-items">
-            {uniqueColors.map(([color, name]) => (
-              <div key={color} className="gantt__legend-item">
-                <span className="gantt__legend-color" style={{ backgroundColor: color }} />
-                <span className="gantt__legend-label">{name}</span>
-              </div>
-            ))}
-            {todayPosition !== null && (
-              <div className="gantt__legend-item">
-                <span className="gantt__legend-color gantt__legend-color--today" />
-                <span className="gantt__legend-label">{t?.today || 'Dnes'}</span>
-              </div>
-            )}
+      <div className="gantt__legend">
+        <span className="gantt__legend-title">{t?.legend || 'Legenda'}:</span>
+        <div className="gantt__legend-items">
+          <div className="gantt__legend-item">
+            <span className="gantt__legend-color" style={{ backgroundColor: '#10b981' }} />
+            <span className="gantt__legend-label">{t?.mainTask || 'Hlavná úloha'}</span>
           </div>
+          <div className="gantt__legend-item">
+            <span className="gantt__legend-color" style={{ backgroundColor: '#3b82f6' }} />
+            <span className="gantt__legend-label">{t?.task || 'Úloha'}</span>
+          </div>
+          {todayPosition !== null && (
+            <div className="gantt__legend-item">
+              <span className="gantt__legend-color gantt__legend-color--today" />
+              <span className="gantt__legend-label">{t?.today || 'Dnes'}</span>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

@@ -118,11 +118,69 @@ export const useTasks = () => {
     return lastIndex;
   };
 
-  // Update task
+  // Update task with parent-child date constraint (cascades through ALL ancestors)
   const updateTask = useCallback((taskId, updates) => {
-    const newTasks = tasks.map(task =>
-      task.id === taskId ? { ...task, ...updates } : task
-    );
+    let newTasks = [...tasks];
+    const taskIndex = newTasks.findIndex(t => t.id === taskId);
+    if (taskIndex === -1) return;
+
+    const task = newTasks[taskIndex];
+    const updatedTask = { ...task, ...updates };
+
+    // If start date is being updated, cascade to ALL ancestors
+    if (updates.startDate) {
+      const newStartDate = new Date(updates.startDate);
+
+      // Traverse ALL ancestors and move them if needed
+      let currentParentId = task.parentId;
+      while (currentParentId) {
+        const parentIndex = newTasks.findIndex(t => t.id === currentParentId);
+        if (parentIndex === -1) break;
+
+        const parent = newTasks[parentIndex];
+        const parentStart = new Date(parent.startDate);
+
+        // If this ancestor starts after the new date, move it
+        if (parentStart > newStartDate) {
+          newTasks[parentIndex] = { ...parent, startDate: updates.startDate };
+        }
+
+        // Move to next ancestor
+        currentParentId = parent.parentId;
+      }
+    }
+
+    // If this task has children and is being moved forward, move children too
+    if (updates.startDate) {
+      const newParentStart = new Date(updates.startDate);
+
+      // Get all descendants recursively
+      const getAllDescendants = (parentId) => {
+        const children = newTasks.filter(t => t.parentId === parentId);
+        let descendants = [...children];
+        children.forEach(child => {
+          descendants = [...descendants, ...getAllDescendants(child.id)];
+        });
+        return descendants;
+      };
+
+      const descendants = getAllDescendants(taskId);
+
+      descendants.forEach(child => {
+        const childStart = new Date(child.startDate);
+        // If any descendant starts before new start, move it forward
+        if (childStart < newParentStart) {
+          const childIndex = newTasks.findIndex(t => t.id === child.id);
+          if (childIndex !== -1) {
+            newTasks[childIndex] = { ...newTasks[childIndex], startDate: updates.startDate };
+          }
+        }
+      });
+    }
+
+    // Update the task itself
+    newTasks[taskIndex] = updatedTask;
+
     saveToHistory(newTasks);
     setTasks(newTasks);
   }, [tasks, setTasks, saveToHistory]);
