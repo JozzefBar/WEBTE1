@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState, useLayoutEffect } from 'react';
-import { calculateTaskPosition } from '../../utils/dateUtils';
+import { useMemo, useRef, useState, useLayoutEffect } from "react";
+import { calculateTaskPosition } from "../../utils/dateUtils";
 
 const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
   const svgRef = useRef(null);
@@ -9,7 +9,8 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
   useLayoutEffect(() => {
     const updateWidth = () => {
       if (svgRef.current && svgRef.current.parentElement) {
-        const width = svgRef.current.parentElement.getBoundingClientRect().width;
+        const width =
+          svgRef.current.parentElement.getBoundingClientRect().width;
         setContainerWidth(width);
       }
     };
@@ -25,11 +26,11 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
       resizeObserver.observe(svgRef.current.parentElement);
     }
 
-    window.addEventListener('resize', updateWidth);
+    window.addEventListener("resize", updateWidth);
 
     return () => {
       resizeObserver.disconnect();
-      window.removeEventListener('resize', updateWidth);
+      window.removeEventListener("resize", updateWidth);
     };
   }, []);
 
@@ -40,7 +41,7 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
 
     tasks.forEach((task, targetIndex) => {
       if (task.dependencies && task.dependencies.length > 0) {
-        task.dependencies.forEach(sourceId => {
+        task.dependencies.forEach((sourceId) => {
           const sourceTask = taskMap.get(sourceId);
           if (sourceTask) {
             const sourcePos = calculateTaskPosition(sourceTask, dateRange);
@@ -54,7 +55,7 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
               sourceLeftPercent: sourcePos.left + sourcePos.width,
               targetLeftPercent: targetPos.left,
               sourceIndex: sourceTask.index,
-              targetIndex
+              targetIndex,
             });
           }
         });
@@ -74,14 +75,14 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
       ref={svgRef}
       className="gantt__arrows"
       style={{
-        position: 'absolute',
+        position: "absolute",
         top: 0,
         left: 0,
-        width: '100%',
+        width: "100%",
         height: `${totalHeight}px`,
-        pointerEvents: 'none',
-        overflow: 'visible',
-        zIndex: 4
+        pointerEvents: "none",
+        overflow: "visible",
+        zIndex: 4,
       }}
     >
       <defs>
@@ -94,14 +95,11 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
           orient="auto"
           markerUnits="userSpaceOnUse"
         >
-          <polygon
-            points="0 0, 8 3, 0 6"
-            fill="#6366f1"
-          />
+          <polygon points="0 0, 8 3, 0 6" fill="#6366f1" />
         </marker>
       </defs>
 
-      {arrows.map(arrow => {
+      {arrows.map((arrow) => {
         // Convert percentages to pixels
         const sx = (arrow.sourceLeftPercent / 100) * containerWidth;
         const tx = (arrow.targetLeftPercent / 100) * containerWidth;
@@ -117,12 +115,11 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
           const midX = sx + dx / 2;
           pathD = `M ${sx} ${sy} C ${midX} ${sy}, ${midX} ${ty}, ${tx} ${ty}`;
         } else {
-          // Target is to the left or close - go around
-          const offsetX = 20;
-          const offsetY = ty > sy ? 25 : -25;
-          const routeY = ty > sy ? Math.max(sy, ty) + offsetY : Math.min(sy, ty) + offsetY;
-
-          pathD = `M ${sx} ${sy} L ${sx + offsetX} ${sy} L ${sx + offsetX} ${routeY} L ${tx - offsetX} ${routeY} L ${tx - offsetX} ${ty} L ${tx} ${ty}`;
+          // Target is to the left or close - simple L-shape: right a bit, then down, then left to target
+          const horizontalOffset = 18;
+          const stopY = ty - rowHeight / 2;
+          pathD = `M ${sx} ${sy} L ${sx + horizontalOffset} ${sy} L ${sx + horizontalOffset} ${stopY} L ${tx - horizontalOffset} ${stopY}
+              L ${tx - horizontalOffset} ${ty} L ${tx} ${ty}`;
         }
 
         return (
@@ -133,7 +130,7 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
               stroke="#6366f1"
               strokeWidth="2"
               markerEnd="url(#arrowhead)"
-              style={{ pointerEvents: 'stroke', cursor: 'pointer' }}
+              style={{ pointerEvents: "stroke", cursor: "pointer" }}
               onClick={(e) => {
                 e.stopPropagation();
                 if (onRemoveDependency) {
@@ -147,7 +144,7 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
               fill="none"
               stroke="transparent"
               strokeWidth="12"
-              style={{ pointerEvents: 'stroke', cursor: 'pointer' }}
+              style={{ pointerEvents: "stroke", cursor: "pointer" }}
               onClick={(e) => {
                 e.stopPropagation();
                 if (onRemoveDependency) {

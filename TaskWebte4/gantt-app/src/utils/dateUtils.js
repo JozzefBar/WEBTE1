@@ -86,38 +86,57 @@ export const generateTimelineUnits = (dateRange, zoomLevel, translations = {}) =
   const weekPrefix = translations.weekPrefix || 'T';
 
   if (zoomLevel === 'day') {
+    // Count total days in range
+    const numDays = Math.ceil(totalDays) + 1;
+    const unitWidth = 100 / numDays;
+
+    let dayIndex = 0;
     while (current <= rangeEnd) {
-      const dayStart = new Date(current);
-      const startOffset = (dayStart - rangeStart) / (1000 * 60 * 60 * 24);
-      const left = (startOffset / totalDays) * 100;
-      const width = (1 / totalDays) * 100;
+      // Each day gets equal width
+      const left = dayIndex * unitWidth;
+      const width = unitWidth;
 
       // Get day of week (0 = Sunday, 1 = Monday, ...)
       const dayOfWeek = current.getDay();
       // Convert to Monday-first index (0 = Monday, 6 = Sunday)
-      const dayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+      const dayNameIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
 
       units.push({
         label: current.getDate().toString(),
-        sublabel: dayNames[dayIndex],
+        sublabel: dayNames[dayNameIndex],
         left,
         width
       });
 
       current.setDate(current.getDate() + 1);
+      dayIndex++;
     }
   } else if (zoomLevel === 'week') {
-    // Start from Monday of the first week
-    const firstMonday = new Date(current);
+    // First, count how many weeks we'll show
+    const tempCurrent = new Date(rangeStart);
+    const firstMonday = new Date(tempCurrent);
     firstMonday.setDate(firstMonday.getDate() - ((firstMonday.getDay() + 6) % 7));
-    current.setTime(firstMonday.getTime());
+    tempCurrent.setTime(firstMonday.getTime());
+
+    let numWeeks = 0;
+    while (tempCurrent <= rangeEnd) {
+      numWeeks++;
+      tempCurrent.setDate(tempCurrent.getDate() + 7);
+    }
+
+    // Each week gets equal width
+    const unitWidth = 100 / numWeeks;
+
+    // Now generate weeks
+    const firstMondayActual = new Date(current);
+    firstMondayActual.setDate(firstMondayActual.getDate() - ((firstMondayActual.getDay() + 6) % 7));
+    current.setTime(firstMondayActual.getTime());
 
     let weekNum = 1;
+    let weekIndex = 0;
     while (current <= rangeEnd) {
-      const weekStart = new Date(current);
-      const startOffset = Math.max(0, (weekStart - rangeStart) / (1000 * 60 * 60 * 24));
-      const left = (startOffset / totalDays) * 100;
-      const width = (7 / totalDays) * 100;
+      const left = weekIndex * unitWidth;
+      const width = unitWidth;
 
       units.push({
         label: `${weekPrefix}${weekNum}`,
@@ -128,6 +147,7 @@ export const generateTimelineUnits = (dateRange, zoomLevel, translations = {}) =
 
       current.setDate(current.getDate() + 7);
       weekNum++;
+      weekIndex++;
     }
   } else if (zoomLevel === 'month') {
     const startMonth = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), 1);

@@ -267,14 +267,19 @@ const GanttBar = ({
       {/* Task label */}
       <span className="gantt__bar-label">{task.name}</span>
 
-      {/* Progress handle/marker (draggable) */}
+      {/* Progress handle/marker (visual only, not interactive) */}
       <div
         className="gantt__bar-progress-handle"
         style={{ left: `${currentProgress}%` }}
-        onMouseDown={handleProgressDragStart}
-        title={`${currentProgress}%`}
       >
-        <span className="gantt__bar-progress-value">{currentProgress}</span>
+        {/* Progress value - this is draggable */}
+        <span
+          className="gantt__bar-progress-value"
+          onMouseDown={handleProgressDragStart}
+          style={{ cursor: 'ew-resize' }}
+        >
+          {currentProgress}%
+        </span>
       </div>
 
       {/* Right resize handle */}

@@ -70,7 +70,7 @@ const translations = {
 };
 
 function App() {
-  const [dateRange, setDateRange] = useState(getDefaultDateRange());
+  const [dateRange, setDateRange] = useLocalStorage('gantt-date-range', getDefaultDateRange());
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [language, setLanguage] = useLocalStorage('gantt-language', 'sk');
@@ -113,7 +113,7 @@ function App() {
         if (data.tasks) {
           localStorage.setItem('gantt-tasks', JSON.stringify(data.tasks));
           if (data.dateRange) {
-            setDateRange(data.dateRange);
+            localStorage.setItem('gantt-date-range', JSON.stringify(data.dateRange));
           }
           window.location.reload();
         }

@@ -27,7 +27,6 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
     stopEditing,
     addDependency,
     removeDependency,
-    getAvailableDependencies,
     undo,
     redo,
     canUndo,
@@ -38,10 +37,10 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
 
   const [draggedTaskId, setDraggedTaskId] = useState(null);
   const [zoomLevel, setZoomLevel] = useState('month');
-  const [tableWidth, setTableWidth] = useState(420); // Default table width in pixels
+  const [tableWidth, setTableWidth] = useState(420);
   const [isResizingSplit, setIsResizingSplit] = useState(false);
-  const [linkingFromTask, setLinkingFromTask] = useState(null); // Task ID we're linking FROM
-  const [hoveredTaskId, setHoveredTaskId] = useState(null); // Track hovered row for sync highlight
+  const [linkingFromTask, setLinkingFromTask] = useState(null);
+  const [hoveredTaskId, setHoveredTaskId] = useState(null);
   const [columnWidths, setColumnWidths] = useState({
     name: 180,
     date: 90,
@@ -50,11 +49,13 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
     actions: 50
   });
   const [resizingColumn, setResizingColumn] = useState(null);
-  const chartBodyRef = useRef(null);
-  const timelineRef = useRef(null);
+
+  // Refs for scroll sync
   const containerRef = useRef(null);
   const tableHeaderRef = useRef(null);
   const tableBodyRef = useRef(null);
+  const timelineHeaderRef = useRef(null);
+  const chartBodyRef = useRef(null);
 
   // Click outside to cancel editing
   useEffect(() => {
@@ -79,14 +80,12 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
 
   // Filter tasks by search and tags
   const filteredTasks = visibleTasks.filter(task => {
-    // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       if (!task.name.toLowerCase().includes(query)) {
         return false;
       }
     }
-    // Tag filter
     if (selectedTags && selectedTags.length > 0) {
       if (!task.tags || !task.tags.some(tag => selectedTags.includes(tag))) {
         return false;
@@ -95,13 +94,11 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
     return true;
   });
 
-  // Check if task is highlighted by search
   const isTaskHighlighted = (task) => {
     if (!searchQuery) return false;
     return task.name.toLowerCase().includes(searchQuery.toLowerCase());
   };
 
-  // Calculate today marker position
   const getTodayPosition = () => {
     const today = new Date();
     const rangeStart = new Date(dateRange.start);
@@ -140,7 +137,7 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
     setDraggedTaskId(null);
   };
 
-  // Handle split resize
+  // Handle split resize - NO minimum width restriction
   const handleSplitMouseDown = (e) => {
     e.preventDefault();
     setIsResizingSplit(true);
@@ -149,8 +146,8 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
       if (containerRef.current) {
         const containerRect = containerRef.current.getBoundingClientRect();
         let newWidth = e.clientX - containerRect.left;
-        // Clamp between 200 and 600 pixels
-        newWidth = Math.max(200, Math.min(600, newWidth));
+        // Allow very small width (50px min) up to 800px
+        newWidth = Math.max(50, Math.min(800, newWidth));
         setTableWidth(newWidth);
       }
     };
@@ -165,17 +162,53 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  // Sync scroll between timeline header and body
-  const handleBodyScroll = (e) => {
-    if (timelineRef.current) {
-      timelineRef.current.scrollLeft = e.target.scrollLeft;
+  // Sync scroll: chart body -> timeline header (horizontal) + table body (vertical)
+  // Chart body is the MASTER for vertical scroll
+  const handleChartBodyScroll = (e) => {
+    // Sync horizontal to timeline header using scroll percentage for accuracy
+    if (timelineHeaderRef.current) {
+      const scrollLeft = e.target.scrollLeft;
+      const maxScroll = e.target.scrollWidth - e.target.clientWidth;
+      const timelineMaxScroll = timelineHeaderRef.current.scrollWidth - timelineHeaderRef.current.clientWidth;
+
+      if (maxScroll > 0 && timelineMaxScroll > 0) {
+        const scrollPercent = scrollLeft / maxScroll;
+        timelineHeaderRef.current.scrollLeft = scrollPercent * timelineMaxScroll;
+      } else {
+        timelineHeaderRef.current.scrollLeft = scrollLeft;
+      }
+    }
+    // Sync vertical to table body (chart is master, table follows)
+    if (tableBodyRef.current) {
+      tableBodyRef.current.scrollTop = e.target.scrollTop;
     }
   };
 
-  // Sync scroll between table header and body (body -> header)
-  const handleTableScroll = (e) => {
+  // Sync horizontal scroll: timeline header -> chart body
+  const handleTimelineHeaderScroll = (e) => {
+    if (chartBodyRef.current) {
+      const scrollLeft = e.target.scrollLeft;
+      const maxScroll = e.target.scrollWidth - e.target.clientWidth;
+      const chartMaxScroll = chartBodyRef.current.scrollWidth - chartBodyRef.current.clientWidth;
+
+      if (maxScroll > 0 && chartMaxScroll > 0) {
+        const scrollPercent = scrollLeft / maxScroll;
+        chartBodyRef.current.scrollLeft = scrollPercent * chartMaxScroll;
+      } else {
+        chartBodyRef.current.scrollLeft = scrollLeft;
+      }
+    }
+  };
+
+  // Sync scroll: table body -> table header (horizontal) + chart body (vertical)
+  const handleTableBodyScroll = (e) => {
+    // Sync horizontal to table header
     if (tableHeaderRef.current) {
       tableHeaderRef.current.scrollLeft = e.target.scrollLeft;
+    }
+    // Sync vertical to chart body (bidirectional sync)
+    if (chartBodyRef.current && chartBodyRef.current.scrollTop !== e.target.scrollTop) {
+      chartBodyRef.current.scrollTop = e.target.scrollTop;
     }
   };
 
@@ -202,22 +235,22 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  // Get zoom multiplier for timeline width
-  const getZoomMultiplier = () => {
-    const level = ZOOM_LEVELS.find(l => l.id === zoomLevel);
-    if (!level) return 1;
-    // More days = narrower view, fewer days = wider view
-    return 30 / level.days;
+  // Calculate minimum width for timeline
+  const getTimelineMinWidth = () => {
+    const numUnits = timelineUnits.length;
+    const minWidthPerUnit = 60;
+    return numUnits * minWidthPerUnit;
   };
 
-  const timelineWidth = 100 * getZoomMultiplier();
+  const timelineMinWidth = getTimelineMinWidth();
+
+  // Calculate total table content width
+  const tableContentWidth = columnWidths.name + columnWidths.date + columnWidths.duration + columnWidths.progress + columnWidths.actions;
 
   return (
     <div className={`gantt ${isResizingSplit ? 'gantt--resizing' : ''}`} ref={containerRef}>
-      {/* Sticky top section */}
-      <div className="gantt__sticky-top">
-        {/* Toolbar */}
-        <div className="gantt__toolbar">
+      {/* Toolbar - full width */}
+      <div className="gantt__toolbar">
         <div className="gantt__zoom">
           <span className="gantt__zoom-label">{t?.zoom || 'Priblíženie'}:</span>
           {ZOOM_LEVELS.map(level => (
@@ -265,7 +298,7 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
         </div>
       </div>
 
-      {/* Tag filter row */}
+      {/* Tag filter row - full width */}
       {allTags.length > 0 && (
         <div className="gantt__tags-row">
           <span className="gantt__tags-label">{t?.tags || 'Štítky'}:</span>
@@ -281,142 +314,100 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
         </div>
       )}
 
-      {/* Header */}
-      <div className={`gantt__header ${resizingColumn ? 'gantt__header--resizing' : ''}`}>
-        <div className="gantt__header-table" style={{ width: `${tableWidth}px` }} ref={tableHeaderRef}>
-          <div className="gantt__header-cell gantt__header-cell--name" style={{ width: `${columnWidths.name}px` }}>
-            {t?.taskName || 'Názov úlohy'}
-            <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('name', e)} />
-          </div>
-          <div className="gantt__header-cell gantt__header-cell--date" style={{ width: `${columnWidths.date}px` }}>
-            {t?.startDate || 'Začiatok'}
-            <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('date', e)} />
-          </div>
-          <div className="gantt__header-cell gantt__header-cell--duration" style={{ width: `${columnWidths.duration}px` }}>
-            {t?.days || 'Dni'}
-            <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('duration', e)} />
-          </div>
-          <div className="gantt__header-cell gantt__header-cell--progress" style={{ width: `${columnWidths.progress}px` }}>
-            %
-            <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('progress', e)} />
-          </div>
-          <div className="gantt__header-cell gantt__header-cell--actions" style={{ width: `${columnWidths.actions}px` }}>
-            <button
-              className="gantt__btn gantt__btn--add-root"
-              onClick={() => addTask(null)}
-              title={t?.addTask || 'Pridať úlohu'}
-            >
-              +
-            </button>
-          </div>
-        </div>
-        {/* Split divider */}
-        <div className="gantt__split-divider" onMouseDown={handleSplitMouseDown} />
-        <div className="gantt__header-timeline" ref={timelineRef}>
-          <div className="gantt__timeline-scroll" style={{ width: `${timelineWidth}%` }}>
-            {timelineUnits.map((unit, index) => (
-              <div
-                key={index}
-                className="gantt__timeline-unit"
-                style={{ left: `${unit.left}%`, width: `${unit.width}%` }}
-              >
-                <span className="gantt__timeline-label">{unit.label}</span>
-                {unit.sublabel && <span className="gantt__timeline-sublabel">{unit.sublabel}</span>}
+      {/* Main area */}
+      <div className="gantt__main" onDragEnd={handleDragEnd}>
+        {/* Headers row - fixed at top */}
+        <div className="gantt__headers-row">
+          {/* Table Header */}
+          <div
+            className={`gantt__table-header ${resizingColumn ? 'gantt__header--resizing' : ''}`}
+            style={{ width: `${tableWidth}px` }}
+            ref={tableHeaderRef}
+          >
+            <div className="gantt__table-header-content" style={{ minWidth: `${tableContentWidth}px` }}>
+              <div className="gantt__header-cell gantt__header-cell--name" style={{ width: `${columnWidths.name}px` }}>
+                {t?.taskName || 'Názov úlohy'}
+                <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('name', e)} />
               </div>
-            ))}
-            {/* Today marker in header */}
-            {todayPosition !== null && (
-              <div
-                className="gantt__today-marker gantt__today-marker--header"
-                style={{ left: `${todayPosition}%` }}
-              />
-            )}
+              <div className="gantt__header-cell gantt__header-cell--date" style={{ width: `${columnWidths.date}px` }}>
+                {t?.startDate || 'Začiatok'}
+                <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('date', e)} />
+              </div>
+              <div className="gantt__header-cell gantt__header-cell--duration" style={{ width: `${columnWidths.duration}px` }}>
+                {t?.days || 'Dni'}
+                <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('duration', e)} />
+              </div>
+              <div className="gantt__header-cell gantt__header-cell--progress" style={{ width: `${columnWidths.progress}px` }}>
+                %
+                <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('progress', e)} />
+              </div>
+              <div className="gantt__header-cell gantt__header-cell--actions" style={{ width: `${columnWidths.actions}px` }}>
+                <button
+                  className="gantt__btn gantt__btn--add-root"
+                  onClick={() => addTask(null)}
+                  title={t?.addTask || 'Pridať úlohu'}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+
+          {/* Timeline Header */}
+          <div
+            className="gantt__timeline-header"
+            ref={timelineHeaderRef}
+            onScroll={handleTimelineHeaderScroll}
+          >
+            <div className="gantt__timeline-scroll" style={{ minWidth: `${timelineMinWidth}px` }}>
+              {timelineUnits.map((unit, index) => (
+                <div
+                  key={index}
+                  className="gantt__timeline-unit"
+                  style={{ left: `${unit.left}%`, width: `${unit.width}%` }}
+                >
+                  <span className="gantt__timeline-label">{unit.label}</span>
+                  {unit.sublabel && <span className="gantt__timeline-sublabel">{unit.sublabel}</span>}
+                </div>
+              ))}
+              {todayPosition !== null && (
+                <div
+                  className="gantt__today-marker gantt__today-marker--header"
+                  style={{ left: `${todayPosition}%` }}
+                />
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      </div>
 
-      {/* Body */}
-      <div className="gantt__body" onDragEnd={handleDragEnd}>
-        {filteredTasks.length === 0 ? (
-          <div className="gantt__empty">
-            <p>{searchQuery ? (t?.noResults || 'Žiadne výsledky') : (t?.noTasks || 'Žiadne úlohy.')}</p>
-            {!searchQuery && (
-              <button
-                className="gantt__empty-btn"
-                onClick={() => addTask(null)}
-              >
-                + {t?.addFirstTask || 'Pridať prvú úlohu'}
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="gantt__content">
-            {/* Table column - fixed */}
-            <div className="gantt__table-column" style={{ width: `${tableWidth}px` }} ref={tableBodyRef} onScroll={handleTableScroll}>
-              {filteredTasks.map(task => {
-                const taskHasChildren = hasChildren(task.id);
-                const isExpanded = task.expanded !== false;
-                const depth = getTaskDepth(task.id);
-                const isRoot = task.parentId === null;
-
-                return (
-                  <GanttRow
-                    key={task.id}
-                    task={task}
-                    dateRange={dateRange}
-                    depth={depth}
-                    hasChildren={taskHasChildren}
-                    isExpanded={isExpanded}
-                    isEditing={editingTaskId === task.id}
-                    onToggleExpand={toggleExpand}
-                    onStartEdit={startEditing}
-                    onStopEdit={stopEditing}
-                    onUpdate={updateTask}
-                    onDelete={deleteTask}
-                    onAddChild={addTask}
-                    onDragStart={handleDragStart}
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                    isDragging={draggedTaskId === task.id}
-                    isHighlighted={isTaskHighlighted(task)}
-                    timelineWidth={timelineWidth}
-                    todayPosition={todayPosition}
-                    tableWidth={tableWidth}
-                    isRoot={isRoot}
-                    renderMode="table"
-                    linkingFromTask={linkingFromTask}
-                    onStartLink={setLinkingFromTask}
-                    onCompleteLink={(targetId) => {
-                      if (linkingFromTask && linkingFromTask !== targetId) {
-                        addDependency(targetId, linkingFromTask);
-                      }
-                      setLinkingFromTask(null);
-                    }}
-                    isHovered={hoveredTaskId === task.id}
-                    onHover={setHoveredTaskId}
-                    columnWidths={columnWidths}
-                  />
-                );
-              })}
-            </div>
-            {/* Split divider in body */}
-            <div className="gantt__split-divider gantt__split-divider--body" onMouseDown={handleSplitMouseDown} />
-            {/* Chart column - scrollable */}
+        {/* Bodies row - table and chart side by side */}
+        <div className="gantt__bodies-row">
+          {/* Table Body */}
             <div
-              className="gantt__chart-column"
-              ref={chartBodyRef}
-              onScroll={handleBodyScroll}
+              className="gantt__table-body"
+              style={{ width: `${tableWidth}px` }}
             >
-              <div className="gantt__chart-scroll" style={{ width: `${timelineWidth}%` }}>
-                {/* Dependency arrows */}
-                <DependencyArrows
-                  tasks={filteredTasks}
-                  dateRange={dateRange}
-                  onRemoveDependency={removeDependency}
-                />
-                {filteredTasks.map(task => {
+              <div
+                className="gantt__table-body-scroll"
+                ref={tableBodyRef}
+                onScroll={handleTableBodyScroll}
+              >
+                <div className="gantt__table-body-content" style={{ minWidth: `${tableContentWidth}px` }}>
+              {filteredTasks.length === 0 ? (
+                <div className="gantt__empty">
+                  <p>{searchQuery ? (t?.noResults || 'Žiadne výsledky') : (t?.noTasks || 'Žiadne úlohy.')}</p>
+                  {!searchQuery && (
+                    <button className="gantt__empty-btn" onClick={() => addTask(null)}>
+                      + {t?.addFirstTask || 'Pridať prvú úlohu'}
+                    </button>
+                  )}
+                </div>
+              ) : (
+                filteredTasks.map(task => {
                   const taskHasChildren = hasChildren(task.id);
+                  const isExpanded = task.expanded !== false;
+                  const depth = getTaskDepth(task.id);
                   const isRoot = task.parentId === null;
 
                   return (
@@ -424,9 +415,9 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
                       key={task.id}
                       task={task}
                       dateRange={dateRange}
-                      depth={0}
+                      depth={depth}
                       hasChildren={taskHasChildren}
-                      isExpanded={true}
+                      isExpanded={isExpanded}
                       isEditing={editingTaskId === task.id}
                       onToggleExpand={toggleExpand}
                       onStartEdit={startEditing}
@@ -443,7 +434,7 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
                       todayPosition={todayPosition}
                       tableWidth={tableWidth}
                       isRoot={isRoot}
-                      renderMode="chart"
+                      renderMode="table"
                       linkingFromTask={linkingFromTask}
                       onStartLink={setLinkingFromTask}
                       onCompleteLink={(targetId) => {
@@ -454,13 +445,86 @@ const GanttChart = ({ dateRange, searchQuery, selectedTags, onTagToggle, onExpor
                       }}
                       isHovered={hoveredTaskId === task.id}
                       onHover={setHoveredTaskId}
+                      columnWidths={columnWidths}
                     />
                   );
-                })}
+                })
+              )}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+
+
+            {/* Chart Body */}
+            <div className="gantt__chart-body">
+              <div
+                className="gantt__chart-body-scroll"
+                ref={chartBodyRef}
+                onScroll={handleChartBodyScroll}
+              >
+                <div className="gantt__chart-scroll" style={{ minWidth: `${timelineMinWidth}px` }}>
+              {filteredTasks.length > 0 && (
+                <>
+                  <DependencyArrows
+                    tasks={filteredTasks}
+                    dateRange={dateRange}
+                    onRemoveDependency={removeDependency}
+                  />
+                  {filteredTasks.map(task => {
+                    const taskHasChildren = hasChildren(task.id);
+                    const isRoot = task.parentId === null;
+
+                    return (
+                      <GanttRow
+                        key={task.id}
+                        task={task}
+                        dateRange={dateRange}
+                        depth={0}
+                        hasChildren={taskHasChildren}
+                        isExpanded={true}
+                        isEditing={editingTaskId === task.id}
+                        onToggleExpand={toggleExpand}
+                        onStartEdit={startEditing}
+                        onStopEdit={stopEditing}
+                        onUpdate={updateTask}
+                        onDelete={deleteTask}
+                        onAddChild={addTask}
+                        onDragStart={handleDragStart}
+                        onDragOver={handleDragOver}
+                        onDrop={handleDrop}
+                        isDragging={draggedTaskId === task.id}
+                        isHighlighted={isTaskHighlighted(task)}
+                        timelineWidth={100}
+                        todayPosition={todayPosition}
+                        tableWidth={tableWidth}
+                        isRoot={isRoot}
+                        renderMode="chart"
+                        linkingFromTask={linkingFromTask}
+                        onStartLink={setLinkingFromTask}
+                        onCompleteLink={(targetId) => {
+                          if (linkingFromTask && linkingFromTask !== targetId) {
+                            addDependency(targetId, linkingFromTask);
+                          }
+                          setLinkingFromTask(null);
+                        }}
+                        isHovered={hoveredTaskId === task.id}
+                        onHover={setHoveredTaskId}
+                      />
+                    );
+                  })}
+                </>
+              )}
+                </div>
+              </div>
+            </div>
+        </div>
+
+        {/* Single Split Divider - spans full height */}
+        <div
+          className="gantt__split-divider"
+          style={{ left: `${tableWidth}px` }}
+          onMouseDown={handleSplitMouseDown}
+        />
       </div>
 
       {/* Legend */}

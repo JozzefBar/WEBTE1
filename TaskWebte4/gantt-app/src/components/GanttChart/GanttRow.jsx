@@ -187,14 +187,11 @@ const GanttRow = ({
                 {task.name}
               </span>
               {task.tags && task.tags.length > 0 && (
-                <div className="gantt__tags">
-                  {task.tags.slice(0, 2).map(tag => (
+                <span className="gantt__tags-inline">
+                  {task.tags.map(tag => (
                     <span key={tag} className="gantt__tag">{tag}</span>
                   ))}
-                  {task.tags.length > 2 && (
-                    <span className="gantt__tag">+{task.tags.length - 2}</span>
-                  )}
-                </div>
+                </span>
               )}
             </>
           )}

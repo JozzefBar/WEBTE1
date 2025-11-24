@@ -59,6 +59,44 @@
   background-color: #713f12;
 }
 
+[data-theme="dark"] .app__lang-select {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .app__lang-select option {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .toolbar__input {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .toolbar__input::placeholder {
+  color: var(--color-text-light);
+}
+
+[data-theme="dark"] .gantt__table-row--highlighted {
+  background-color: #422006;
+}
+
+[data-theme="dark"] .gantt__table-row--highlighted:hover {
+  background-color: #713f12;
+}
+
+[data-theme="dark"] .gantt__table-row--hovered {
+  background-color: #1e3a5f;
+}
+
+[data-theme="dark"] .gantt__chart-row--highlighted {
+  background-color: rgba(66, 32, 6, 0.5);
+}
+
+[data-theme="dark"] .gantt__chart-row--hovered {
+  background-color: rgba(30, 58, 95, 0.7);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -200,37 +238,149 @@ body {
 /* ==================== GANTT CHART ==================== */
 .gantt {
   flex: 1;
-  min-height: 0; /* Critical for flex scroll */
+  min-height: 0;
   background-color: var(--color-surface);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* No scroll on main container */
+  overflow: hidden;
   border: 1px solid var(--color-border);
 }
 
-/* Fixed top section (toolbar + tags + header) - never scrolls */
-.gantt__sticky-top {
-  flex-shrink: 0;
-  z-index: 20;
-  background-color: var(--color-surface);
+/* Main area - vertical layout: headers row + bodies row */
+.gantt__main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
-/* Gantt Header */
-.gantt__header {
+/* Headers row - fixed at top, contains table header + divider + timeline header */
+.gantt__headers-row {
   display: flex;
+  flex-shrink: 0;
   border-bottom: 2px solid var(--color-border);
-  background-color: var(--color-hover);
-  flex-shrink: 0;
 }
 
-.gantt__header-table {
+/* Bodies row - container for table and chart */
+.gantt__bodies-row {
+  flex: 1;
+  min-height: 0;
   display: flex;
+  overflow: hidden;
+}
+
+/* Table Header */
+.gantt__table-header {
   flex-shrink: 0;
-  border-right: 2px solid var(--color-border);
+  background-color: var(--color-hover);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.gantt__table-header::-webkit-scrollbar {
+  display: none;
+}
+
+.gantt__table-header-content {
+  display: flex;
+  height: 40px;
+}
+
+/* Table Body wrapper - fixed width */
+.gantt__table-body {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Table body scroll container - both scrolls, vertical scrollbar hidden */
+.gantt__table-body-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  /* Firefox - thin scrollbar (can't hide only vertical in FF) */
+  scrollbar-width: thin;
+}
+
+/* Webkit - hide vertical scrollbar, keep horizontal */
+.gantt__table-body-scroll::-webkit-scrollbar:vertical {
+  width: 0;
+  display: none;
+}
+
+.gantt__table-body-scroll::-webkit-scrollbar:horizontal {
+  height: 8px;
+}
+
+.gantt__table-body-scroll::-webkit-scrollbar-track {
+  background: var(--color-hover);
+}
+
+.gantt__table-body-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.gantt__table-body-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-light);
+}
+
+.gantt__table-body-content {
   min-width: max-content;
-  overflow: hidden; /* No independent scroll - synced with body */
+}
+
+/* Split Divider - ONE element spanning full height, absolutely positioned */
+.gantt__split-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background-color: var(--color-border);
+  cursor: col-resize;
+  transition: background-color 0.15s;
+  z-index: 30;
+}
+
+.gantt__split-divider:hover {
+  background-color: var(--color-primary);
+}
+
+/* Timeline Header */
+.gantt__timeline-header {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  background-color: var(--color-hover);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  margin-left: 6px;
+}
+
+.gantt__timeline-header::-webkit-scrollbar {
+  display: none;
+}
+
+/* Chart Body wrapper - flex grow */
+.gantt__chart-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin-left: 6px;
+}
+
+/* Chart body scroll container - both scrolls visible (master for vertical) */
+.gantt__chart-body-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 .gantt__header-cell {
@@ -279,22 +429,10 @@ body {
   border-right: none;
 }
 
-.gantt__header-timeline {
-  flex: 1;
-  position: relative;
-  height: 40px;
-  overflow-x: hidden;
-  overflow-y: hidden;
-}
-
-.gantt__header-timeline::-webkit-scrollbar {
-  display: none;
-}
-
 .gantt__timeline-scroll {
   position: relative;
   height: 100%;
-  min-width: 100%;
+  display: inline-block;
 }
 
 .gantt__month {
@@ -325,30 +463,25 @@ body {
   background-color: var(--color-hover);
   min-width: 30px;
   overflow: hidden;
+  white-space: nowrap;
 }
 
 .gantt__timeline-label {
   font-weight: 600;
   font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .gantt__timeline-sublabel {
   font-size: 0.6rem;
   color: var(--color-text-light);
-}
-
-/* Split Divider */
-.gantt__split-divider {
-  width: 6px;
-  background-color: var(--color-border);
-  cursor: col-resize;
-  flex-shrink: 0;
-  transition: background-color 0.15s;
-  z-index: 25;
-}
-
-.gantt__split-divider:hover {
-  background-color: var(--color-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .gantt--resizing {
@@ -360,43 +493,10 @@ body {
   cursor: col-resize !important;
 }
 
-/* Gantt Body */
-.gantt__body {
-  flex: 1;
-  overflow-x: hidden;
-  min-height: 200px;
-}
-
-/* Content wrapper - two columns */
-.gantt__content {
-  display: flex;
-  min-height: 100%;
-}
-
-/* Table column - fixed, scrolls horizontally when content overflows */
-.gantt__table-column {
-  flex-shrink: 0;
-  border-right: 2px solid var(--color-border);
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
-
-.gantt__table-column::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
-}
-
-/* Chart column - scrollable horizontally */
-.gantt__chart-column {
-  flex: 1;
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-
+/* Chart scroll container */
 .gantt__chart-scroll {
-  min-width: 100%;
   position: relative;
+  display: inline-block;
 }
 
 /* Table row */
@@ -470,11 +570,6 @@ body {
   flex: 1;
 }
 
-/* Split divider in body */
-.gantt__split-divider--body {
-  height: auto;
-  align-self: stretch;
-}
 
 .gantt__empty {
   display: flex;
@@ -544,6 +639,8 @@ body {
 .gantt__cell--name {
   gap: 0.4rem;
   flex-shrink: 0;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 .gantt__cell--date {
@@ -551,6 +648,9 @@ body {
   color: var(--color-text-light);
   font-size: 0.75rem;
   flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .gantt__cell--duration {
@@ -738,12 +838,13 @@ body {
 
 .gantt__arrows path {
   pointer-events: stroke;
-  transition: stroke 0.15s, stroke-width 0.15s;
+  stroke-width: 2;
+  transition: stroke 0.2s, stroke-width 0.2s;
 }
 
 .gantt__arrows path:hover {
   stroke: #ef4444;
-  stroke-width: 3px;
+  stroke-width: 1.5;
   cursor: pointer;
 }
 
@@ -853,18 +954,18 @@ body {
   pointer-events: none;
 }
 
-/* Progress handle/marker - on bar edge */
+/* Progress handle/marker - on bar edge (visual only, not interactive) */
 .gantt__bar-progress-handle {
   position: absolute;
   top: 0;
   bottom: 0;
   width: 12px;
   transform: translateX(-50%);
-  cursor: ew-resize;
   z-index: 6;
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 .gantt__bar-progress-handle::before {
@@ -876,29 +977,37 @@ body {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
 }
 
-.gantt__bar-progress-handle:hover::before {
-  background-color: white;
-  width: 4px;
-}
-
 .gantt__bar-progress-value {
   position: absolute;
-  bottom: -18px;
+  bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  font-size: 0.55rem;
-  padding: 1px 4px;
-  border-radius: 2px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
   white-space: nowrap;
   opacity: 0;
-  transition: opacity 0.15s;
+  pointer-events: none;
+  z-index: 10000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+  user-select: none;
 }
 
+/* Show progress value on bar hover OR when hovering the label itself */
 .gantt__bar:hover .gantt__bar-progress-value,
-.gantt__bar-progress-handle:hover .gantt__bar-progress-value {
+.gantt__bar-progress-value:hover {
   opacity: 1;
+  pointer-events: auto;
+}
+
+.gantt__bar-progress-value:hover {
+  transform: translateX(-50%) scale(1.1);
+  box-shadow: 0 3px 12px rgba(102, 126, 234, 0.5);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
 /* Connection points */
@@ -1141,6 +1250,18 @@ body {
   background-color: #e0e7ff;
   color: #4338ca;
   border-radius: 10px;
+  white-space: nowrap;
+}
+
+/* Inline tags container - stays on same line, shows what fits */
+.gantt__tags-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+  overflow: hidden;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .gantt__tag-input {

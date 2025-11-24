@@ -181,6 +181,30 @@ export const useTasks = () => {
     // Update the task itself
     newTasks[taskIndex] = updatedTask;
 
+    // If end date is being updated, extend ALL ancestors' end dates if needed
+    const finalEndDate = updatedTask.endDate;
+    if (finalEndDate) {
+      const newEndDate = new Date(finalEndDate);
+
+      // Traverse ALL ancestors and extend their end dates if needed
+      let currentParentId = task.parentId;
+      while (currentParentId) {
+        const parentIndex = newTasks.findIndex(t => t.id === currentParentId);
+        if (parentIndex === -1) break;
+
+        const parent = newTasks[parentIndex];
+        const parentEnd = new Date(parent.endDate);
+
+        // If this ancestor ends before the new end date, extend it
+        if (parentEnd < newEndDate) {
+          newTasks[parentIndex] = { ...newTasks[parentIndex], endDate: finalEndDate };
+        }
+
+        // Move to next ancestor
+        currentParentId = parent.parentId;
+      }
+    }
+
     saveToHistory(newTasks);
     setTasks(newTasks);
   }, [tasks, setTasks, saveToHistory]);
