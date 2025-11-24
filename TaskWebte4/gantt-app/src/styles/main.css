@@ -297,6 +297,35 @@ body {
   display: flex;
   flex-direction: column;
 }
+/* make table body a positioning context for resizer overlays */
+.gantt__table-body {
+  position: relative;
+}
+
+.gantt__table-resizers {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none; /* allow individual resizers to control pointer-events */
+}
+
+.gantt__table-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  cursor: col-resize;
+  background: transparent;
+  z-index: 60;
+}
+
+.gantt__table-resizer:hover {
+  background: rgba(37,99,235,0.06);
+}
 
 /* Table body scroll container - both scrolls, vertical scrollbar hidden */
 .gantt__table-body-scroll {
@@ -343,7 +372,7 @@ body {
   background-color: var(--color-border);
   cursor: col-resize;
   transition: background-color 0.15s;
-  z-index: 30;
+  z-index: 100; /* Must be higher than table resizers (60) */
 }
 
 .gantt__split-divider:hover {
@@ -413,6 +442,26 @@ body {
 .gantt__column-resize:hover {
   background-color: var(--color-primary);
   opacity: 0.5;
+}
+
+/* Hidden columns pills */
+.gantt__hidden-columns {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding-left: 8px;
+}
+.gantt__hidden-pill {
+  background-color: rgba(15,23,42,0.04);
+  color: rgba(2,6,23,0.8);
+  border: 1px solid rgba(2,6,23,0.06);
+  border-radius: 8px;
+  padding: 2px 6px;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+.gantt__hidden-pill:hover {
+  background-color: rgba(15,23,42,0.06);
 }
 
 .gantt__header--resizing {
@@ -698,6 +747,14 @@ body {
   flex-shrink: 0;
 }
 
+/* Name cell layout: ensure tags hide first when space is constrained */
+.gantt__cell--name {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
 /* Cell color indicator */
 .gantt__cell-color {
   width: 10px;
@@ -708,7 +765,8 @@ body {
 
 /* Cell text */
 .gantt__cell-text {
-  flex: 1;
+  flex: 1 1 75%;
+  min-width: 0;
   font-weight: 500;
   cursor: pointer;
   padding: 0.15rem 0.3rem;
@@ -838,13 +896,13 @@ body {
 
 .gantt__arrows path {
   pointer-events: stroke;
-  stroke-width: 2;
+  stroke-width: 2.2;
   transition: stroke 0.2s, stroke-width 0.2s;
 }
 
 .gantt__arrows path:hover {
   stroke: #ef4444;
-  stroke-width: 1.5;
+  stroke-width: 2.5;
   cursor: pointer;
 }
 
@@ -888,6 +946,7 @@ body {
   overflow: visible;
   transition: box-shadow 0.15s, transform 0.15s;
   user-select: none;
+  z-index: 50; /* ensure bars sit above most elements by default */
 }
 
 .gantt__bar:hover {
@@ -899,19 +958,25 @@ body {
 .gantt__bar--dragging {
   cursor: grabbing;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 200; /* raise while dragging */
+}
+
+/* Bring hovered bar forward so its tooltip is above other bars */
+.gantt__bar--hovered {
+  z-index: 300;
 }
 
 .gantt__bar-label {
   color: white;
-  font-size: 0.7rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible; /* allow longer names to show */
+  text-overflow: unset;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 2;
-  max-width: calc(100% - 20px);
+  max-width: none;
 }
 
 /* Bar resize handles */
@@ -919,19 +984,19 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 10px;
+  width: 20px;
   cursor: ew-resize;
-  z-index: 5;
+  z-index: 800; /* larger hit area, sit above bar but below connectors */
   transition: background-color 0.15s;
 }
 
 .gantt__bar-resize--left {
-  left: 0;
+  left: -10px; /* expand clickable area outside the bar */
   border-radius: 4px 0 0 4px;
 }
 
 .gantt__bar-resize--right {
-  right: 0;
+  right: -10px; /* expand clickable area outside the bar */
   border-radius: 0 4px 4px 0;
 }
 
@@ -961,11 +1026,11 @@ body {
   bottom: 0;
   width: 12px;
   transform: translateX(-50%);
-  z-index: 6;
+  z-index: 600; /* keep progress handle above bar but below connectors */
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
+  pointer-events: auto; /* allow tooltip / progress value to receive events */
 }
 
 .gantt__bar-progress-handle::before {
@@ -982,7 +1047,7 @@ body {
   bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #2563eb; /* simpler solid primary color */
   color: white;
   font-size: 0.65rem;
   font-weight: 600;
@@ -990,10 +1055,10 @@ body {
   border-radius: 4px;
   white-space: nowrap;
   opacity: 0;
-  pointer-events: none;
-  z-index: 10000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  transition: opacity 0.15s, transform 0.15s, box-shadow 0.15s;
+  pointer-events: auto; /* make the label interactive so cursor can move onto it */
+  z-index: 500;
+  box-shadow: 0 4px 10px rgba(2,6,23,0.08);
+  transition: opacity 0.12s, transform 0.12s, box-shadow 0.12s;
   user-select: none;
 }
 
@@ -1005,9 +1070,8 @@ body {
 }
 
 .gantt__bar-progress-value:hover {
-  transform: translateX(-50%) scale(1.1);
-  box-shadow: 0 3px 12px rgba(102, 126, 234, 0.5);
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateX(-50%) scale(1.03);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.12);
 }
 
 /* Connection points */
@@ -1021,7 +1085,7 @@ body {
   border: 2px solid #6366f1;
   border-radius: 50%;
   cursor: pointer;
-  z-index: 10;
+  z-index: 1200;
   transition: transform 0.15s, background-color 0.15s;
 }
 
@@ -1055,14 +1119,24 @@ body {
 }
 
 /* Milestone (diamond) */
-.gantt__milestone {
+
+/* Wrapper that positions milestone and connectors without inheriting rotation */
+.gantt__milestone-wrapper {
   position: absolute;
+  height: 29px; /* match bar height */
+  display: inline-block;
+  pointer-events: auto;
+}
+
+.gantt__milestone {
+  position: relative;
   top: 50%;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   transform: translateY(-50%) rotate(45deg);
   cursor: grab;
-  z-index: 5;
+  z-index: 100; /* sit above bars but below connectors */
+  display: inline-block;
 }
 
 .gantt__milestone:hover {
@@ -1076,17 +1150,50 @@ body {
 
 .gantt__milestone-label {
   position: absolute;
-  left: 20px;
+  left: 24px; /* place to the right of the diamond */
   top: 50%;
-  transform: translateY(-50%) rotate(-45deg);
+  transform: translateY(-50%); /* keep horizontal */
   white-space: nowrap;
-  font-size: 0.65rem;
+  font-size: 0.72rem; /* slightly smaller than regular bar label */
   font-weight: 500;
   color: var(--color-text);
   background-color: var(--color-surface);
-  padding: 2px 6px;
-  border-radius: 3px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  display: inline-block;
+  margin-left: 4px;
+}
+
+/* Goal (milestone) variant styling */
+.gantt__milestone--goal {
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%) rotate(45deg);
+  border-radius: 2px;
+  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.18);
+  border: 2px solid rgba(255,255,255,0.2);
+  background-color: #8b5cf6; /* violet goal color */
+}
+
+/* Connectors should attach to left/right tips on milestones */
+.gantt__milestone .gantt__bar-connector--left {
+  left: -10px;
+}
+
+.gantt__milestone .gantt__bar-connector--right {
+  right: -10px;
+}
+
+/* Ensure zoom buttons keep stable base styling (restore accidental visual changes) */
+.gantt__zoom-btn {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
 }
 
 /* Today Marker */
@@ -1109,11 +1216,64 @@ body {
 /* Gantt Toolbar */
 .gantt__toolbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 1rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-hover);
+}
+
+/* Row 1: Date range + Search */
+.gantt__toolbar-row-dates {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.gantt__toolbar-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+}
+
+.gantt__toolbar-input {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+.gantt__toolbar-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.gantt__toolbar-search {
+  flex: 1;
+  max-width: 250px;
+}
+
+.gantt__toolbar-input--search {
+  width: 100%;
+}
+
+/* Row 2: Zoom on left + Actions on right */
+.gantt__toolbar-row-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gantt__toolbar-row-top {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .gantt__zoom {
@@ -1123,21 +1283,25 @@ body {
 }
 
 .gantt__zoom-label {
-  font-size: 0.75rem;
-  color: var(--color-text-light);
+  font-size: 0.8rem;
   font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
 }
 
-.gantt__zoom-btn {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.7rem;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.15s;
+.gantt__bar-label {
+  color: white;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 2;
+  max-width: calc(85% - 20px); /* allow more characters to show */
 }
+ 
 
 .gantt__zoom-btn:hover {
   background-color: var(--color-hover);
@@ -1260,8 +1424,31 @@ body {
   gap: 0.25rem;
   margin-left: 0.5rem;
   overflow: hidden;
-  flex-shrink: 1;
+  flex: 0 1 50%; /* allow tags to take up to 25% of cell, shrink before title */
+  max-width: 35%;
   min-width: 0;
+}
+
+.gantt__tag {
+  display: inline-block;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Bar label: use up to ~60% of the bar so long names are readable but not overflow */
+.gantt__bar-label {
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 2;
+  max-width: calc(100% - 5px);
 }
 
 .gantt__tag-input {

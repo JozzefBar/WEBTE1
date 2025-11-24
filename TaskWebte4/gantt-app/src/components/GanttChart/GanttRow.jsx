@@ -19,7 +19,6 @@ const GanttRow = ({
   onDragOver,
   onDrop,
   isDragging,
-  isHighlighted,
   timelineWidth,
   todayPosition,
   tableWidth,
@@ -87,7 +86,7 @@ const GanttRow = ({
 
   // Handle duration change - recalculate end date
   const handleDurationChange = (newDuration) => {
-    const days = Math.max(1, parseInt(newDuration) || 1);
+    const days = Math.max(0, parseInt(newDuration) || 0);
     const newEndDate = addDays(localEditData?.startDate || task.startDate, days - 1);
     setLocalEditData(prev => ({ ...prev, endDate: newEndDate }));
   };
@@ -108,7 +107,7 @@ const GanttRow = ({
   if (renderMode === 'table') {
     return (
       <div
-        className={`gantt__table-row ${isDragging ? 'gantt__table-row--dragging' : ''} ${isHighlighted ? 'gantt__table-row--highlighted' : ''} ${isHovered ? 'gantt__table-row--hovered' : ''}`}
+        className={`gantt__table-row ${isDragging ? 'gantt__table-row--dragging' : ''} ${isHovered ? 'gantt__table-row--hovered' : ''}`}
         draggable={!isEditing}
         onDragStart={handleRowDragStart}
         onDragOver={onDragOver}
@@ -117,7 +116,7 @@ const GanttRow = ({
         onMouseLeave={() => onHover(null)}
       >
         {/* Name cell */}
-        <div className="gantt__cell gantt__cell--name" style={{ width: `${columnWidths.name}px`, paddingLeft: `${depth * 16 + 8}px` }}>
+        <div className="gantt__cell gantt__cell--name" style={{ width: `${columnWidths.name}px`, paddingLeft: `${depth * 16 + 8}px`, display: columnWidths.name === 0 ? 'none' : undefined }}>
           {hasChildren ? (
             <button
               className="gantt__expand-btn"
@@ -198,7 +197,7 @@ const GanttRow = ({
         </div>
 
         {/* Start date cell */}
-        <div className="gantt__cell gantt__cell--date" style={{ width: `${columnWidths.date}px` }}>
+        <div className="gantt__cell gantt__cell--date" style={{ width: `${columnWidths.date}px`, display: columnWidths.date === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <input
               type="date"
@@ -212,13 +211,13 @@ const GanttRow = ({
         </div>
 
         {/* Duration cell - editable */}
-        <div className="gantt__cell gantt__cell--duration" style={{ width: `${columnWidths.duration}px` }}>
+        <div className="gantt__cell gantt__cell--duration" style={{ width: `${columnWidths.duration}px`, display: columnWidths.duration === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <input
               type="number"
               className="gantt__cell-input gantt__cell-input--duration"
               value={currentDuration}
-              min="1"
+              min="0"
               onChange={(e) => handleDurationChange(e.target.value)}
             />
           ) : (
@@ -227,7 +226,7 @@ const GanttRow = ({
         </div>
 
         {/* Progress cell */}
-        <div className="gantt__cell gantt__cell--progress" style={{ width: `${columnWidths.progress}px` }}>
+        <div className="gantt__cell gantt__cell--progress" style={{ width: `${columnWidths.progress}px`, display: columnWidths.progress === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <input
               type="number"
@@ -243,7 +242,7 @@ const GanttRow = ({
         </div>
 
         {/* Actions cell */}
-        <div className="gantt__cell gantt__cell--actions" style={{ width: `${columnWidths.actions}px` }}>
+        <div className="gantt__cell gantt__cell--actions" style={{ width: `${columnWidths.actions}px`, display: columnWidths.actions === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <>
               <button className="gantt__btn gantt__btn--save" onClick={handleSave} title="Uložiť">✓</button>
@@ -276,7 +275,7 @@ const GanttRow = ({
   if (renderMode === 'chart') {
     return (
       <div
-        className={`gantt__chart-row ${isHighlighted ? 'gantt__chart-row--highlighted' : ''} ${isHovered ? 'gantt__chart-row--hovered' : ''}`}
+        className={`gantt__chart-row ${isHovered ? 'gantt__chart-row--hovered' : ''}`}
         onMouseEnter={() => onHover(task.id)}
         onMouseLeave={() => onHover(null)}
       >
@@ -306,7 +305,7 @@ const GanttRow = ({
   // Render both (legacy mode)
   return (
     <div
-      className={`gantt__row ${isDragging ? 'gantt__row--dragging' : ''} ${isHighlighted ? 'gantt__row--highlighted' : ''}`}
+      className={`gantt__row ${isDragging ? 'gantt__row--dragging' : ''}`}
       draggable={!isEditing}
       onDragStart={handleRowDragStart}
       onDragOver={onDragOver}
@@ -315,7 +314,7 @@ const GanttRow = ({
       {/* Table part */}
       <div className="gantt__row-table" style={{ width: `${tableWidth}px` }}>
         {/* Name cell */}
-        <div className="gantt__cell gantt__cell--name" style={{ paddingLeft: `${depth * 16 + 8}px` }}>
+        <div className="gantt__cell gantt__cell--name" style={{ paddingLeft: `${depth * 16 + 8}px`, display: columnWidths.name === 0 ? 'none' : undefined }}>
           {hasChildren ? (
             <button
               className="gantt__expand-btn"
@@ -355,7 +354,7 @@ const GanttRow = ({
         </div>
 
         {/* Start date cell */}
-        <div className="gantt__cell gantt__cell--date">
+        <div className="gantt__cell gantt__cell--date" style={{ display: columnWidths.date === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <input
               type="date"
@@ -369,13 +368,13 @@ const GanttRow = ({
         </div>
 
         {/* Duration cell */}
-        <div className="gantt__cell gantt__cell--duration">
+        <div className="gantt__cell gantt__cell--duration" style={{ display: columnWidths.duration === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <input
               type="number"
               className="gantt__cell-input gantt__cell-input--duration"
               value={currentDuration}
-              min="1"
+              min="0"
               onChange={(e) => handleDurationChange(e.target.value)}
             />
           ) : (
@@ -384,7 +383,7 @@ const GanttRow = ({
         </div>
 
         {/* Progress cell */}
-        <div className="gantt__cell gantt__cell--progress">
+        <div className="gantt__cell gantt__cell--progress" style={{ display: columnWidths.progress === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <input
               type="number"
@@ -400,7 +399,7 @@ const GanttRow = ({
         </div>
 
         {/* Actions cell */}
-        <div className="gantt__cell gantt__cell--actions">
+        <div className="gantt__cell gantt__cell--actions" style={{ display: columnWidths.actions === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <>
               <button className="gantt__btn gantt__btn--save" onClick={handleSave} title="Uložiť">✓</button>

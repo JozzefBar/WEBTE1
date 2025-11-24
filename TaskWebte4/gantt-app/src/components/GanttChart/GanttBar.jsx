@@ -22,6 +22,7 @@ const GanttBar = ({
   const [currentWidth, setCurrentWidth] = useState(position.width);
   const [currentProgress, setCurrentProgress] = useState(task.progress || 0);
   const [isHovered, setIsHovered] = useState(false);
+  const [isTooltipHovered, setIsTooltipHovered] = useState(false);
 
   const duration = calculateDuration(task.startDate, task.endDate);
   const isMilestone = duration === 0;
@@ -152,12 +153,15 @@ const GanttBar = ({
       }
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e) => {
+      // Determine if there was meaningful movement (avoid treating a simple click as a drag)
+      const moved = dragStart && typeof e?.clientX === 'number' && Math.abs(e.clientX - dragStart.x) > 2;
+
       if (isDraggingProgress) {
         // Update progress
         onUpdate(task.id, { progress: currentProgress });
-      } else {
-        // Calculate new dates and update
+      } else if ((isDragging || isResizing) && moved) {
+        // Only recalc dates if the user actually dragged or resized meaningfully
         const newDates = calculateDatesFromPosition(currentLeft, currentWidth, dateRange);
         onUpdate(task.id, newDates);
       }
@@ -179,36 +183,47 @@ const GanttBar = ({
 
   // Milestone (diamond shape)
   if (isMilestone) {
+    const connectorOffsetLeft = -12; // px from milestone center
+    const connectorOffsetRight = 18; // px from milestone left to right connector
+
     return (
       <div
         ref={barRef}
-        className={`gantt__milestone ${isDragging ? 'gantt__milestone--dragging' : ''}`}
-        style={{
-          left: `${currentLeft}%`,
-          backgroundColor: task.color
-        }}
-        onMouseDown={handleMouseDown}
-        onDoubleClick={(e) => {
-          e.stopPropagation();
-          onDoubleClick(task.id);
-        }}
+        className="gantt__milestone-wrapper"
+        style={{ left: `${currentLeft}%`, top: '5px', position: 'absolute' }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        title={`${task.name}: ${task.startDate}`}
       >
+        {/* Left connector - positioned outside rotated diamond so it doesn't inherit rotation */}
+        {(isHovered || isTooltipHovered || isLinking) && (
+          <div
+            className={`gantt__bar-connector gantt__bar-connector--left ${isLinking && !isLinkSource ? 'gantt__bar-connector--active' : ''}`}
+            onClick={(e) => handleConnectorClick(e, 'left')}
+            style={{ left: `${connectorOffsetLeft}px`, top: '50%', transform: 'translateY(-50%)' }}
+          />
+        )}
+
+        {/* The rotated diamond itself - keep drag behavior on the diamond */}
+        <div
+          className={`gantt__milestone gantt__milestone--goal ${isDragging ? 'gantt__milestone--dragging' : ''}`}
+          style={{ backgroundColor: '#8b5cf6' }}
+          onMouseDown={handleMouseDown}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            onDoubleClick(task.id);
+          }}
+        />
+
+        {/* Milestone label placed to the right, horizontal in-row */}
         <span className="gantt__milestone-label">{task.name}</span>
-        {/* Connection points for milestone */}
-        {(isHovered || isLinking) && (
-          <>
-            <div
-              className={`gantt__bar-connector gantt__bar-connector--left ${isLinking && !isLinkSource ? 'gantt__bar-connector--active' : ''}`}
-              onClick={(e) => handleConnectorClick(e, 'left')}
-            />
-            <div
-              className={`gantt__bar-connector gantt__bar-connector--right ${isLinking && !isLinkSource ? 'gantt__bar-connector--active' : ''}`}
-              onClick={(e) => handleConnectorClick(e, 'right')}
-            />
-          </>
+
+        {/* Right connector */}
+        {(isHovered || isTooltipHovered || isLinking) && (
+          <div
+            className={`gantt__bar-connector gantt__bar-connector--right ${isLinking && !isLinkSource ? 'gantt__bar-connector--active' : ''}`}
+            onClick={(e) => handleConnectorClick(e, 'right')}
+            style={{ left: `${connectorOffsetRight}px`, top: '50%', transform: 'translateY(-50%)' }}
+          />
         )}
       </div>
     );
@@ -247,7 +262,7 @@ const GanttBar = ({
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      title={`${task.name}: ${task.startDate} → ${task.endDate} (${currentProgress}%)`}
+      // removed native title to use custom interactive tooltip
     >
       {/* Progress fill (darker left part) */}
       <div
@@ -271,11 +286,20 @@ const GanttBar = ({
       <div
         className="gantt__bar-progress-handle"
         style={{ left: `${currentProgress}%` }}
+        onMouseDown={handleProgressDragStart}
       >
-        {/* Progress value - this is draggable */}
+        {/* Progress value / tooltip - make the whole label interactive
+            and also allow it to be used as a drag-handle for moving the bar
+            (clicking on the visible label will start moving the bar). */}
         <span
           className="gantt__bar-progress-value"
-          onMouseDown={handleProgressDragStart}
+          onMouseDown={(e) => {
+            // Clicking the visible tooltip should adjust the progress, not move the whole bar.
+            e.stopPropagation();
+            handleProgressDragStart(e);
+          }}
+          onMouseEnter={() => setIsTooltipHovered(true)}
+          onMouseLeave={() => setIsTooltipHovered(false)}
           style={{ cursor: 'ew-resize' }}
         >
           {currentProgress}%
@@ -289,7 +313,7 @@ const GanttBar = ({
       />
 
       {/* Connection points */}
-      {(isHovered || isLinking) && (
+      {(isHovered || isTooltipHovered || isLinking) && (
         <>
           <div
             className={`gantt__bar-connector gantt__bar-connector--left ${isLinking && !isLinkSource ? 'gantt__bar-connector--active' : ''}`}

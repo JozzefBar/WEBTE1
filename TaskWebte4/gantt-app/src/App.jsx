@@ -9,7 +9,6 @@ const translations = {
     title: 'Gantt Diagram',
     from: 'Od',
     to: 'Do',
-    search: 'Hľadať...',
     zoom: 'Priblíženie',
     export: 'Export',
     import: 'Import',
@@ -19,7 +18,6 @@ const translations = {
     addTask: 'Pridať úlohu',
     addFirstTask: 'Pridať prvú úlohu',
     noTasks: 'Žiadne úlohy.',
-    noResults: 'Žiadne výsledky',
     tags: 'Štítky',
     allTags: 'Všetky',
     legend: 'Legenda',
@@ -40,7 +38,6 @@ const translations = {
     title: 'Gantt Chart',
     from: 'From',
     to: 'To',
-    search: 'Search...',
     zoom: 'Zoom',
     export: 'Export',
     import: 'Import',
@@ -50,7 +47,6 @@ const translations = {
     addTask: 'Add task',
     addFirstTask: 'Add first task',
     noTasks: 'No tasks.',
-    noResults: 'No results',
     tags: 'Tags',
     allTags: 'All',
     legend: 'Legend',
@@ -71,7 +67,6 @@ const translations = {
 
 function App() {
   const [dateRange, setDateRange] = useLocalStorage('gantt-date-range', getDefaultDateRange());
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [language, setLanguage] = useLocalStorage('gantt-language', 'sk');
   const [theme, setTheme] = useLocalStorage('gantt-theme', 'light');
@@ -149,47 +144,10 @@ function App() {
       </header>
 
       <main className="app__main">
-        {/* Toolbar */}
-        <section className="toolbar">
-          <div className="toolbar__date-range">
-            <label className="toolbar__label">
-              {t.from}:
-              <input
-                type="date"
-                className="toolbar__input"
-                value={dateRange.start}
-                onChange={(e) =>
-                  setDateRange({ ...dateRange, start: e.target.value })
-                }
-              />
-            </label>
-            <label className="toolbar__label">
-              {t.to}:
-              <input
-                type="date"
-                className="toolbar__input"
-                value={dateRange.end}
-                onChange={(e) =>
-                  setDateRange({ ...dateRange, end: e.target.value })
-                }
-              />
-            </label>
-          </div>
-          <div className="toolbar__search">
-            <input
-              type="text"
-              className="toolbar__input toolbar__input--search"
-              placeholder={t.search}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </section>
-
         {/* Gantt Chart */}
         <GanttChart
           dateRange={dateRange}
-          searchQuery={searchQuery}
+          onDateRangeChange={setDateRange}
           selectedTags={selectedTags}
           onTagToggle={(tag) => {
             setSelectedTags(prev =>

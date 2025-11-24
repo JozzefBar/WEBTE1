@@ -71,12 +71,20 @@ export const useTasks = () => {
   // Add new task
   const addTask = useCallback((parentId = null) => {
     const today = formatDate(new Date());
-    const endDate = addDays(today, 7);
+    let startForNew = today;
+    // if adding as child, inherit parent's startDate when possible
+    if (parentId) {
+      const parent = tasks.find(t => t.id === parentId);
+      if (parent && parent.startDate) {
+        startForNew = parent.startDate;
+      }
+    }
+    const endDate = addDays(startForNew, 7);
 
     const newTask = {
       id: Date.now(),
       name: 'Nová úloha',
-      startDate: today,
+      startDate: startForNew,
       endDate: endDate,
       color: DEFAULT_COLOR,
       parentId: parentId,
