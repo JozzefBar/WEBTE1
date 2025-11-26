@@ -12,11 +12,15 @@ const GanttBar = ({
   isLinking,
   linkingFromTask,
   onStartLink,
-  onCompleteLink
+  onCompleteLink,
+  isDraggingRow,
+  isEditingRow,
+  onRowDragStart
 }) => {
   const { getCategoryById } = useCategories();
   const barRef = useRef(null);
   const inputRef = useRef(null);
+  const mouseDownPos = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(null); // 'left' or 'right'
   const [isDraggingProgress, setIsDraggingProgress] = useState(false);
@@ -62,21 +66,77 @@ const GanttBar = ({
     return barRef.current?.getBoundingClientRect().width || 1;
   };
 
+  // Handle HTML5 drag start for row reordering
+  const handleBarDragStart = (e) => {
+    // Don't allow drag if clicking on interactive elements or already dragging
+    if (e.target.classList.contains('gantt__bar-resize') ||
+        e.target.classList.contains('gantt__bar-connector') ||
+        e.target.classList.contains('gantt__bar-progress-handle') ||
+        e.target.closest('.gantt__bar-progress-value') ||
+        isDragging || isResizing) {
+      e.preventDefault();
+      return;
+    }
+
+    // If we already detected horizontal drag, cancel HTML5 drag
+    if (mouseDownPos.current && mouseDownPos.current.isHorizontal) {
+      e.preventDefault();
+      return;
+    }
+
+    // Vertical movement - allow HTML5 drag for reordering
+    if (onRowDragStart) {
+      onRowDragStart(e);
+    }
+  };
+
   // Handle drag start (move entire bar)
   const handleMouseDown = (e) => {
     if (e.target.classList.contains('gantt__bar-resize') ||
         e.target.classList.contains('gantt__bar-connector') ||
         e.target.classList.contains('gantt__bar-progress-handle')) return;
-    e.preventDefault();
-    e.stopPropagation();
 
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX,
-      initialLeft: currentLeft,
-      initialWidth: currentWidth,
-      containerWidth: getContainerWidth()
-    });
+    // Record mouse position for direction detection
+    const startX = e.clientX;
+    const startY = e.clientY;
+    mouseDownPos.current = { x: startX, y: startY, isHorizontal: false };
+
+    // Attach one-time mousemove to detect direction early
+    const handleFirstMove = (moveEvent) => {
+      const deltaX = Math.abs(moveEvent.clientX - startX);
+      const deltaY = Math.abs(moveEvent.clientY - startY);
+
+      // Need at least 3px movement to determine direction
+      if (deltaX < 3 && deltaY < 3) return;
+
+      // Determine if horizontal
+      if (deltaX > deltaY) {
+        // Horizontal drag - start custom drag
+        mouseDownPos.current.isHorizontal = true;
+        moveEvent.preventDefault();
+        moveEvent.stopPropagation();
+
+        setIsDragging(true);
+        setDragStart({
+          x: startX,
+          initialLeft: currentLeft,
+          initialWidth: currentWidth,
+          containerWidth: getContainerWidth()
+        });
+      }
+
+      // Remove this listener after first detection
+      document.removeEventListener('mousemove', handleFirstMove);
+    };
+
+    document.addEventListener('mousemove', handleFirstMove);
+
+    // Clean up listener on mouseup
+    const cleanup = () => {
+      document.removeEventListener('mousemove', handleFirstMove);
+      document.removeEventListener('mouseup', cleanup);
+    };
+    document.addEventListener('mouseup', cleanup);
   };
 
   // Handle resize start
@@ -247,6 +307,8 @@ const GanttBar = ({
         ref={barRef}
         className="gantt__milestone-wrapper"
         style={{ left: `${currentLeft}%`, top: '5px', position: 'absolute' }}
+        draggable={!isEditingRow}
+        onDragStart={handleBarDragStart}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -320,6 +382,8 @@ const GanttBar = ({
         width: `${currentWidth}%`,
         backgroundColor: barColor
       }}
+      draggable={!isEditingRow && !isDragging && !isResizing}
+      onDragStart={handleBarDragStart}
       onMouseDown={handleMouseDown}
       onDoubleClick={handleStartInlineEdit}
       onMouseEnter={() => setIsHovered(true)}
@@ -362,7 +426,6 @@ const GanttBar = ({
       <div
         className="gantt__bar-progress-handle"
         style={{ left: `${currentProgress}%` }}
-        onMouseDown={handleProgressDragStart}
       >
         {/* Progress value / tooltip - make the whole label interactive
             and also allow it to be used as a drag-handle for moving the bar

@@ -12,7 +12,8 @@ export const calculateDuration = (startDate, endDate) => {
   const start = new Date(startDate + 'T00:00:00Z');
   const end = new Date(endDate + 'T00:00:00Z');
   const diffDays = Math.round((end - start) / (1000 * 60 * 60 * 24));
-  return diffDays + 1; // +1 because both start and end dates are inclusive
+  // If same date (milestone/goal), return 0. Otherwise +1 for inclusive counting
+  return diffDays === 0 ? 0 : diffDays + 1;
 };
 
 export const addDays = (date, days) => {

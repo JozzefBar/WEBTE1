@@ -224,9 +224,4 @@
   background-color: #059669;
 }
 
-/* Print styles */
-@media print {
-  .category-modal-overlay {
-    display: none !important;
-  }
-}
+/* Print styles removed per user request */

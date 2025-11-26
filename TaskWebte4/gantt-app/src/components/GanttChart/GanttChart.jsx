@@ -46,7 +46,7 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
   const [linkingFromTask, setLinkingFromTask] = useState(null);
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
-  const [showDatesInPrint, setShowDatesInPrint] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const [columnWidths, setColumnWidths] = useState({
     name: 180,
     date: 90,
@@ -111,6 +111,17 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     // Task is outside range if it ends before range starts OR starts after range ends
     if (taskEnd < rangeStart || taskStart > rangeEnd) {
       return false;
+    }
+
+    // Filter by search query (ignore diacritics)
+    if (searchQuery && searchQuery.trim()) {
+      // Normalize strings to remove diacritics
+      const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const query = normalize(searchQuery);
+      const taskName = normalize(task.name || '');
+      if (!taskName.includes(query)) {
+        return false;
+      }
     }
 
     return true;
@@ -205,18 +216,9 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
   // Sync scroll: chart body -> timeline header (horizontal) + table body (vertical)
   // Chart body is the MASTER for vertical scroll
   const handleChartBodyScroll = (e) => {
-    // Sync horizontal to timeline header using scroll percentage for accuracy
+    // Sync horizontal to timeline header (both have same width, so direct sync)
     if (timelineHeaderRef.current) {
-      const scrollLeft = e.target.scrollLeft;
-      const maxScroll = e.target.scrollWidth - e.target.clientWidth;
-      const timelineMaxScroll = timelineHeaderRef.current.scrollWidth - timelineHeaderRef.current.clientWidth;
-
-      if (maxScroll > 0 && timelineMaxScroll > 0) {
-        const scrollPercent = scrollLeft / maxScroll;
-        timelineHeaderRef.current.scrollLeft = scrollPercent * timelineMaxScroll;
-      } else {
-        timelineHeaderRef.current.scrollLeft = scrollLeft;
-      }
+      timelineHeaderRef.current.scrollLeft = e.target.scrollLeft;
     }
     // Sync vertical to table body (chart is master, table follows)
     if (tableBodyRef.current) {
@@ -227,18 +229,10 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
   // Sync horizontal scroll: timeline header -> chart body
   const handleTimelineHeaderScroll = (e) => {
     if (chartBodyRef.current) {
-      const scrollLeft = e.target.scrollLeft;
-      const maxScroll = e.target.scrollWidth - e.target.clientWidth;
-      const chartMaxScroll = chartBodyRef.current.scrollWidth - chartBodyRef.current.clientWidth;
-
-      if (maxScroll > 0 && chartMaxScroll > 0) {
-        const scrollPercent = scrollLeft / maxScroll;
-        chartBodyRef.current.scrollLeft = scrollPercent * chartMaxScroll;
-      } else {
-        chartBodyRef.current.scrollLeft = scrollLeft;
-      }
+      chartBodyRef.current.scrollLeft = e.target.scrollLeft;
     }
   };
+
 
   // Sync scroll: table body -> table header (horizontal) + chart body (vertical)
   const handleTableBodyScroll = (e) => {
@@ -359,7 +353,7 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
   const tableContentWidth = columnWidths.name + columnWidths.date + columnWidths.duration + columnWidths.progress + columnWidths.actions;
 
   return (
-    <div className={`gantt ${isResizingSplit ? 'gantt--resizing' : ''} ${!showDatesInPrint ? 'gantt--hide-dates-print' : ''}`} ref={containerRef}>
+    <div className={`gantt ${isResizingSplit ? 'gantt--resizing' : ''}`} ref={containerRef}>
       {/* Toolbar - full width */}
       <div className="gantt__toolbar">
         {/* Row 1: Date range */}
@@ -384,6 +378,16 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
               onChange={(e) =>
                 onDateRangeChange({ ...dateRange, end: e.target.value })
               }
+            />
+          </label>
+          <label className="gantt__toolbar-label">
+            {t?.search || 'Hľadať'}:
+            <input
+              type="text"
+              className="gantt__toolbar-input gantt__toolbar-input--search"
+              placeholder={t?.searchPlaceholder || 'Zadajte názov úlohy...'}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </label>
         </div>
@@ -644,6 +648,22 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                 onScroll={handleChartBodyScroll}
               >
                 <div className="gantt__chart-scroll" style={{ minWidth: `${timelineMinWidth}px` }}>
+              {/* Grid overlay based on timeline units */}
+              <div className="gantt__chart-grid" style={{ height: `${filteredTasks.length * 40}px` }}>
+                {timelineUnits.map((unit, index) => (
+                  <div
+                    key={index}
+                    className="gantt__chart-grid-line"
+                    style={{ left: `${unit.left}%` }}
+                  />
+                ))}
+                {/* Right edge line */}
+                <div
+                  className="gantt__chart-grid-line"
+                  style={{ left: '100%' }}
+                  />
+              </div>
+
               {filteredTasks.length > 0 && (
                 <>
                   <DependencyArrows
@@ -764,18 +784,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
               <span className="gantt__legend-label">{t?.today || 'Dnes'}</span>
             </div>
           )}
-        </div>
-
-        {/* Print options */}
-        <div className="gantt__legend-print-options">
-          <label className="gantt__legend-checkbox">
-            <input
-              type="checkbox"
-              checked={showDatesInPrint}
-              onChange={(e) => setShowDatesInPrint(e.target.checked)}
-            />
-            <span>{t?.showDatesInPrint || 'Zobraziť dátumy pri tlači'}</span>
-          </label>
         </div>
       </div>
 

@@ -15,11 +15,11 @@ export const useTasks = (translations = {}) => {
 
   // Initialize history on first load
   useEffect(() => {
-    if (historyRef.current.length === 0 && tasks.length >= 0) {
+    if (historyRef.current.length === 0) {
       historyRef.current = [JSON.stringify(tasks)];
       indexRef.current = 0;
     }
-  }, []);
+  }, [tasks]);
 
   // Track changes for undo/redo
   const saveToHistory = useCallback((newTasks) => {
@@ -246,10 +246,12 @@ export const useTasks = (translations = {}) => {
 
   // Toggle task expand/collapse
   const toggleExpand = useCallback((taskId) => {
-    setTasks(tasks.map(task =>
+    const newTasks = tasks.map(task =>
       task.id === taskId ? { ...task, expanded: !task.expanded } : task
-    ));
-  }, [tasks, setTasks]);
+    );
+    saveToHistory(newTasks);
+    setTasks(newTasks);
+  }, [tasks, setTasks, saveToHistory]);
 
   // Get visible tasks (respecting expanded/collapsed state)
   const getVisibleTasks = useCallback(() => {

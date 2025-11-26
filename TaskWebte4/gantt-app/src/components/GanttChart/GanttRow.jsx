@@ -129,7 +129,9 @@ const GanttRow = ({
   // Handle duration change - recalculate end date
   const handleDurationChange = (newDuration) => {
     const days = Math.max(0, parseInt(newDuration) || 0);
-    const newEndDate = addDays(localEditData?.startDate || task.startDate, days - 1);
+    const startDate = localEditData?.startDate || task.startDate;
+    // For 0 days (milestone), endDate = startDate. Otherwise, endDate = startDate + (days - 1)
+    const newEndDate = days === 0 ? startDate : addDays(startDate, days - 1);
     const updatedData = { ...localEditData, endDate: newEndDate };
     setLocalEditData(updatedData);
     // Update in real-time for diagram sync
@@ -336,7 +338,9 @@ const GanttRow = ({
   if (renderMode === 'chart') {
     return (
       <div
-        className={`gantt__chart-row ${isHovered ? 'gantt__chart-row--hovered' : ''}`}
+        className={`gantt__chart-row ${isDragging ? 'gantt__chart-row--dragging' : ''} ${isHovered ? 'gantt__chart-row--hovered' : ''}`}
+        onDragOver={onDragOver}
+        onDrop={(e) => onDrop(e, task.id)}
         onMouseEnter={() => onHover(task.id)}
         onMouseLeave={() => onHover(null)}
       >
@@ -351,6 +355,9 @@ const GanttRow = ({
           linkingFromTask={linkingFromTask}
           onStartLink={onStartLink}
           onCompleteLink={onCompleteLink}
+          isDraggingRow={isDragging}
+          isEditingRow={isEditing}
+          onRowDragStart={handleRowDragStart}
         />
         {/* Today marker in row */}
         {todayPosition !== null && (

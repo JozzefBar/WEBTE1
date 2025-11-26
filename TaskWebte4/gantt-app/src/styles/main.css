@@ -585,13 +585,6 @@ body {
   position: relative;
   height: 40px;
   border-bottom: 1px solid var(--color-border);
-  background: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent calc(100% / 12 - 1px),
-    var(--color-border) calc(100% / 12 - 1px),
-    var(--color-border) calc(100% / 12)
-  );
 }
 
 .gantt__chart-row--highlighted {
@@ -600,6 +593,29 @@ body {
 
 .gantt__chart-row--hovered {
   background-color: rgba(224, 242, 254, 0.7);
+}
+
+.gantt__chart-row--dragging {
+  opacity: 0.5;
+  background-color: rgba(219, 234, 254, 0.7);
+}
+
+/* Chart grid overlay */
+.gantt__chart-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.gantt__chart-grid-line {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  background-color: var(--color-border);
 }
 
 /* Duration input */
@@ -1012,19 +1028,19 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 20px;
+  width: 10px;
   cursor: ew-resize;
   z-index: 800; /* larger hit area, sit above bar but below connectors */
   transition: background-color 0.15s;
 }
 
 .gantt__bar-resize--left {
-  left: -10px; /* expand clickable area outside the bar */
+  left: -5px; /* expand clickable area outside the bar */
   border-radius: 4px 0 0 4px;
 }
 
 .gantt__bar-resize--right {
-  right: -10px; /* expand clickable area outside the bar */
+  right: -5px; /* expand clickable area outside the bar */
   border-radius: 0 4px 4px 0;
 }
 
@@ -1307,6 +1323,10 @@ body {
 .gantt__toolbar-input:focus {
   outline: none;
   border-color: var(--color-primary);
+}
+
+.gantt__toolbar-input--search {
+  min-width: 200px;
 }
 
 .gantt__toolbar-search {
@@ -1621,26 +1641,6 @@ body {
   white-space: nowrap;
 }
 
-.gantt__legend-print-options {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-left: auto;
-}
-
-.gantt__legend-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  font-size: 0.75rem;
-  color: var(--color-text);
-}
-
-.gantt__legend-checkbox input[type="checkbox"] {
-  cursor: pointer;
-}
-
 /* Category select in edit mode */
 .gantt__category-select {
   padding: 0.25rem 0.5rem;
@@ -1683,84 +1683,4 @@ body {
 }
 
 /* Print */
-@media print {
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  body {
-    background-color: white;
-  }
-
-  .app {
-    min-height: auto;
-  }
-
-  .app__header {
-    border-bottom: 2px solid #000;
-    padding: 0.5rem 1rem;
-  }
-
-  .app__lang-select,
-  .toolbar,
-  .gantt__toolbar,
-  .gantt__btn,
-  .gantt__expand-btn,
-  .gantt__action-btn,
-  .gantt__legend-print-options,
-  .app__theme-btn {
-    display: none !important;
-  }
-
-  /* Hide dates when checkbox is unchecked */
-  .gantt--hide-dates-print .gantt__cell--date,
-  .gantt--hide-dates-print .gantt__timeline-header,
-  .gantt--hide-dates-print .gantt__chart-body {
-    display: none !important;
-  }
-
-  .gantt {
-    box-shadow: none;
-    border: 2px solid #000;
-    page-break-inside: avoid;
-  }
-
-  .gantt__header {
-    border-bottom: 2px solid #000;
-    background-color: #f0f0f0 !important;
-  }
-
-  .gantt__row {
-    border-bottom: 1px solid #333;
-  }
-
-  .gantt__row-table {
-    border-right: 2px solid #000;
-  }
-
-  .gantt__bar {
-    border: 1px solid rgba(0,0,0,0.3);
-  }
-
-  .gantt__bar-label {
-    color: white !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-  }
-
-  .gantt__today-marker {
-    background-color: #000 !important;
-  }
-
-  .gantt__cell-color {
-    border: 1px solid #000;
-  }
-
-  /* Legend for print */
-  .gantt__legend {
-    page-break-before: always;
-    margin-top: 1rem;
-    padding: 1rem;
-    border: 1px solid #000;
-  }
-}
+/* Print styles removed per user request */

@@ -61,9 +61,7 @@ const CategoryManager = ({ isOpen, onClose, translations: t }) => {
   };
 
   const handleReset = () => {
-    if (window.confirm(t?.confirmReset || 'Naozaj chcete obnoviť predvolené kategórie?')) {
-      resetToDefaults();
-    }
+    resetToDefaults();
   };
 
   return (
