@@ -1,0 +1,232 @@
+.category-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.category-modal {
+  background-color: var(--color-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.category-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.category-modal__header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--color-text);
+}
+
+.category-modal__close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--color-text);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.category-modal__close:hover {
+  background-color: var(--color-hover);
+}
+
+.category-modal__body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background-color: var(--color-hover);
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+}
+
+.category-item--new {
+  border-style: dashed;
+}
+
+.category-item__color {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.category-item__color-input {
+  width: 50px;
+  height: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.category-item__name {
+  flex: 1;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.category-item__name-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.category-item__btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.category-item__btn--edit {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.category-item__btn--edit:hover {
+  background-color: #2563eb;
+}
+
+.category-item__btn--delete {
+  background-color: #ef4444;
+  color: white;
+}
+
+.category-item__btn--delete:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.category-item__btn--delete:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.category-item__btn--save {
+  background-color: #10b981;
+  color: white;
+}
+
+.category-item__btn--save:hover {
+  background-color: #059669;
+}
+
+.category-item__btn--cancel {
+  background-color: #6b7280;
+  color: white;
+}
+
+.category-item__btn--cancel:hover {
+  background-color: #4b5563;
+}
+
+.category-modal__add-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.category-modal__add-btn:hover {
+  background-color: #2563eb;
+}
+
+.category-modal__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.category-modal__reset-btn,
+.category-modal__done-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.category-modal__reset-btn {
+  background-color: #6b7280;
+  color: white;
+}
+
+.category-modal__reset-btn:hover {
+  background-color: #4b5563;
+}
+
+.category-modal__done-btn {
+  background-color: #10b981;
+  color: white;
+}
+
+.category-modal__done-btn:hover {
+  background-color: #059669;
+}
+
+/* Print styles */
+@media print {
+  .category-modal-overlay {
+    display: none !important;
+  }
+}

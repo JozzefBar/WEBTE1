@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import GanttBar from './GanttBar';
 import { calculateDuration, calculateTaskPosition, addDays } from '../../utils/dateUtils';
+import { useCategories } from '../../hooks/useCategories';
 
 const GanttRow = ({
   task,
@@ -31,13 +32,14 @@ const GanttRow = ({
   onHover,
   columnWidths = { name: 180, date: 90, duration: 50, progress: 50, actions: 50 }
 }) => {
+  const { categories, getCategoryById } = useCategories();
   const isLinking = linkingFromTask !== null;
   const [localEditData, setLocalEditData] = useState(null);
   const [newTagInput, setNewTagInput] = useState('');
 
   // Start inline editing
   const handleStartEdit = () => {
-    setLocalEditData({ ...task, tags: task.tags || [] });
+    setLocalEditData({ ...task, tags: task.tags || [], category: task.category || 'task' });
     setNewTagInput('');
     onStartEdit(task.id);
   };
@@ -146,6 +148,18 @@ const GanttRow = ({
                   if (e.key === 'Escape') handleCancel();
                 }}
               />
+              {/* Category selector */}
+              <select
+                className="gantt__category-select"
+                value={currentData.category || 'task'}
+                onChange={(e) => handleChange('category', e.target.value)}
+              >
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
               {/* Tag editor */}
               <div className="gantt__tag-editor">
                 <div className="gantt__tag-list">

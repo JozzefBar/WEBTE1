@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import GanttRow from './GanttRow';
 import DependencyArrows from './DependencyArrows';
+import { CategoryManager } from '../CategoryManager';
 import { generateTimelineUnits } from '../../utils/dateUtils';
 import { useTasks } from '../../hooks/useTasks';
+import { useCategories } from '../../hooks/useCategories';
 
 const ZOOM_LEVELS = [
   { id: 'day', days: 1 },
@@ -30,9 +32,11 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     undo,
     redo,
     canUndo,
-    canRedo
+    canRedo,
+    tasks
   } = useTasks();
 
+  const { categories, getCategoryById } = useCategories();
   const allTags = useMemo(() => getAllTags(), [getAllTags]);
 
   const [draggedTaskId, setDraggedTaskId] = useState(null);
@@ -41,6 +45,8 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
   const [isResizingSplit, setIsResizingSplit] = useState(false);
   const [linkingFromTask, setLinkingFromTask] = useState(null);
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
+  const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
+  const [showDatesInPrint, setShowDatesInPrint] = useState(true);
   const [columnWidths, setColumnWidths] = useState({
     name: 180,
     date: 90,
@@ -96,6 +102,14 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     }
     return true;
   });
+
+  // Get unique categories used in tasks
+  const usedCategories = useMemo(() => {
+    const categoryIds = new Set(tasks.map(task => task.category || 'task'));
+    return Array.from(categoryIds)
+      .map(id => getCategoryById(id))
+      .filter(cat => cat !== undefined);
+  }, [tasks, getCategoryById]);
 
   const getTodayPosition = () => {
     const today = new Date();
@@ -317,7 +331,7 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
   const tableContentWidth = columnWidths.name + columnWidths.date + columnWidths.duration + columnWidths.progress + columnWidths.actions;
 
   return (
-    <div className={`gantt ${isResizingSplit ? 'gantt--resizing' : ''}`} ref={containerRef}>
+    <div className={`gantt ${isResizingSplit ? 'gantt--resizing' : ''} ${!showDatesInPrint ? 'gantt--hide-dates-print' : ''}`} ref={containerRef}>
       {/* Toolbar - full width */}
       <div className="gantt__toolbar">
         {/* Row 1: Date range */}
@@ -376,6 +390,20 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
               title={t?.redo || 'Dopredu'}
             >
               ↷
+            </button>
+            <button
+              className="gantt__action-btn"
+              onClick={() => setIsCategoryManagerOpen(true)}
+              title={t?.manageCategories || 'Správa kategórií'}
+            >
+              🎨 {t?.categories || 'Kategórie'}
+            </button>
+            <button
+              className="gantt__action-btn"
+              onClick={() => window.print()}
+              title={t?.print || 'Tlačiť'}
+            >
+              🖨️ {t?.print || 'Tlačiť'}
             </button>
             <button className="gantt__action-btn" onClick={onExport} title={t?.export || 'Export JSON'}>
               📥 {t?.export || 'Export'}
@@ -694,14 +722,12 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
       <div className="gantt__legend">
         <span className="gantt__legend-title">{t?.legend || 'Legenda'}:</span>
         <div className="gantt__legend-items">
-          <div className="gantt__legend-item">
-            <span className="gantt__legend-color" style={{ backgroundColor: '#10b981' }} />
-            <span className="gantt__legend-label">{t?.mainTask || 'Hlavná úloha'}</span>
-          </div>
-          <div className="gantt__legend-item">
-            <span className="gantt__legend-color" style={{ backgroundColor: '#3b82f6' }} />
-            <span className="gantt__legend-label">{t?.task || 'Úloha'}</span>
-          </div>
+          {usedCategories.map(category => (
+            <div key={category.id} className="gantt__legend-item">
+              <span className="gantt__legend-color" style={{ backgroundColor: category.color }} />
+              <span className="gantt__legend-label">{category.name}</span>
+            </div>
+          ))}
           {todayPosition !== null && (
             <div className="gantt__legend-item">
               <span className="gantt__legend-color gantt__legend-color--today" />
@@ -709,7 +735,26 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
             </div>
           )}
         </div>
+
+        {/* Print options */}
+        <div className="gantt__legend-print-options">
+          <label className="gantt__legend-checkbox">
+            <input
+              type="checkbox"
+              checked={showDatesInPrint}
+              onChange={(e) => setShowDatesInPrint(e.target.checked)}
+            />
+            <span>{t?.showDatesInPrint || 'Zobraziť dátumy pri tlači'}</span>
+          </label>
+        </div>
       </div>
+
+      {/* Category Manager Modal */}
+      <CategoryManager
+        isOpen={isCategoryManagerOpen}
+        onClose={() => setIsCategoryManagerOpen(false)}
+        translations={t}
+      />
     </div>
   );
 };

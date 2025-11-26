@@ -2,7 +2,6 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { formatDate, addDays } from '../utils/dateUtils';
 
-const DEFAULT_COLOR = '#3b82f6';
 const MAX_HISTORY = 50;
 
 export const useTasks = () => {
@@ -86,7 +85,7 @@ export const useTasks = () => {
       name: 'Nová úloha',
       startDate: startForNew,
       endDate: endDate,
-      color: DEFAULT_COLOR,
+      category: parentId === null ? 'summary' : 'task', // Root tasks are summary, subtasks are regular
       parentId: parentId,
       expanded: true,
       progress: 0,

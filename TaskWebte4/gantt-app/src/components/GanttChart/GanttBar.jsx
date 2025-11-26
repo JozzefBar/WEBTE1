@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { calculateDatesFromPosition, calculateDuration } from '../../utils/dateUtils';
+import { useCategories } from '../../hooks/useCategories';
 
 const GanttBar = ({
   task,
@@ -13,6 +14,7 @@ const GanttBar = ({
   onStartLink,
   onCompleteLink
 }) => {
+  const { getCategoryById } = useCategories();
   const barRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(null); // 'left' or 'right'
@@ -27,6 +29,10 @@ const GanttBar = ({
   const duration = calculateDuration(task.startDate, task.endDate);
   const isMilestone = duration === 0;
   const isLinkSource = linkingFromTask === task.id;
+
+  // Get category color
+  const category = getCategoryById(task.category || 'task');
+  const categoryColor = category?.color || '#3b82f6';
 
   // Update when position changes externally
   useEffect(() => {
@@ -206,7 +212,7 @@ const GanttBar = ({
         {/* The rotated diamond itself - keep drag behavior on the diamond */}
         <div
           className={`gantt__milestone gantt__milestone--goal ${isDragging ? 'gantt__milestone--dragging' : ''}`}
-          style={{ backgroundColor: '#8b5cf6' }}
+          style={{ backgroundColor: categoryColor }}
           onMouseDown={handleMouseDown}
           onDoubleClick={(e) => {
             e.stopPropagation();
@@ -229,8 +235,8 @@ const GanttBar = ({
     );
   }
 
-  // Green for root tasks, blue for all subtasks (consistent colors)
-  const barColor = isParent ? '#10b981' : '#3b82f6';
+  // Use category color
+  const barColor = categoryColor;
 
   // Calculate darker color for progress
   const getDarkerColor = (color) => {

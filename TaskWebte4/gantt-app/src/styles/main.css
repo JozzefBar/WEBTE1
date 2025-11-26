@@ -1565,6 +1565,44 @@ body {
   white-space: nowrap;
 }
 
+.gantt__legend-print-options {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.gantt__legend-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--color-text);
+}
+
+.gantt__legend-checkbox input[type="checkbox"] {
+  cursor: pointer;
+}
+
+/* Category select in edit mode */
+.gantt__category-select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  margin-top: 0.25rem;
+  width: 100%;
+}
+
+.gantt__category-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .app__header {
@@ -1613,7 +1651,16 @@ body {
   .gantt__toolbar,
   .gantt__btn,
   .gantt__expand-btn,
-  .gantt__action-btn {
+  .gantt__action-btn,
+  .gantt__legend-print-options,
+  .app__theme-btn {
+    display: none !important;
+  }
+
+  /* Hide dates when checkbox is unchecked */
+  .gantt--hide-dates-print .gantt__cell--date,
+  .gantt--hide-dates-print .gantt__timeline-header,
+  .gantt--hide-dates-print .gantt__chart-body {
     display: none !important;
   }
 

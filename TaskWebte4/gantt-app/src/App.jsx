@@ -12,6 +12,7 @@ const translations = {
     zoom: 'Priblíženie',
     export: 'Export',
     import: 'Import',
+    print: 'Tlačiť',
     taskName: 'Názov úlohy',
     startDate: 'Začiatok',
     days: 'Dni',
@@ -30,6 +31,16 @@ const translations = {
     week: 'Týždeň',
     month: 'Mesiac',
     quarter: 'Štvrťrok',
+    categories: 'Kategórie',
+    manageCategories: 'Správa kategórií',
+    addCategory: 'Pridať kategóriu',
+    categoryName: 'Názov kategórie',
+    confirmDeleteCategory: 'Naozaj chcete odstrániť túto kategóriu?',
+    cannotDeleteDefault: 'Nemožno odstrániť predvolenú kategóriu.',
+    confirmReset: 'Naozaj chcete obnoviť predvolené kategórie?',
+    resetToDefaults: 'Obnoviť predvolené',
+    done: 'Hotovo',
+    showDatesInPrint: 'Zobraziť dátumy pri tlači',
     dayNames: ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'],
     monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'Máj', 'Jún', 'Júl', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'],
     weekPrefix: 'T'
@@ -41,6 +52,7 @@ const translations = {
     zoom: 'Zoom',
     export: 'Export',
     import: 'Import',
+    print: 'Print',
     taskName: 'Task name',
     startDate: 'Start',
     days: 'Days',
@@ -59,6 +71,16 @@ const translations = {
     week: 'Week',
     month: 'Month',
     quarter: 'Quarter',
+    categories: 'Categories',
+    manageCategories: 'Manage Categories',
+    addCategory: 'Add category',
+    categoryName: 'Category name',
+    confirmDeleteCategory: 'Are you sure you want to delete this category?',
+    cannotDeleteDefault: 'Cannot delete default category.',
+    confirmReset: 'Are you sure you want to reset to default categories?',
+    resetToDefaults: 'Reset to defaults',
+    done: 'Done',
+    showDatesInPrint: 'Show dates in print',
     dayNames: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     weekPrefix: 'W'
@@ -85,10 +107,13 @@ function App() {
   // Export tasks
   const handleExport = useCallback(() => {
     const tasks = JSON.parse(localStorage.getItem('gantt-tasks') || '[]');
+    const categories = JSON.parse(localStorage.getItem('gantt-categories') || '[]');
     const data = {
       tasks,
+      categories,
       dateRange,
-      exportedAt: new Date().toISOString()
+      exportedAt: new Date().toISOString(),
+      version: '1.0'
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -106,10 +131,47 @@ function App() {
       try {
         const data = JSON.parse(e.target.result);
         if (data.tasks) {
+          // Import tasks
           localStorage.setItem('gantt-tasks', JSON.stringify(data.tasks));
+
+          // Import date range
           if (data.dateRange) {
             localStorage.setItem('gantt-date-range', JSON.stringify(data.dateRange));
           }
+
+          // Import categories or auto-detect from tasks
+          if (data.categories) {
+            // Merge imported categories with existing ones
+            const existingCategories = JSON.parse(localStorage.getItem('gantt-categories') || '[]');
+            const existingIds = new Set(existingCategories.map(c => c.id));
+
+            // Add imported categories that don't exist yet
+            const newCategories = data.categories.filter(c => !existingIds.has(c.id));
+            const mergedCategories = [...existingCategories, ...newCategories];
+
+            localStorage.setItem('gantt-categories', JSON.stringify(mergedCategories));
+          } else {
+            // Auto-detect missing categories from tasks
+            const existingCategories = JSON.parse(localStorage.getItem('gantt-categories') || '[]');
+            const existingIds = new Set(existingCategories.map(c => c.id));
+            const usedCategoryIds = new Set(data.tasks.map(t => t.category).filter(Boolean));
+
+            // Create missing categories with default colors
+            const missingIds = Array.from(usedCategoryIds).filter(id => !existingIds.has(id));
+            const defaultColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+
+            const newCategories = missingIds.map((id, index) => ({
+              id,
+              name: id.charAt(0).toUpperCase() + id.slice(1),
+              color: defaultColors[index % defaultColors.length]
+            }));
+
+            if (newCategories.length > 0) {
+              const mergedCategories = [...existingCategories, ...newCategories];
+              localStorage.setItem('gantt-categories', JSON.stringify(mergedCategories));
+            }
+          }
+
           window.location.reload();
         }
       } catch (err) {
