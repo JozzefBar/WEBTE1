@@ -43,7 +43,11 @@ const translations = {
     showDatesInPrint: 'Zobraziť dátumy pri tlači',
     dayNames: ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'],
     monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'Máj', 'Jún', 'Júl', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'],
-    weekPrefix: 'T'
+    weekPrefix: 'T',
+    category_summary: 'Hlavná úloha',
+    category_task: 'Úloha',
+    category_goal: 'Cieľ',
+    newTask: 'Nová úloha'
   },
   en: {
     title: 'Gantt Chart',
@@ -83,7 +87,11 @@ const translations = {
     showDatesInPrint: 'Show dates in print',
     dayNames: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    weekPrefix: 'W'
+    weekPrefix: 'W',
+    category_summary: 'Summary task',
+    category_task: 'Task',
+    category_goal: 'Goal',
+    newTask: 'New task'
   }
 };
 

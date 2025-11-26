@@ -8,9 +8,11 @@ export const formatDate = (date) => {
 
 export const calculateDuration = (startDate, endDate) => {
   if (!startDate || !endDate) return 0;
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  return Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+  // Use UTC to avoid timezone issues
+  const start = new Date(startDate + 'T00:00:00Z');
+  const end = new Date(endDate + 'T00:00:00Z');
+  const diffDays = Math.round((end - start) / (1000 * 60 * 60 * 24));
+  return diffDays + 1; // +1 because both start and end dates are inclusive
 };
 
 export const addDays = (date, days) => {
@@ -20,14 +22,15 @@ export const addDays = (date, days) => {
 };
 
 export const calculateTaskPosition = (task, dateRange) => {
-  const rangeStart = new Date(dateRange.start);
-  const rangeEnd = new Date(dateRange.end);
-  const taskStart = new Date(task.startDate);
-  const taskEnd = new Date(task.endDate);
+  // Use UTC to avoid timezone issues
+  const rangeStart = new Date(dateRange.start + 'T00:00:00Z');
+  const rangeEnd = new Date(dateRange.end + 'T00:00:00Z');
+  const taskStart = new Date(task.startDate + 'T00:00:00Z');
+  const taskEnd = new Date(task.endDate + 'T00:00:00Z');
 
-  const totalDays = (rangeEnd - rangeStart) / (1000 * 60 * 60 * 24);
-  const startOffsetDays = (taskStart - rangeStart) / (1000 * 60 * 60 * 24);
-  const taskDurationDays = (taskEnd - taskStart) / (1000 * 60 * 60 * 24) + 1;
+  const totalDays = Math.round((rangeEnd - rangeStart) / (1000 * 60 * 60 * 24));
+  const startOffsetDays = Math.round((taskStart - rangeStart) / (1000 * 60 * 60 * 24));
+  const taskDurationDays = Math.round((taskEnd - taskStart) / (1000 * 60 * 60 * 24)) + 1;
 
   const leftPercent = (startOffsetDays / totalDays) * 100;
   const widthPercent = (taskDurationDays / totalDays) * 100;

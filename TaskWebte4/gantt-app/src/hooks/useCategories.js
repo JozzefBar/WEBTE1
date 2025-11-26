@@ -1,11 +1,11 @@
 import { useLocalStorage } from './useLocalStorage';
 
+// Default categories without name - names come from translations
+// When user edits a category, the name field is set and overrides translation
 const DEFAULT_CATEGORIES = [
-  { id: 'summary', name: 'Hlavná úloha', color: '#10b981' },
-  { id: 'task', name: 'Úloha', color: '#3b82f6' },
-  { id: 'development', name: 'Vývoj', color: '#8b5cf6' },
-  { id: 'testing', name: 'Testovanie', color: '#f59e0b' },
-  { id: 'documentation', name: 'Dokumentácia', color: '#6b7280' }
+  { id: 'summary', color: '#10b981' },
+  { id: 'task', color: '#3b82f6' },
+  { id: 'goal', color: '#f97316' }
 ];
 
 export const useCategories = () => {
@@ -29,7 +29,7 @@ export const useCategories = () => {
 
   const deleteCategory = (id) => {
     // Don't allow deleting default categories
-    if (['summary', 'task'].includes(id)) {
+    if (['summary', 'task', 'goal'].includes(id)) {
       return false;
     }
     setCategories(categories.filter(cat => cat.id !== id));

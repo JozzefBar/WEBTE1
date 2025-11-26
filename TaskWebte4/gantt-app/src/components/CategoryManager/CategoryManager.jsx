@@ -13,9 +13,23 @@ const CategoryManager = ({ isOpen, onClose, translations: t }) => {
 
   if (!isOpen) return null;
 
+  // Get category display name (translation or custom name)
+  const getCategoryName = (category) => {
+    // If category has custom name, use it
+    if (category.name) {
+      return category.name;
+    }
+    // Otherwise use translation for default categories
+    if (t && t[`category_${category.id}`]) {
+      return t[`category_${category.id}`];
+    }
+    // Fallback to ID
+    return category.id;
+  };
+
   const handleStartEdit = (category) => {
     setEditingId(category.id);
-    setEditName(category.name);
+    setEditName(getCategoryName(category));
     setEditColor(category.color);
   };
 
@@ -96,7 +110,7 @@ const CategoryManager = ({ isOpen, onClose, translations: t }) => {
                       className="category-item__color"
                       style={{ backgroundColor: category.color }}
                     />
-                    <span className="category-item__name">{category.name}</span>
+                    <span className="category-item__name">{getCategoryName(category)}</span>
                     <button
                       className="category-item__btn category-item__btn--edit"
                       onClick={() => handleStartEdit(category)}
@@ -106,7 +120,7 @@ const CategoryManager = ({ isOpen, onClose, translations: t }) => {
                     <button
                       className="category-item__btn category-item__btn--delete"
                       onClick={() => handleDelete(category.id)}
-                      disabled={['summary', 'task'].includes(category.id)}
+                      disabled={['summary', 'task', 'goal'].includes(category.id)}
                     >
                       ×
                     </button>

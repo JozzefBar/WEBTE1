@@ -628,6 +628,8 @@ body {
   padding: 3rem;
   gap: 1rem;
   color: var(--color-text-light);
+  position: relative;
+  z-index: 100;
 }
 
 .gantt__empty-btn {
@@ -638,6 +640,8 @@ body {
   border-radius: var(--border-radius);
   cursor: pointer;
   font-size: 0.875rem;
+  position: relative;
+  z-index: 100;
 }
 
 .gantt__empty-btn:hover {
@@ -979,6 +983,30 @@ body {
   max-width: none;
 }
 
+/* Inline editing input on bar */
+.gantt__bar-label-input {
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #1e293b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 2px solid #3b82f6;
+  border-radius: 3px;
+  padding: 3px 8px;
+  outline: none;
+  position: relative;
+  z-index: 1000;
+  min-width: 120px;
+  max-width: 300px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  text-indent: 0;
+  padding-left: 8px;
+}
+
+.gantt__bar-label-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* Bar resize handles */
 .gantt__bar-resize {
   position: absolute;
@@ -1085,7 +1113,7 @@ body {
   border: 2px solid #6366f1;
   border-radius: 50%;
   cursor: pointer;
-  z-index: 1200;
+  z-index: 900; /* Below inline editing input (1000) but above bars and handles */
   transition: transform 0.15s, background-color 0.15s;
 }
 
@@ -1163,6 +1191,34 @@ body {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   display: inline-block;
   margin-left: 4px;
+}
+
+/* Inline editing input on milestone */
+.gantt__milestone-label-input {
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 2px solid #3b82f6;
+  border-radius: 6px;
+  padding: 5px 10px;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  margin-left: 4px;
+  min-width: 140px;
+  max-width: 300px;
+  z-index: 1000;
+  text-indent: 0;
+  padding-left: 10px;
+}
+
+.gantt__milestone-label-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Goal (milestone) variant styling */

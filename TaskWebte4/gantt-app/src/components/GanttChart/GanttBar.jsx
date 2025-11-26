@@ -16,6 +16,7 @@ const GanttBar = ({
 }) => {
   const { getCategoryById } = useCategories();
   const barRef = useRef(null);
+  const inputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(null); // 'left' or 'right'
   const [isDraggingProgress, setIsDraggingProgress] = useState(false);
@@ -25,6 +26,8 @@ const GanttBar = ({
   const [currentProgress, setCurrentProgress] = useState(task.progress || 0);
   const [isHovered, setIsHovered] = useState(false);
   const [isTooltipHovered, setIsTooltipHovered] = useState(false);
+  const [isInlineEditing, setIsInlineEditing] = useState(false);
+  const [editedName, setEditedName] = useState(task.name);
 
   const duration = calculateDuration(task.startDate, task.endDate);
   const isMilestone = duration === 0;
@@ -117,6 +120,51 @@ const GanttBar = ({
     }
   };
 
+  // Handle inline editing
+  const handleStartInlineEdit = (e) => {
+    e.stopPropagation();
+    setIsInlineEditing(true);
+    setEditedName(task.name);
+  };
+
+  const handleSaveInlineEdit = () => {
+    if (editedName.trim()) {
+      onUpdate(task.id, { name: editedName.trim() });
+    }
+    setIsInlineEditing(false);
+  };
+
+  const handleCancelInlineEdit = () => {
+    setEditedName(task.name);
+    setIsInlineEditing(false);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSaveInlineEdit();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      handleCancelInlineEdit();
+    }
+  };
+
+  // Handle name change with real-time sync
+  const handleNameChange = (e) => {
+    const newName = e.target.value;
+    setEditedName(newName);
+    // Update in real-time for table sync
+    onUpdate(task.id, { name: newName });
+  };
+
+  // Focus input when inline editing starts
+  useEffect(() => {
+    if (isInlineEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isInlineEditing]);
+
   // Handle mouse move and up for dragging/resizing
   useEffect(() => {
     if (!dragStart) return;
@@ -145,7 +193,8 @@ const GanttBar = ({
           newWidth += newLeft;
           newLeft = 0;
         }
-        if (newWidth < 1) newWidth = 1;
+        // Allow very small widths (0.2% minimum - about 1 day even for 500-day ranges)
+        if (newWidth < 0.2) newWidth = 0.2;
         if (newLeft + newWidth > 100) newLeft = 100 - newWidth;
         setCurrentLeft(newLeft);
         setCurrentWidth(newWidth);
@@ -153,7 +202,8 @@ const GanttBar = ({
         // Resize from right edge
         const deltaPercent = (deltaX / dragStart.containerWidth) * 100;
         let newWidth = dragStart.initialWidth + deltaPercent;
-        if (newWidth < 1) newWidth = 1;
+        // Allow very small widths (0.2% minimum - about 1 day even for 500-day ranges)
+        if (newWidth < 0.2) newWidth = 0.2;
         if (currentLeft + newWidth > 100) newWidth = 100 - currentLeft;
         setCurrentWidth(newWidth);
       }
@@ -214,14 +264,23 @@ const GanttBar = ({
           className={`gantt__milestone gantt__milestone--goal ${isDragging ? 'gantt__milestone--dragging' : ''}`}
           style={{ backgroundColor: categoryColor }}
           onMouseDown={handleMouseDown}
-          onDoubleClick={(e) => {
-            e.stopPropagation();
-            onDoubleClick(task.id);
-          }}
+          onDoubleClick={handleStartInlineEdit}
         />
 
         {/* Milestone label placed to the right, horizontal in-row */}
-        <span className="gantt__milestone-label">{task.name}</span>
+        {isInlineEditing ? (
+          <input
+            ref={inputRef}
+            type="text"
+            className="gantt__milestone-label-input"
+            value={editedName}
+            onChange={handleNameChange}
+            onKeyDown={handleKeyDown}
+            onBlur={handleSaveInlineEdit}
+          />
+        ) : (
+          <span className="gantt__milestone-label">{task.name}</span>
+        )}
 
         {/* Right connector */}
         {(isHovered || isTooltipHovered || isLinking) && (
@@ -262,10 +321,7 @@ const GanttBar = ({
         backgroundColor: barColor
       }}
       onMouseDown={handleMouseDown}
-      onDoubleClick={(e) => {
-        e.stopPropagation();
-        onDoubleClick(task.id);
-      }}
+      onDoubleClick={handleStartInlineEdit}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       // removed native title to use custom interactive tooltip
@@ -285,8 +341,22 @@ const GanttBar = ({
         onMouseDown={(e) => handleResizeStart(e, 'left')}
       />
 
-      {/* Task label */}
-      <span className="gantt__bar-label">{task.name}</span>
+      {/* Task label or input */}
+      {isInlineEditing ? (
+        <input
+          ref={inputRef}
+          type="text"
+          className="gantt__bar-label-input"
+          value={editedName}
+          onChange={handleNameChange}
+          onKeyDown={handleKeyDown}
+          onBlur={handleSaveInlineEdit}
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+        />
+      ) : (
+        <span className="gantt__bar-label">{task.name}</span>
+      )}
 
       {/* Progress handle/marker (visual only, not interactive) */}
       <div

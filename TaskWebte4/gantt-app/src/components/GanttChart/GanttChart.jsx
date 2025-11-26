@@ -34,7 +34,7 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     canUndo,
     canRedo,
     tasks
-  } = useTasks();
+  } = useTasks(t);
 
   const { categories, getCategoryById } = useCategories();
   const allTags = useMemo(() => getAllTags(), [getAllTags]);
@@ -93,23 +93,51 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
   const timelineUnits = generateTimelineUnits(dateRange, zoomLevel, t);
   const visibleTasks = getVisibleTasks();
 
-  // Filter tasks by tags
+  // Filter tasks by tags and date range
   const filteredTasks = visibleTasks.filter(task => {
+    // Filter by tags
     if (selectedTags && selectedTags.length > 0) {
       if (!task.tags || !task.tags.some(tag => selectedTags.includes(tag))) {
         return false;
       }
     }
+
+    // Filter by date range - hide tasks completely outside the range
+    const taskStart = new Date(task.startDate);
+    const taskEnd = new Date(task.endDate);
+    const rangeStart = new Date(dateRange.start);
+    const rangeEnd = new Date(dateRange.end);
+
+    // Task is outside range if it ends before range starts OR starts after range ends
+    if (taskEnd < rangeStart || taskStart > rangeEnd) {
+      return false;
+    }
+
     return true;
   });
 
-  // Get unique categories used in tasks
+  // Get category display name (translation or custom name)
+  const getCategoryName = (category) => {
+    if (!category) return '';
+    // If category has custom name, use it
+    if (category.name) {
+      return category.name;
+    }
+    // Otherwise use translation for default categories
+    if (t && t[`category_${category.id}`]) {
+      return t[`category_${category.id}`];
+    }
+    // Fallback to ID
+    return category.id;
+  };
+
+  // Get unique categories used in visible filtered tasks
   const usedCategories = useMemo(() => {
-    const categoryIds = new Set(tasks.map(task => task.category || 'task'));
+    const categoryIds = new Set(filteredTasks.map(task => task.category || 'task'));
     return Array.from(categoryIds)
       .map(id => getCategoryById(id))
       .filter(cat => cat !== undefined);
-  }, [tasks, getCategoryById]);
+  }, [filteredTasks, getCategoryById]);
 
   const getTodayPosition = () => {
     const today = new Date();
@@ -596,6 +624,7 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                       onHover={setHoveredTaskId}
                       columnWidths={columnWidths}
                       hiddenColumns={hiddenColumns}
+                      translations={t}
                     />
                   );
                 })
@@ -660,6 +689,7 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                         }}
                         isHovered={hoveredTaskId === task.id}
                         onHover={setHoveredTaskId}
+                        translations={t}
                       />
                     );
                   })}
@@ -725,7 +755,7 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
           {usedCategories.map(category => (
             <div key={category.id} className="gantt__legend-item">
               <span className="gantt__legend-color" style={{ backgroundColor: category.color }} />
-              <span className="gantt__legend-label">{category.name}</span>
+              <span className="gantt__legend-label">{getCategoryName(category)}</span>
             </div>
           ))}
           {todayPosition !== null && (

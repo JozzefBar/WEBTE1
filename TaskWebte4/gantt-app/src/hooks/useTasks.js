@@ -4,7 +4,7 @@ import { formatDate, addDays } from '../utils/dateUtils';
 
 const MAX_HISTORY = 50;
 
-export const useTasks = () => {
+export const useTasks = (translations = {}) => {
   const [tasks, setTasks] = useLocalStorage('gantt-tasks', []);
   const [editingTaskId, setEditingTaskId] = useState(null);
 
@@ -82,7 +82,7 @@ export const useTasks = () => {
 
     const newTask = {
       id: Date.now(),
-      name: 'Nová úloha',
+      name: translations.newTask || 'Nová úloha',
       startDate: startForNew,
       endDate: endDate,
       category: parentId === null ? 'summary' : 'task', // Root tasks are summary, subtasks are regular
