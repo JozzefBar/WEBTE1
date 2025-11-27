@@ -2,9 +2,9 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import GanttRow from './GanttRow';
 import DependencyArrows from './DependencyArrows';
 import { CategoryManager } from '../CategoryManager';
-import { generateTimelineUnits } from '../../utils/dateUtils';
-import { useTasks } from '../../hooks/useTasks';
-import { useCategories } from '../../hooks/useCategories';
+import { generateTimelineUnits } from '../../js/utils/dateUtils';
+import { useTasks } from '../../js/hooks/useTasks';
+import { useCategories } from '../../js/hooks/useCategories';
 
 const ZOOM_LEVELS = [
   { id: 'day', days: 1 },
@@ -67,14 +67,13 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
   };
   const [resizingColumn, setResizingColumn] = useState(null);
 
-  // Refs for scroll sync
   const containerRef = useRef(null);
   const tableHeaderRef = useRef(null);
   const tableBodyRef = useRef(null);
   const timelineHeaderRef = useRef(null);
   const chartBodyRef = useRef(null);
 
-  // Click outside to cancel editing
+  // Click outside handlers
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (editingTaskId && !e.target.closest('.gantt__table-row')) {
@@ -91,11 +90,8 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     };
   }, [editingTaskId, stopEditing]);
 
-  // Click outside to cancel linking mode
   useEffect(() => {
     const handleClickOutside = (e) => {
-      // Cancel linking if clicked outside dependency targets
-      // Use 'click' instead of 'mousedown' to allow onClick handlers to complete first
       if (linkingFromTask && !e.target.closest('.gantt__dependency-target')) {
         setLinkingFromTask(null);
       }
@@ -110,52 +106,41 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     };
   }, [linkingFromTask]);
 
-  // Handle responsive view mode based on screen width
+  // Responsive view mode
   useEffect(() => {
     const handleResize = () => {
       const isMobile = window.innerWidth <= 768;
-
-      // If mobile and currently in 'both' mode, switch to table-only
       if (isMobile && viewMode === 'both') {
         setViewMode('table-only');
       }
     };
 
-    // Check on mount
     handleResize();
-
-    // Listen to resize events
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [viewMode]);
 
-  // Generate timeline based on zoom level
   const timelineUnits = generateTimelineUnits(dateRange, zoomLevel, t);
   const visibleTasks = getVisibleTasks();
 
-  // Filter tasks by tags and date range
+  // Filter tasks
   const filteredTasks = visibleTasks.filter(task => {
-    // Filter by tags
     if (selectedTags && selectedTags.length > 0) {
       if (!task.tags || !task.tags.some(tag => selectedTags.includes(tag))) {
         return false;
       }
     }
 
-    // Filter by date range - hide tasks completely outside the range
     const taskStart = new Date(task.startDate);
     const taskEnd = new Date(task.endDate);
     const rangeStart = new Date(dateRange.start);
     const rangeEnd = new Date(dateRange.end);
 
-    // Task is outside range if it ends before range starts OR starts after range ends
     if (taskEnd < rangeStart || taskStart > rangeEnd) {
       return false;
     }
 
-    // Filter by search query (ignore diacritics)
     if (searchQuery && searchQuery.trim()) {
-      // Normalize strings to remove diacritics
       const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
       const query = normalize(searchQuery);
       const taskName = normalize(task.name || '');
@@ -167,22 +152,13 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     return true;
   });
 
-  // Get category display name (translation or custom name)
   const getCategoryName = (category) => {
     if (!category) return '';
-    // If category has custom name, use it
-    if (category.name) {
-      return category.name;
-    }
-    // Otherwise use translation for default categories
-    if (t && t[`category_${category.id}`]) {
-      return t[`category_${category.id}`];
-    }
-    // Fallback to ID
+    if (category.name) return category.name;
+    if (t && t[`category_${category.id}`]) return t[`category_${category.id}`];
     return category.id;
   };
 
-  // Get unique categories used in visible filtered tasks
   const usedCategories = useMemo(() => {
     const categoryIds = new Set(filteredTasks.map(task => task.category || 'task'));
     return Array.from(categoryIds)
@@ -205,7 +181,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
 
   const todayPosition = getTodayPosition();
 
-  // Drag handlers
   const handleDragStart = (e, taskId) => {
     setDraggedTaskId(taskId);
     e.dataTransfer.effectAllowed = 'move';
@@ -228,7 +203,7 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     setDraggedTaskId(null);
   };
 
-  // Handle split resize - NO minimum width restriction
+  // Split resize
   const handleSplitMouseDown = (e) => {
     e.preventDefault();
     setIsResizingSplit(true);
@@ -237,7 +212,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
       if (containerRef.current) {
         const containerRect = containerRef.current.getBoundingClientRect();
         let newWidth = e.clientX - containerRect.left;
-        // Allow very small width (50px min) up to 800px
         newWidth = Math.max(50, Math.min(800, newWidth));
         setTableWidth(newWidth);
       }
@@ -253,7 +227,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  // Handle split resize - Touch support
   const handleSplitTouchStart = (e) => {
     setIsResizingSplit(true);
 
@@ -278,41 +251,32 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     document.addEventListener('touchcancel', handleTouchEnd);
   };
 
-  // Sync scroll: chart body -> timeline header (horizontal) + table body (vertical)
-  // Chart body is the MASTER for vertical scroll
+  // Scroll sync
   const handleChartBodyScroll = (e) => {
-    // Sync horizontal to timeline header (both have same width, so direct sync)
     if (timelineHeaderRef.current) {
       timelineHeaderRef.current.scrollLeft = e.target.scrollLeft;
     }
-    // Sync vertical to table body (chart is master, table follows)
     if (tableBodyRef.current) {
       tableBodyRef.current.scrollTop = e.target.scrollTop;
     }
   };
 
-  // Sync horizontal scroll: timeline header -> chart body
   const handleTimelineHeaderScroll = (e) => {
     if (chartBodyRef.current) {
       chartBodyRef.current.scrollLeft = e.target.scrollLeft;
     }
   };
 
-
-  // Sync scroll: table body -> table header (horizontal) + chart body (vertical)
   const handleTableBodyScroll = (e) => {
-    // Sync horizontal to table header
     if (tableHeaderRef.current) {
       tableHeaderRef.current.scrollLeft = e.target.scrollLeft;
     }
-    // Sync vertical to chart body (bidirectional sync)
     if (chartBodyRef.current && chartBodyRef.current.scrollTop !== e.target.scrollTop) {
       chartBodyRef.current.scrollTop = e.target.scrollTop;
     }
   };
 
-  // Handle column resize for a single column (standard behavior).
-  // Dragging the resizer adjusts only the targeted column's width.
+  // Column resize
   const handleColumnResize = (column, e) => {
     e.preventDefault();
     setResizingColumn(column);
@@ -346,7 +310,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  // Handle column resize - Touch support
   const handleColumnTouchStart = (column, e) => {
     setResizingColumn(column);
     const startX = e.touches[0].clientX;
@@ -383,10 +346,7 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     document.addEventListener('touchcancel', handleTouchEnd);
   };
 
-  // (resizing now handled by full-height resizer overlays rendered in the table body)
-
-  // Handle overlay boundary resize between two adjacent columns (leftCol, rightCol).
-  // This adjusts the left and right columns inversely so the boundary moves.
+  // Boundary resize between columns
   const handleOverlayBoundaryResize = (leftCol, rightCol, e) => {
     e.preventDefault();
     setResizingColumn(`${leftCol}-${rightCol}`);
@@ -404,7 +364,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
       let newLeft = startLeft + (leftCol ? deltaX : 0);
       let newRight = startRight - (rightCol ? deltaX : 0);
 
-      // enforce minimums and transfer overflow
       if (leftCol && newLeft < MIN_WIDTH) {
         const diff = MIN_WIDTH - newLeft;
         newLeft = MIN_WIDTH;
@@ -442,7 +401,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  // Calculate minimum width for timeline
   const getTimelineMinWidth = () => {
     const numUnits = timelineUnits.length;
     const minWidthPerUnit = 60;
@@ -450,16 +408,13 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
   };
 
   const timelineMinWidth = getTimelineMinWidth();
-
-  // Calculate total table content width
   const tableContentWidth = columnWidths.name + columnWidths.date + columnWidths.duration + columnWidths.progress + columnWidths.actions;
 
   return (
     <div className={`gantt ${isResizingSplit ? 'gantt--resizing' : ''} ${!showToolbar ? 'gantt--toolbar-hidden' : ''}`} ref={containerRef}>
-      {/* Toolbar - full width */}
+      {/* Toolbar */}
       <div className={`gantt__toolbar-wrapper ${!showToolbar ? 'gantt__toolbar-wrapper--hidden' : ''}`}>
         <div className="gantt__toolbar">
-            {/* Row 1: Date range */}
             <div className="gantt__toolbar-row-dates">
               <label className="gantt__toolbar-label">
                 {t?.from || 'Od'}:
@@ -494,8 +449,7 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
             />
           </label>
         </div>
-        
-        {/* Row 2: Zoom on left + Actions on right */}
+
         <div className="gantt__toolbar-row-bottom">
           <div className="gantt__zoom">
             <span className="gantt__zoom-label">{t?.zoom || 'Priblíženie'}:</span>
@@ -559,7 +513,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
         </div>
       </div>
 
-          {/* Tag filter row - full width */}
           {allTags.length > 0 && (
             <div className="gantt__tags-row">
               <span className="gantt__tags-label">{t?.tags || 'Štítky'}:</span>
@@ -572,7 +525,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                   {tag}
                 </button>
               ))}
-              {/* Toolbar toggle button */}
               <button
                 className="gantt__toolbar-toggle"
                 onClick={() => setShowToolbar(!showToolbar)}
@@ -583,7 +535,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
           )}
       </div>
 
-      {/* Show toolbar button when hidden */}
       {!showToolbar && (
         <div className="gantt__toolbar-show">
           <button
@@ -596,7 +547,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
       )}
 
       <div className={`gantt__main gantt__main--${viewMode}`} onDragEnd={handleDragEnd}>
-        {/* Headers row - fixed at top */}
         <div className="gantt__headers-row">
           {viewMode !== 'chart-only' && (
             <div
@@ -631,7 +581,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                 </button>
               </div>
 
-              {/* Hidden columns pill area */}
               {hiddenColumns.length > 0 && (
                 <div className="gantt__hidden-columns">
                   {hiddenColumns.map(col => (
@@ -639,7 +588,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                       key={col}
                       className="gantt__hidden-pill"
                       onClick={() => {
-                        // restore to default width
                         setColumnWidths(prev => ({ ...prev, [col]: DEFAULT_COLUMN_WIDTHS[col] || 60 }));
                         setHiddenColumns(prev => prev.filter(c => c !== col));
                       }}
@@ -688,9 +636,7 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
           )}
         </div>
 
-        {/* Bodies row - table and chart side by side */}
         <div className="gantt__bodies-row">
-          {/* Table Body */}
           {viewMode !== 'chart-only' && (
             <div
               className="gantt__table-body"
@@ -772,7 +718,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
             </div>
           )}
 
-          {/* Chart Body */}
           {viewMode !== 'table-only' && (
             <div className="gantt__chart-body">
               <div
@@ -781,7 +726,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                 onScroll={handleChartBodyScroll}
               >
                 <div className="gantt__chart-scroll" style={{ minWidth: `${timelineMinWidth}px` }}>
-              {/* Grid overlay based on timeline units */}
               <div className="gantt__chart-grid" style={{ height: `${filteredTasks.length * 40}px` }}>
                 {timelineUnits.map((unit, index) => (
                   <div
@@ -790,7 +734,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                     style={{ left: `${unit.left}%` }}
                   />
                 ))}
-                {/* Right edge line */}
                 <div
                   className="gantt__chart-grid-line"
                   style={{ left: '100%' }}
@@ -853,7 +796,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
             </div>
           )}
 
-          {/* Full-height resizer overlays between columns - works in both and table-only modes */}
           {viewMode !== 'chart-only' && (
             <div className="gantt__table-resizers" aria-hidden="true">
               {(() => {
@@ -865,7 +807,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                   const col = cols[i];
                   cum += widthFor(col);
 
-                  // find nearest visible columns to left and right of this boundary
                   let leftVisible = null;
                   for (let j = i; j >= 0; j--) {
                     if (widthFor(cols[j]) > 0) { leftVisible = cols[j]; break; }
@@ -875,9 +816,7 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                     if (widthFor(cols[j]) > 0) { rightVisible = cols[j]; break; }
                   }
 
-                  // render resizer only when it separates two different visible columns
                   if (leftVisible && rightVisible && leftVisible !== rightVisible) {
-                    // compute left position based on leftVisible cumulative width
                     const leftIndex = cols.indexOf(leftVisible);
                     const leftPos = cols.slice(0, leftIndex + 1).reduce((s, c) => s + widthFor(c), 0);
 
@@ -898,7 +837,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
           )}
         </div>
 
-        {/* Single Split Divider - spans full height */}
         {viewMode === 'both' && (
           <div
             className="gantt__split-divider"
@@ -906,7 +844,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
             onMouseDown={handleSplitMouseDown}
             onTouchStart={handleSplitTouchStart}
           >
-            {/* View mode toggle buttons */}
             <div className="gantt__view-toggle">
               <button
                 className="gantt__view-toggle-btn"
@@ -924,12 +861,10 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
           </div>
         )}
 
-        {/* Restore buttons when in single view mode */}
         {viewMode === 'table-only' && (
           <button
             className="gantt__restore-btn gantt__restore-btn--right"
             onClick={() => {
-              // On mobile/tablet, toggle to chart-only instead of both
               const isMobile = window.innerWidth <= 768;
               setViewMode(isMobile ? 'chart-only' : 'both');
             }}
@@ -941,7 +876,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
           <button
             className="gantt__restore-btn gantt__restore-btn--left"
             onClick={() => {
-              // On mobile/tablet, toggle to table-only instead of both
               const isMobile = window.innerWidth <= 768;
               setViewMode(isMobile ? 'table-only' : 'both');
             }}

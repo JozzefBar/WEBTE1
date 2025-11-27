@@ -68,6 +68,16 @@
   color: var(--color-text);
 }
 
+[data-theme="dark"] .gantt__category-select {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .gantt__category-select option {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
 [data-theme="dark"] .toolbar__input {
   background-color: var(--color-surface);
   color: var(--color-text);
@@ -180,7 +190,7 @@ body {
 
 .app__main {
   flex: 1;
-  min-height: 0; /* Critical for flex scroll */
+  min-height: 0;
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -188,7 +198,6 @@ body {
   overflow: hidden;
 }
 
-/* Toolbar */
 .toolbar {
   background-color: var(--color-surface);
   border-radius: var(--border-radius);
@@ -235,7 +244,7 @@ body {
   width: 100%;
 }
 
-/* ==================== GANTT CHART ==================== */
+/* Gantt chart */
 .gantt {
   flex: 1;
   min-height: 0;
@@ -249,7 +258,6 @@ body {
   margin-bottom: 24px;
 }
 
-/* Main area - vertical layout: headers row + bodies row */
 .gantt__main {
   flex: 1;
   min-height: 0;
@@ -258,14 +266,13 @@ body {
   position: relative;
 }
 
-/* Headers row - fixed at top, contains table header + divider + timeline header */
+/* Headers row */
 .gantt__headers-row {
   display: flex;
   flex-shrink: 0;
   border-bottom: 2px solid var(--color-border);
 }
 
-/* Bodies row - container for table and chart */
 .gantt__bodies-row {
   flex: 1;
   min-height: 0;
@@ -273,7 +280,6 @@ body {
   overflow: hidden;
 }
 
-/* Table Header */
 .gantt__table-header {
   flex-shrink: 0;
   background-color: var(--color-hover);
@@ -292,13 +298,11 @@ body {
   height: 40px;
 }
 
-/* Table Body wrapper - fixed width */
 .gantt__table-body {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
 }
-/* make table body a positioning context for resizer overlays */
 .gantt__table-body {
   position: relative;
 }
@@ -309,7 +313,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  pointer-events: none; /* allow individual resizers to control pointer-events */
+  pointer-events: none;
 }
 
 .gantt__table-resizer {
@@ -322,23 +326,21 @@ body {
   cursor: col-resize;
   background: transparent;
   z-index: 60;
-  touch-action: none; /* Prevent scrolling when touching/dragging resizers */
+  touch-action: none;
 }
 
 .gantt__table-resizer:hover {
   background: rgba(37, 99, 235, 0.06);
 }
 
-/* Table body scroll container - both scrolls, vertical scrollbar hidden */
+/* Table body scroll container */
 .gantt__table-body-scroll {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  /* Firefox - thin scrollbar (can't hide only vertical in FF) */
   scrollbar-width: thin;
 }
 
-/* Webkit - hide vertical scrollbar, keep horizontal */
 .gantt__table-body-scroll::-webkit-scrollbar:vertical {
   width: 0;
   display: none;
@@ -374,15 +376,14 @@ body {
   background-color: var(--color-border);
   cursor: col-resize;
   transition: background-color 0.15s;
-  z-index: 100; /* Must be higher than table resizers (60) */
-  touch-action: none; /* Prevent scrolling when touching/dragging divider */
+  z-index: 100;
+  touch-action: none;
 }
 
 .gantt__split-divider:hover {
   background-color: var(--color-primary);
 }
 
-/* Timeline Header */
 .gantt__timeline-header {
   flex: 1;
   min-width: 0;
@@ -399,7 +400,6 @@ body {
   display: none;
 }
 
-/* Chart Body wrapper - flex grow */
 .gantt__chart-body {
   flex: 1;
   min-width: 0;
@@ -408,7 +408,7 @@ body {
   margin-left: 6px;
 }
 
-/* Chart body scroll container - both scrolls visible (master for vertical) */
+/* Chart body scroll container */
 .gantt__chart-body-scroll {
   flex: 1;
   min-height: 0;
@@ -430,7 +430,6 @@ body {
   flex-shrink: 0;
 }
 
-/* Column resize handle */
 .gantt__column-resize {
   position: absolute;
   right: 0;
@@ -447,7 +446,6 @@ body {
   opacity: 0.5;
 }
 
-/* Hidden columns pills */
 .gantt__hidden-columns {
   display: flex;
   gap: 6px;
@@ -501,7 +499,6 @@ body {
   text-transform: capitalize;
 }
 
-/* Timeline units (day/week/month/quarter) */
 .gantt__timeline-unit {
   position: absolute;
   height: 100%;
@@ -545,13 +542,11 @@ body {
   cursor: col-resize;
 }
 
-/* Chart scroll container */
 .gantt__chart-scroll {
   position: relative;
   display: inline-block;
 }
 
-/* Table row */
 .gantt__table-row {
   display: flex;
   border-bottom: 1px solid var(--color-border);
@@ -583,7 +578,6 @@ body {
   background-color: #e0f2fe;
 }
 
-/* Chart row */
 .gantt__chart-row {
   position: relative;
   height: 40px;
@@ -603,7 +597,6 @@ body {
   background-color: rgba(219, 234, 254, 0.7);
 }
 
-/* Chart grid overlay */
 .gantt__chart-grid {
   position: absolute;
   top: 0;
@@ -621,7 +614,6 @@ body {
   background-color: var(--color-border);
 }
 
-/* Duration input */
 .gantt__cell-input--duration {
   width: 100%;
   min-width: 30px;
@@ -666,7 +658,6 @@ body {
   background-color: var(--color-primary-dark);
 }
 
-/* Gantt Row */
 .gantt__row {
   display: flex;
   border-bottom: 1px solid var(--color-border);
@@ -691,7 +682,6 @@ body {
   background-color: #fde68a;
 }
 
-/* Row Table Part */
 .gantt__row-table {
   display: flex;
   flex-shrink: 0;
@@ -745,7 +735,6 @@ body {
   flex-shrink: 0;
 }
 
-/* Expand button */
 .gantt__expand-btn {
   width: 16px;
   height: 16px;
@@ -769,7 +758,7 @@ body {
   flex-shrink: 0;
 }
 
-/* Name cell layout: ensure tags hide first when space is constrained */
+/* Name cell layout */
 .gantt__cell--name {
   display: flex;
   align-items: center;
@@ -777,7 +766,6 @@ body {
   min-width: 0;
 }
 
-/* Cell color indicator */
 .gantt__cell-color {
   width: 10px;
   height: 10px;
@@ -785,7 +773,6 @@ body {
   flex-shrink: 0;
 }
 
-/* Cell text */
 .gantt__cell-text {
   flex: 1 1 75%;
   min-width: 0;
@@ -803,7 +790,6 @@ body {
   background-color: var(--color-border);
 }
 
-/* Cell input */
 .gantt__cell-input {
   flex: 1;
   padding: 0.35rem 0.5rem;
@@ -834,7 +820,6 @@ body {
   max-width: 100%;
 }
 
-/* Action buttons */
 .gantt__btn {
   width: 22px;
   height: 22px;
@@ -886,7 +871,6 @@ body {
   background-color: #cbd5e1;
 }
 
-/* Link buttons */
 .gantt__btn--link {
   background-color: #e0e7ff;
   color: #4f46e5;
@@ -916,7 +900,6 @@ body {
   background-color: #a7f3d0;
 }
 
-/* Dependency Arrows */
 .gantt__arrows {
   pointer-events: none;
 }
@@ -933,7 +916,6 @@ body {
   cursor: pointer;
 }
 
-/* Row Chart Part */
 .gantt__row-chart {
   flex: 1;
   position: relative;
@@ -959,7 +941,6 @@ body {
   );
 }
 
-/* Gantt Bar */
 .gantt__bar {
   position: absolute;
   top: 5px;
@@ -973,7 +954,7 @@ body {
   overflow: visible;
   transition: box-shadow 0.15s, transform 0.15s;
   user-select: none;
-  touch-action: none; /* Prevent scrolling when touching/dragging bars */
+  touch-action: none;
   z-index: 50; /* ensure bars sit above most elements by default */
 }
 
@@ -989,7 +970,6 @@ body {
   z-index: 200; /* raise while dragging */
 }
 
-/* Bring hovered bar forward so its tooltip is above other bars */
 .gantt__bar--hovered {
   z-index: 300;
 }
@@ -1007,7 +987,6 @@ body {
   max-width: none;
 }
 
-/* Inline editing input on bar */
 .gantt__bar-label-input {
   background-color: rgba(255, 255, 255, 0.95);
   color: #1e293b;
@@ -1031,14 +1010,13 @@ body {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Bar resize handles */
 .gantt__bar-resize {
   position: absolute;
   top: 0;
   bottom: 0;
   width: 10px;
   cursor: ew-resize;
-  touch-action: none; /* Prevent scrolling when touching/dragging resize handles */
+  touch-action: none;
   z-index: 800; /* larger hit area, sit above bar but below connectors */
   transition: background-color 0.15s;
 }
@@ -1061,7 +1039,6 @@ body {
   background-color: rgba(0, 0, 0, 0.35);
 }
 
-/* Progress fill (darker left part) */
 .gantt__bar-progress-fill {
   position: absolute;
   left: 0;
@@ -1072,7 +1049,7 @@ body {
   pointer-events: none;
 }
 
-/* Progress handle/marker - on bar edge (visual only, not interactive) */
+/* Progress handle/marker */
 .gantt__bar-progress-handle {
   position: absolute;
   top: 0;
@@ -1083,7 +1060,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: auto; /* allow tooltip / progress value to receive events */
+  pointer-events: auto;
 }
 
 .gantt__bar-progress-handle::before {
@@ -1100,7 +1077,7 @@ body {
   bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
-  background: #2563eb; /* simpler solid primary color */
+  background: #2563eb;
   color: white;
   font-size: 0.65rem;
   font-weight: 600;
@@ -1108,8 +1085,8 @@ body {
   border-radius: 4px;
   white-space: nowrap;
   opacity: 0;
-  pointer-events: auto; /* make the label interactive so cursor can move onto it */
-  touch-action: none; /* Prevent scrolling when touching/dragging progress handle */
+  pointer-events: auto;
+  touch-action: none;
   z-index: 500;
   box-shadow: 0 4px 10px rgba(2, 6, 23, 0.08);
   transition: opacity 0.12s, transform 0.12s, box-shadow 0.12s;
@@ -1128,7 +1105,6 @@ body {
   box-shadow: 0 6px 18px rgba(2, 6, 23, 0.12);
 }
 
-/* Connection points */
 .gantt__bar-connector {
   position: absolute;
   top: 50%;
@@ -1171,13 +1147,11 @@ body {
   }
 }
 
-/* Parent bar style */
 .gantt__bar--parent {
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Milestone (diamond) */
 
 /* Wrapper that positions milestone and connectors without inheriting rotation */
 .gantt__milestone-wrapper {
@@ -1185,7 +1159,7 @@ body {
   height: 29px; /* match bar height */
   display: inline-block;
   pointer-events: auto;
-  touch-action: none; /* Prevent scrolling when touching/dragging milestones */
+  touch-action: none;
   z-index: 100;
 }
 
@@ -1196,7 +1170,7 @@ body {
   height: 18px;
   transform: translateY(-50%) rotate(45deg);
   cursor: grab;
-  touch-action: none; /* Prevent scrolling when touching/dragging milestones */
+  touch-action: none;
   z-index: 100; /* sit above bars but below connectors */
   display: inline-block;
 }
@@ -1212,11 +1186,11 @@ body {
 
 .gantt__milestone-label {
   position: absolute;
-  left: 24px; /* place to the right of the diamond */
+  left: 24px;
   top: 50%;
   transform: translateY(-50%); /* keep horizontal */
   white-space: nowrap;
-  font-size: 0.72rem; /* slightly smaller than regular bar label */
+  font-size: 0.72rem;
   font-weight: 500;
   color: var(--color-text);
   background-color: var(--color-surface);
@@ -1234,7 +1208,6 @@ body {
   background-color: var(--color-hover);
 }
 
-/* Inline editing input on milestone */
 .gantt__milestone-label-input {
   position: absolute;
   left: 24px;
@@ -1262,7 +1235,6 @@ body {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Goal (milestone) variant styling */
 .gantt__milestone--goal {
   width: 18px;
   height: 18px;
@@ -1270,10 +1242,9 @@ body {
   border-radius: 2px;
   box-shadow: 0 2px 6px rgba(139, 92, 246, 0.18);
   border: 2px solid rgba(255, 255, 255, 0.2);
-  background-color: #8b5cf6; /* violet goal color */
+  background-color: #8b5cf6;
 }
 
-/* Connectors should attach to left/right tips on milestones */
 .gantt__milestone .gantt__bar-connector--left {
   left: -10px;
 }
@@ -1282,7 +1253,7 @@ body {
   right: -10px;
 }
 
-/* Ensure zoom buttons keep stable base styling (restore accidental visual changes) */
+/* Ensure zoom buttons keep stable base styling */
 .gantt__zoom-btn {
   padding: 0.35rem 0.5rem;
   border: 1px solid var(--color-border);
@@ -1293,7 +1264,6 @@ body {
   font-size: 0.8rem;
 }
 
-/* Today Marker */
 .gantt__today-marker {
   position: absolute;
   top: 0;
@@ -1308,9 +1278,7 @@ body {
   height: 100%;
 }
 
-/* Removed circle marker - just line */
 
-/* Gantt Toolbar */
 .gantt__toolbar {
   display: flex;
   flex-direction: column;
@@ -1320,7 +1288,6 @@ body {
   background-color: var(--color-hover);
 }
 
-/* Row 1: Date range + Search */
 .gantt__toolbar-row-dates {
   display: flex;
   gap: 1rem;
@@ -1363,7 +1330,6 @@ body {
   width: 100%;
 }
 
-/* Row 2: Zoom on left + Actions on right */
 .gantt__toolbar-row-bottom {
   display: flex;
   justify-content: space-between;
@@ -1448,8 +1414,6 @@ body {
   border-color: var(--color-border);
 }
 
-/* Tag Filter */
-/* Tags row - separate line below toolbar */
 .gantt__tags-row {
   display: flex;
   align-items: center;
@@ -1501,7 +1465,6 @@ body {
   border-color: var(--color-primary);
 }
 
-/* Tags in row */
 .gantt__tags {
   display: flex;
   gap: 0.25rem;
@@ -1517,7 +1480,6 @@ body {
   white-space: nowrap;
 }
 
-/* Inline tags container - stays on same line, shows what fits */
 .gantt__tags-inline {
   display: inline-flex;
   align-items: center;
@@ -1591,7 +1553,6 @@ body {
   transform: scale(0.95);
 }
 
-/* Tag editor in edit mode */
 .gantt__cell-edit-content {
   flex: 1;
   display: flex;
@@ -1644,7 +1605,6 @@ body {
   color: white;
 }
 
-/* Legend */
 .gantt__legend {
   display: flex;
   align-items: center;
@@ -1694,7 +1654,6 @@ body {
   white-space: nowrap;
 }
 
-/* Category select in edit mode */
 .gantt__category-select {
   padding: 0.25rem 0.5rem;
   border: 1px solid var(--color-border);
@@ -1712,7 +1671,420 @@ body {
   border-color: #3b82f6;
 }
 
+/* Category Modal Styles */
+.category-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.category-modal {
+  background-color: var(--color-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.category-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.category-modal__header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--color-text);
+}
+
+.category-modal__close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--color-text);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.category-modal__close:hover {
+  background-color: var(--color-hover);
+}
+
+.category-modal__body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background-color: var(--color-hover);
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+}
+
+.category-item--new {
+  border-style: dashed;
+}
+
+.category-item__color {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.category-item__color-input {
+  width: 50px;
+  height: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.category-item__name {
+  flex: 1;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.category-item__name-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.category-item__btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.category-item__btn--edit {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.category-item__btn--edit:hover {
+  background-color: #2563eb;
+}
+
+.category-item__btn--delete {
+  background-color: #ef4444;
+  color: white;
+}
+
+.category-item__btn--delete:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.category-item__btn--delete:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.category-item__btn--save {
+  background-color: #10b981;
+  color: white;
+}
+
+.category-item__btn--save:hover {
+  background-color: #059669;
+}
+
+.category-item__btn--cancel {
+  background-color: #6b7280;
+  color: white;
+}
+
+.category-item__btn--cancel:hover {
+  background-color: #4b5563;
+}
+
+.category-modal__add-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.category-modal__add-btn:hover {
+  background-color: #2563eb;
+}
+
+.category-modal__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.category-modal__reset-btn,
+.category-modal__done-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.category-modal__reset-btn {
+  background-color: #6b7280;
+  color: white;
+}
+
+.category-modal__reset-btn:hover {
+  background-color: #4b5563;
+}
+
+.category-modal__done-btn {
+  background-color: #10b981;
+  color: white;
+}
+
+.category-modal__done-btn:hover {
+  background-color: #059669;
+}
+
+.category-modal__reset-confirm {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.category-modal__confirm-btn,
+.category-modal__cancel-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-modal__confirm-btn {
+  background-color: #10b981;
+  color: white;
+}
+
+.category-modal__confirm-btn:hover {
+  background-color: #059669;
+  transform: scale(1.05);
+}
+
+.category-modal__cancel-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.category-modal__cancel-btn:hover {
+  background-color: #dc2626;
+  transform: scale(1.05);
+}
+
+
+
+.gantt__main--table-only .gantt__table-header,
+.gantt__main--table-only .gantt__table-body {
+  width: 100% !important;
+}
+
+.gantt__main--chart-only .gantt__chart-body,
+.gantt__main--chart-only .gantt__timeline-header {
+  width: 100% !important;
+}
+
+.gantt__toolbar-wrapper--hidden {
+  display: none;
+}
+
+.gantt__toolbar-toggle {
+  margin-left: auto;
+  padding: 4px 12px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+}
+
+.gantt__toolbar-toggle:hover {
+  background-color: var(--color-hover);
+  border-color: var(--color-primary);
+}
+
+.gantt__toolbar-show {
+  padding: 8px;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: center;
+}
+
+.gantt__toolbar-toggle--show {
+  margin-left: 0;
+}
+
+.gantt__main--table-only .gantt__table-header,
+.gantt__main--table-only .gantt__table-body {
+  width: 100%;
+}
+
+.gantt__main--chart-only .gantt__timeline-header,
+.gantt__main--chart-only .gantt__chart-body {
+  width: 100%;
+  left: 0;
+}
+
+.gantt__view-toggle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 2px;
+  box-shadow: var(--shadow);
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.gantt__view-toggle-btn {
+  padding: 4px 6px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.7rem;
+  transition: all 0.2s;
+  line-height: 1;
+  pointer-events: auto;
+}
+
+.gantt__view-toggle-btn:hover {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.gantt__restore-btn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  padding: 6px 4px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.875rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.gantt__restore-btn:hover {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.gantt__restore-btn--left {
+  left: 8px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.gantt__restore-btn--right {
+  right: 8px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.gantt__footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 3px 8px;
+  text-align: center;
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  z-index: 50;
+}
+
+.gantt__footer-text {
+  font-size: 0.65rem;
+  color: var(--color-text-light);
+  opacity: 0.7;
+}
+
 /* Responsive */
+
 @media (max-width: 768px) {
   .app__header {
     flex-direction: column;
@@ -1734,25 +2106,12 @@ body {
   }
 }
 
-/* Table-only and Chart-only modes - stretch to full width */
-.gantt__main--table-only .gantt__table-header,
-.gantt__main--table-only .gantt__table-body {
-  width: 100% !important;
-}
-
-.gantt__main--chart-only .gantt__chart-body,
-.gantt__main--chart-only .gantt__timeline-header {
-  width: 100% !important;
-}
-
-/* Tablet and Mobile - Force single view mode */
 @media (max-width: 768px) {
   /* Hide split divider on mobile */
   .gantt__split-divider {
     display: none;
   }
 
-  /* Toolbar adjustments */
   .gantt__toolbar {
     padding: 0.5rem;
     gap: 0.5rem;
@@ -1803,7 +2162,6 @@ body {
     font-size: 0.875rem;
   }
 
-  /* Legend adjustments */
   .gantt__legend {
     padding: 0.5rem;
     font-size: 0.875rem;
@@ -1826,7 +2184,6 @@ body {
     height: 12px;
   }
 
-  /* Tags adjustments - smaller */
   .gantt__tags-row {
     padding: 0.375rem;
     gap: 0.375rem;
@@ -1857,7 +2214,6 @@ body {
     right: 0.5rem;
   }
 
-  /* Default state (both mode) - show only table */
   .gantt__main:not(.gantt__main--table-only):not(.gantt__main--chart-only)
     .gantt__chart-body,
   .gantt__main:not(.gantt__main--table-only):not(.gantt__main--chart-only)
@@ -1890,9 +2246,7 @@ body {
   }
 }
 
-/* Small Mobile */
 @media (max-width: 480px) {
-  /* Even smaller toolbar */
   .gantt__toolbar {
     padding: 0.375rem;
     gap: 0.375rem;
@@ -1924,7 +2278,6 @@ body {
     font-size: 0.75rem;
   }
 
-  /* Even smaller legend */
   .gantt__legend {
     padding: 0.375rem;
     font-size: 0.75rem;
@@ -1943,7 +2296,6 @@ body {
     height: 10px;
   }
 
-  /* Even smaller tags */
   .gantt__tags-row {
     padding: 0.25rem;
     gap: 0.25rem;
@@ -1959,7 +2311,6 @@ body {
   }
 }
 
-/* Print */
 @media print {
   @page {
     size: A4 portrait;
@@ -1977,6 +2328,14 @@ body {
   html {
     background: white;
     color: #1f2937;
+    --color-primary: #3b82f6;
+    --color-primary-dark: #2563eb;
+    --color-background: #f8fafc;
+    --color-surface: #ffffff;
+    --color-text: #1e293b;
+    --color-text-light: #64748b;
+    --color-border: #e2e8f0;
+    --color-hover: #f1f5f9;
   }
 
   body {
@@ -2044,7 +2403,6 @@ body {
     display: inline-block;
   }
 
-  /* Hide toolbar actions, zoom, tags */
   .app__theme-btn,
   .app__lang-select,
   .gantt__toolbar-row-bottom,
@@ -2080,7 +2438,6 @@ body {
     border: none;
   }
 
-  /* Show expand/collapse arrow in print */
   .gantt__expand-btn {
     display: inline-block;
     background: transparent;
@@ -2138,7 +2495,6 @@ body {
     overflow: visible;
   }
 
-  /* Force table to always show in print, regardless of view mode */
   .gantt__table-header,
   .gantt__table-body,
   .gantt__main--chart-only .gantt__table-header,
@@ -2173,7 +2529,6 @@ body {
     color: #1f2937;
   }
 
-  /* Show category colors */
   .gantt__cell-color {
     display: inline-block;
     width: 10px;
@@ -2227,21 +2582,21 @@ body {
     margin-left: auto;
   }
 
-  .gantt__tag {
+  .gantt__tag,
+  [data-theme="dark"] .gantt__tag,
+  [data-theme="light"] .gantt__tag {
     font-size: 0.7rem;
     padding: 2px 5px;
-    border: 1px solid #6366f1;
+    border: 1px solid #6366f1 !important;
     border-radius: 3px;
-    background-color: #eef2ff;
-    color: #4338ca;
+    background-color: #eef2ff !important;
+    color: #4338ca !important;
   }
 
-  /* Repeat header on each page */
   .gantt__header-row {
     display: table-header-group;
   }
 
-  /* Legend at bottom of last page */
   .gantt__legend {
     display: block;
     padding: 1rem 0;
@@ -2280,144 +2635,4 @@ body {
     color: #1f2937;
     font-size: 0.7rem;
   }
-}
-
-/* Toolbar wrapper - instant hide/show */
-.gantt__toolbar-wrapper--hidden {
-  display: none;
-}
-
-/* Toolbar toggle button */
-.gantt__toolbar-toggle {
-  margin-left: auto;
-  padding: 4px 12px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  color: var(--color-text);
-  cursor: pointer;
-  font-size: 0.75rem;
-  transition: all 0.2s;
-}
-
-.gantt__toolbar-toggle:hover {
-  background-color: var(--color-hover);
-  border-color: var(--color-primary);
-}
-
-.gantt__toolbar-show {
-  padding: 8px;
-  background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  display: flex;
-  justify-content: center;
-}
-
-.gantt__toolbar-toggle--show {
-  margin-left: 0;
-}
-
-/* View mode styles */
-.gantt__main--table-only .gantt__table-header,
-.gantt__main--table-only .gantt__table-body {
-  width: 100%;
-}
-
-.gantt__main--chart-only .gantt__timeline-header,
-.gantt__main--chart-only .gantt__chart-body {
-  width: 100%;
-  left: 0;
-}
-
-/* View toggle buttons on split divider */
-.gantt__view-toggle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  padding: 2px;
-  box-shadow: var(--shadow);
-  z-index: 100;
-  pointer-events: auto;
-}
-
-.gantt__view-toggle-btn {
-  padding: 4px 6px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 3px;
-  color: var(--color-text);
-  cursor: pointer;
-  font-size: 0.7rem;
-  transition: all 0.2s;
-  line-height: 1;
-  pointer-events: auto;
-}
-
-.gantt__view-toggle-btn:hover {
-  background-color: var(--color-primary);
-  color: white;
-  border-color: var(--color-primary);
-}
-
-/* Restore buttons when in single view mode */
-.gantt__restore-btn {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1000;
-  padding: 6px 4px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  color: var(--color-text);
-  cursor: pointer;
-  font-size: 0.875rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s;
-  line-height: 1;
-}
-
-.gantt__restore-btn:hover {
-  background-color: var(--color-primary);
-  color: white;
-  border-color: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.gantt__restore-btn--left {
-  left: 8px;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-.gantt__restore-btn--right {
-  right: 8px;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-/* Footer */
-.gantt__footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 3px 8px;
-  text-align: center;
-  border-top: 1px solid var(--color-border);
-  background-color: var(--color-surface);
-  z-index: 50;
-}
-
-.gantt__footer-text {
-  font-size: 0.65rem;
-  color: var(--color-text-light);
-  opacity: 0.7;
 }

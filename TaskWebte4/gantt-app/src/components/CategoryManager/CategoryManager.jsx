@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useCategories } from '../../hooks/useCategories';
-import './CategoryManager.css';
+import { useCategories } from '../../js/hooks/useCategories';
 
 const CategoryManager = ({ isOpen, onClose, translations: t }) => {
   const { categories, addCategory, updateCategory, deleteCategory, resetToDefaults } = useCategories();
@@ -14,17 +13,14 @@ const CategoryManager = ({ isOpen, onClose, translations: t }) => {
 
   if (!isOpen) return null;
 
-  // Get category display name (translation or custom name)
+  /* Get display name for category, using custom name if set, otherwise translation or ID */
   const getCategoryName = (category) => {
-    // If category has custom name, use it
     if (category.name) {
       return category.name;
     }
-    // Otherwise use translation for default categories
     if (t && t[`category_${category.id}`]) {
       return t[`category_${category.id}`];
     }
-    // Fallback to ID
     return category.id;
   };
 

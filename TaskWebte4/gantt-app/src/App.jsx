@@ -1,22 +1,16 @@
 import { useState, useCallback, useEffect } from 'react';
 import { GanttChart } from './components/GanttChart';
-import { getCurrentDateFormatted, getDefaultDateRange } from './utils/dateUtils';
-import { useLocalStorage } from './hooks/useLocalStorage';
-
-// All translations are loaded from external JSON files in `public/locales/*.json`.
-// No inline translations are kept in the source — the app will fetch the selected locale at runtime.
+import { getCurrentDateFormatted, getDefaultDateRange } from './js/utils/dateUtils';
+import { useLocalStorage } from './js/hooks/useLocalStorage';
 
 function App() {
   const [dateRange, setDateRange] = useLocalStorage('gantt-date-range', getDefaultDateRange());
   const [selectedTags, setSelectedTags] = useState([]);
   const [language, setLanguage] = useLocalStorage('gantt-language', 'sk');
   const [theme, setTheme] = useLocalStorage('gantt-theme', 'light');
-
-  // translations state loaded from external JSON files in /locales/*.json
-  // starts null until locale JSON is fetched
   const [t, setT] = useState(null);
 
-  // Load translations JSON from public/locales when language changes
+  // Load translations
   useEffect(() => {
     const loadLocale = async () => {
       try {
@@ -26,14 +20,12 @@ function App() {
         setT(data);
       } catch (err) {
         console.error('Failed to load locale', language, err);
-        // set empty object to avoid rendering errors; all translations expected from JSON
         setT({});
       }
     };
     loadLocale();
   }, [language]);
 
-  // Apply theme to document
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
@@ -42,7 +34,6 @@ function App() {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  // Export tasks
   const handleExport = useCallback(() => {
     const tasks = JSON.parse(localStorage.getItem('gantt-tasks') || '[]');
     const categories = JSON.parse(localStorage.getItem('gantt-categories') || '[]');
@@ -61,39 +52,28 @@ function App() {
     URL.revokeObjectURL(url);
   }, [dateRange]);
 
-  // Import tasks
   const handleImport = useCallback((file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target.result);
         if (data.tasks) {
-          // Import tasks
           localStorage.setItem('gantt-tasks', JSON.stringify(data.tasks));
 
-          // Import date range
           if (data.dateRange) {
             localStorage.setItem('gantt-date-range', JSON.stringify(data.dateRange));
           }
 
-          // Import categories or auto-detect from tasks
           if (data.categories) {
-            // Merge imported categories with existing ones
             const existingCategories = JSON.parse(localStorage.getItem('gantt-categories') || '[]');
             const existingIds = new Set(existingCategories.map(c => c.id));
-
-            // Add imported categories that don't exist yet
             const newCategories = data.categories.filter(c => !existingIds.has(c.id));
             const mergedCategories = [...existingCategories, ...newCategories];
-
             localStorage.setItem('gantt-categories', JSON.stringify(mergedCategories));
           } else {
-            // Auto-detect missing categories from tasks
             const existingCategories = JSON.parse(localStorage.getItem('gantt-categories') || '[]');
             const existingIds = new Set(existingCategories.map(c => c.id));
             const usedCategoryIds = new Set(data.tasks.map(t => t.category).filter(Boolean));
-
-            // Create missing categories with default colors
             const missingIds = Array.from(usedCategoryIds).filter(id => !existingIds.has(id));
             const defaultColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
@@ -143,7 +123,6 @@ function App() {
       </header>
 
       <main className="app__main">
-        {/* Gantt Chart - only render when translations are loaded */}
         {t ? (
           <GanttChart
             dateRange={dateRange}

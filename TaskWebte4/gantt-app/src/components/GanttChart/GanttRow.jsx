@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import GanttBar from './GanttBar';
-import { calculateDuration, calculateTaskPosition, addDays } from '../../utils/dateUtils';
-import { useCategories } from '../../hooks/useCategories';
+import { calculateDuration, calculateTaskPosition, addDays } from '../../js/utils/dateUtils';
+import { useCategories } from '../../js/hooks/useCategories';
 
 const GanttRow = ({
   task,
@@ -38,26 +38,15 @@ const GanttRow = ({
   const [localEditData, setLocalEditData] = useState(null);
   const [newTagInput, setNewTagInput] = useState('');
 
-  // Get category display name (translation or custom name)
   const getCategoryName = (category) => {
     if (!category) return '';
-    // If category has custom name, use it
-    if (category.name) {
-      return category.name;
-    }
-    // Otherwise use translation for default categories
-    if (t && t[`category_${category.id}`]) {
-      return t[`category_${category.id}`];
-    }
-    // Fallback to ID
+    if (category.name) return category.name;
+    if (t && t[`category_${category.id}`]) return t[`category_${category.id}`];
     return category.id;
   };
 
-  // Sync task changes from chart back to edit fields (reverse sync)
   useEffect(() => {
     if (isEditing && localEditData) {
-      // Update localEditData when task changes from chart manipulation
-      // Only update fields that might have changed from chart (dates, progress, name)
       setLocalEditData(prev => ({
         ...prev,
         name: task.name,
@@ -68,14 +57,12 @@ const GanttRow = ({
     }
   }, [task.name, task.startDate, task.endDate, task.progress, isEditing]);
 
-  // Start inline editing
   const handleStartEdit = () => {
     setLocalEditData({ ...task, tags: task.tags || [], category: task.category || 'task' });
     setNewTagInput('');
     onStartEdit(task.id);
   };
 
-  // Save changes
   const handleSave = () => {
     if (localEditData) {
       onUpdate(task.id, localEditData);
@@ -85,22 +72,18 @@ const GanttRow = ({
     onStopEdit();
   };
 
-  // Cancel editing
   const handleCancel = () => {
     setLocalEditData(null);
     setNewTagInput('');
     onStopEdit();
   };
 
-  // Handle input change
   const handleChange = (field, value) => {
     const updatedData = { ...localEditData, [field]: value };
     setLocalEditData(updatedData);
-    // Update in real-time for diagram sync
     onUpdate(task.id, updatedData);
   };
 
-  // Add a new tag
   const handleAddTag = () => {
     const tag = newTagInput.trim();
     if (tag && localEditData) {
@@ -108,33 +91,27 @@ const GanttRow = ({
       if (!currentTags.includes(tag)) {
         const updatedData = { ...localEditData, tags: [...currentTags, tag] };
         setLocalEditData(updatedData);
-        // Update in real-time for diagram sync
         onUpdate(task.id, updatedData);
       }
       setNewTagInput('');
     }
   };
 
-  // Remove a tag
   const handleRemoveTag = (tagToRemove) => {
     if (localEditData) {
       const currentTags = localEditData.tags || [];
       const updatedData = { ...localEditData, tags: currentTags.filter(t => t !== tagToRemove) };
       setLocalEditData(updatedData);
-      // Update in real-time for diagram sync
       onUpdate(task.id, updatedData);
     }
   };
 
-  // Handle duration change - recalculate end date
   const handleDurationChange = (newDuration) => {
     const days = Math.max(0, parseInt(newDuration) || 0);
     const startDate = localEditData?.startDate || task.startDate;
-    // For 0 days (milestone), endDate = startDate. Otherwise, endDate = startDate + (days - 1)
     const newEndDate = days === 0 ? startDate : addDays(startDate, days - 1);
     const updatedData = { ...localEditData, endDate: newEndDate };
     setLocalEditData(updatedData);
-    // Update in real-time for diagram sync
     onUpdate(task.id, updatedData);
   };
 
@@ -145,16 +122,14 @@ const GanttRow = ({
     ? calculateDuration(localEditData.startDate, localEditData.endDate)
     : duration;
 
-  // Get category color for the indicator
   const category = getCategoryById(currentData.category || 'task');
   const categoryColor = category?.color || '#3b82f6';
 
-  // Handle row drag (only from table part)
   const handleRowDragStart = (e) => {
     onDragStart(e, task.id);
   };
 
-  // Render only table part
+  // Table view
   if (renderMode === 'table') {
     return (
       <div
@@ -166,7 +141,6 @@ const GanttRow = ({
         onMouseEnter={() => onHover(task.id)}
         onMouseLeave={() => onHover(null)}
       >
-        {/* Name cell */}
         <div className="gantt__cell gantt__cell--name" style={{ width: `${columnWidths.name}px`, paddingLeft: `${depth * 16 + 8}px`, display: columnWidths.name === 0 ? 'none' : undefined }}>
           {hasChildren ? (
             <button
@@ -197,7 +171,6 @@ const GanttRow = ({
                   if (e.key === 'Escape') handleCancel();
                 }}
               />
-              {/* Category selector */}
               <select
                 className="gantt__category-select"
                 value={currentData.category || 'task'}
@@ -209,7 +182,6 @@ const GanttRow = ({
                   </option>
                 ))}
               </select>
-              {/* Tag editor */}
               <div className="gantt__tag-editor">
                 <div className="gantt__tag-list">
                   {(currentData.tags || []).map(tag => (
@@ -232,7 +204,6 @@ const GanttRow = ({
                     value={newTagInput}
                     onChange={(e) => setNewTagInput(e.target.value)}
                     onKeyDown={(e) => {
-                      // Handle both key and keyCode for better mobile support
                       if (e.key === 'Enter' || e.keyCode === 13) {
                         e.preventDefault();
                         handleAddTag();
@@ -271,7 +242,6 @@ const GanttRow = ({
           )}
         </div>
 
-        {/* Start date cell */}
         <div className="gantt__cell gantt__cell--date" style={{ width: `${columnWidths.date}px`, display: columnWidths.date === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <input
@@ -285,7 +255,6 @@ const GanttRow = ({
           )}
         </div>
 
-        {/* Duration cell - editable */}
         <div className="gantt__cell gantt__cell--duration" style={{ width: `${columnWidths.duration}px`, display: columnWidths.duration === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <input
@@ -300,7 +269,6 @@ const GanttRow = ({
           )}
         </div>
 
-        {/* Progress cell */}
         <div className="gantt__cell gantt__cell--progress" style={{ width: `${columnWidths.progress}px`, display: columnWidths.progress === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <input
@@ -316,7 +284,6 @@ const GanttRow = ({
           )}
         </div>
 
-        {/* Actions cell */}
         <div className="gantt__cell gantt__cell--actions" style={{ width: `${columnWidths.actions}px`, display: columnWidths.actions === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <>
@@ -346,7 +313,7 @@ const GanttRow = ({
     );
   }
 
-  // Render only chart part
+  // Chart view
   if (renderMode === 'chart') {
     return (
       <div
@@ -372,7 +339,6 @@ const GanttRow = ({
           onRowDragStart={handleRowDragStart}
           translations={t}
         />
-        {/* Today marker in row */}
         {todayPosition !== null && (
           <div
             className="gantt__today-marker"
@@ -383,7 +349,7 @@ const GanttRow = ({
     );
   }
 
-  // Render both (legacy mode)
+  // Legacy mode
   return (
     <div
       className={`gantt__row ${isDragging ? 'gantt__row--dragging' : ''}`}
@@ -392,9 +358,7 @@ const GanttRow = ({
       onDragOver={onDragOver}
       onDrop={(e) => onDrop(e, task.id)}
     >
-      {/* Table part */}
       <div className="gantt__row-table" style={{ width: `${tableWidth}px` }}>
-        {/* Name cell */}
         <div className="gantt__cell gantt__cell--name" style={{ paddingLeft: `${depth * 16 + 8}px`, display: columnWidths.name === 0 ? 'none' : undefined }}>
           {hasChildren ? (
             <button
@@ -434,7 +398,6 @@ const GanttRow = ({
           )}
         </div>
 
-        {/* Start date cell */}
         <div className="gantt__cell gantt__cell--date" style={{ display: columnWidths.date === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <input
@@ -448,7 +411,6 @@ const GanttRow = ({
           )}
         </div>
 
-        {/* Duration cell */}
         <div className="gantt__cell gantt__cell--duration" style={{ display: columnWidths.duration === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <input
@@ -463,7 +425,6 @@ const GanttRow = ({
           )}
         </div>
 
-        {/* Progress cell */}
         <div className="gantt__cell gantt__cell--progress" style={{ display: columnWidths.progress === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <input
@@ -479,7 +440,6 @@ const GanttRow = ({
           )}
         </div>
 
-        {/* Actions cell */}
         <div className="gantt__cell gantt__cell--actions" style={{ display: columnWidths.actions === 0 ? 'none' : undefined }}>
           {isEditing ? (
             <>
@@ -507,7 +467,6 @@ const GanttRow = ({
         </div>
       </div>
 
-      {/* Chart part */}
       <div className="gantt__row-chart">
         <div className="gantt__row-chart-inner" style={{ width: `${timelineWidth}%` }}>
           <GanttBar
@@ -518,7 +477,6 @@ const GanttRow = ({
             onDoubleClick={handleStartEdit}
             isParent={isRoot}
           />
-          {/* Today marker in row */}
           {todayPosition !== null && (
             <div
               className="gantt__today-marker"

@@ -1,11 +1,10 @@
 import { useMemo, useRef, useState, useLayoutEffect } from "react";
-import { calculateTaskPosition } from "../../utils/dateUtils";
+import { calculateTaskPosition } from "../../js/utils/dateUtils";
 
 const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
   const svgRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(1000);
 
-  // Measure container width for pixel calculations - use ResizeObserver for all size changes
   useLayoutEffect(() => {
     const updateWidth = () => {
       if (svgRef.current && svgRef.current.parentElement) {
@@ -17,7 +16,6 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
 
     updateWidth();
 
-    // Use ResizeObserver to detect container size changes (split resize, zoom, etc.)
     const resizeObserver = new ResizeObserver(() => {
       updateWidth();
     });
@@ -34,7 +32,6 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
     };
   }, []);
 
-  // Calculate arrow paths between dependent tasks
   const arrows = useMemo(() => {
     const arrowList = [];
     const taskMap = new Map(tasks.map((t, index) => [t.id, { ...t, index }]));
@@ -51,7 +48,6 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
               id: `${sourceId}-${task.id}`,
               sourceId,
               targetId: task.id,
-              // Store percentages - will convert to pixels when rendering
               sourceLeftPercent: sourcePos.left + sourcePos.width,
               targetLeftPercent: targetPos.left,
               sourceIndex: sourceTask.index,
@@ -100,7 +96,6 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
       </defs>
 
       {arrows.map((arrow) => {
-        // Convert percentages to pixels
         const sx = (arrow.sourceLeftPercent / 100) * containerWidth;
         const tx = (arrow.targetLeftPercent / 100) * containerWidth;
         const sy = arrow.sourceIndex * rowHeight + rowHeight / 2;
@@ -111,11 +106,9 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
         let pathD;
 
         if (dx > 30) {
-          // Target is to the right - smooth curve
           const midX = sx + dx / 2;
           pathD = `M ${sx} ${sy} C ${midX} ${sy}, ${midX} ${ty}, ${tx} ${ty}`;
         } else {
-          // Target is to the left or close - simple L-shape: right a bit, then down, then left to target
           const horizontalOffset = 18;
           const stopY = ty - rowHeight / 2;
           pathD = `M ${sx} ${sy} L ${sx + horizontalOffset} ${sy} L ${sx + horizontalOffset} ${stopY} L ${tx - horizontalOffset} ${stopY}
@@ -138,7 +131,6 @@ const DependencyArrows = ({ tasks, dateRange, onRemoveDependency }) => {
                 }
               }}
             />
-            {/* Wider invisible path for easier clicking */}
             <path
               d={pathD}
               fill="none"
