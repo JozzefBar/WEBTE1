@@ -82,7 +82,7 @@ export const useTasks = (translations = {}) => {
 
     const newTask = {
       id: Date.now(),
-      name: translations.newTask || 'Nová úloha',
+      name: '', // Empty name will show translated 'newTask' in UI
       startDate: startForNew,
       endDate: endDate,
       category: parentId === null ? 'summary' : 'task', // Root tasks are summary, subtasks are regular
@@ -229,16 +229,57 @@ export const useTasks = (translations = {}) => {
     setTasks(newTasks);
   }, [tasks, setTasks, saveToHistory]);
 
-  // Move task (drag & drop reorder)
+  // Move task (drag & drop reorder) - with constraints
   const moveTask = useCallback((draggedId, targetId) => {
     if (draggedId === targetId) return;
 
+    const draggedTask = tasks.find(t => t.id === draggedId);
+    const targetTask = tasks.find(t => t.id === targetId);
+
+    if (!draggedTask || !targetTask) return;
+
+    // CONSTRAINT: Can only move within same level (same parentId)
+    if (draggedTask.parentId !== targetTask.parentId) {
+      return;
+    }
+
+    // Get all descendants of dragged task (children, grandchildren, etc.)
+    const getAllDescendants = (id) => {
+      const directChildren = tasks.filter(t => t.parentId === id);
+      return directChildren.reduce((acc, child) => {
+        return [...acc, child, ...getAllDescendants(child.id)];
+      }, []);
+    };
+
+    const descendants = getAllDescendants(draggedId);
+    const taskAndDescendants = [draggedTask, ...descendants];
+    const taskIds = new Set([draggedId, ...descendants.map(d => d.id)]);
+
+    // Find the original indices to determine direction
     const draggedIndex = tasks.findIndex(t => t.id === draggedId);
     const targetIndex = tasks.findIndex(t => t.id === targetId);
 
-    const newTasks = [...tasks];
-    const [draggedTask] = newTasks.splice(draggedIndex, 1);
-    newTasks.splice(targetIndex, 0, draggedTask);
+    // Remove dragged task and all its descendants from their current positions
+    const remainingTasks = tasks.filter(t => !taskIds.has(t.id));
+
+    // Find where to insert in the remaining tasks
+    // If moving down (target is below dragged), insert after target
+    // If moving up (target is above dragged), insert before target
+    let insertIndex;
+    if (draggedIndex < targetIndex) {
+      // Moving down: insert after target
+      insertIndex = remainingTasks.findIndex(t => t.id === targetId) + 1;
+    } else {
+      // Moving up: insert before target
+      insertIndex = remainingTasks.findIndex(t => t.id === targetId);
+    }
+
+    // Insert dragged task and descendants at calculated position
+    const newTasks = [
+      ...remainingTasks.slice(0, insertIndex),
+      ...taskAndDescendants,
+      ...remainingTasks.slice(insertIndex)
+    ];
 
     saveToHistory(newTasks);
     setTasks(newTasks);

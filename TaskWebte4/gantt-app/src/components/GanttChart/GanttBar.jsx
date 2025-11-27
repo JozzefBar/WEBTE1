@@ -15,7 +15,8 @@ const GanttBar = ({
   onCompleteLink,
   isDraggingRow,
   isEditingRow,
-  onRowDragStart
+  onRowDragStart,
+  translations
 }) => {
   const { getCategoryById } = useCategories();
   const barRef = useRef(null);
@@ -139,6 +140,57 @@ const GanttBar = ({
     document.addEventListener('mouseup', cleanup);
   };
 
+  // Handle touch start for bar movement
+  const handleTouchStart = (e) => {
+    if (e.target.classList.contains('gantt__bar-resize') ||
+        e.target.classList.contains('gantt__bar-connector') ||
+        e.target.classList.contains('gantt__bar-progress-handle')) return;
+
+    // Prevent default to stop scrolling when touching the bar
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.touches[0]) {
+      const startX = e.touches[0].clientX;
+      const startY = e.touches[0].clientY;
+
+      const handleFirstMove = (moveEvent) => {
+        if (!moveEvent.touches[0]) return;
+
+        const deltaX = Math.abs(moveEvent.touches[0].clientX - startX);
+        const deltaY = Math.abs(moveEvent.touches[0].clientY - startY);
+
+        if (deltaX < 3 && deltaY < 3) return;
+
+        if (deltaX > deltaY) {
+          // Horizontal drag - start custom drag
+          moveEvent.preventDefault();
+          moveEvent.stopPropagation();
+
+          setIsDragging(true);
+          setDragStart({
+            x: startX,
+            initialLeft: currentLeft,
+            initialWidth: currentWidth,
+            containerWidth: getContainerWidth()
+          });
+        }
+
+        document.removeEventListener('touchmove', handleFirstMove);
+      };
+
+      document.addEventListener('touchmove', handleFirstMove, { passive: false });
+
+      const cleanup = () => {
+        document.removeEventListener('touchmove', handleFirstMove);
+        document.removeEventListener('touchend', cleanup);
+        document.removeEventListener('touchcancel', cleanup);
+      };
+      document.addEventListener('touchend', cleanup);
+      document.addEventListener('touchcancel', cleanup);
+    }
+  };
+
   // Handle resize start
   const handleResizeStart = (e, side) => {
     e.preventDefault();
@@ -153,6 +205,22 @@ const GanttBar = ({
     });
   };
 
+  // Handle resize start - Touch support
+  const handleResizeTouchStart = (e, side) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.touches[0]) {
+      setIsResizing(side);
+      setDragStart({
+        x: e.touches[0].clientX,
+        initialLeft: currentLeft,
+        initialWidth: currentWidth,
+        containerWidth: getContainerWidth()
+      });
+    }
+  };
+
   // Handle progress drag start
   const handleProgressDragStart = (e) => {
     e.preventDefault();
@@ -164,6 +232,21 @@ const GanttBar = ({
       barWidth: getBarWidth(),
       initialProgress: currentProgress
     });
+  };
+
+  // Handle progress drag start - Touch support
+  const handleProgressTouchStart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.touches[0]) {
+      setIsDraggingProgress(true);
+      setDragStart({
+        x: e.touches[0].clientX,
+        barWidth: getBarWidth(),
+        initialProgress: currentProgress
+      });
+    }
   };
 
   // Handle connection point click
@@ -225,12 +308,21 @@ const GanttBar = ({
     }
   }, [isInlineEditing]);
 
-  // Handle mouse move and up for dragging/resizing
+  // Handle mouse and touch move/up for dragging/resizing
   useEffect(() => {
     if (!dragStart) return;
 
-    const handleMouseMove = (e) => {
-      const deltaX = e.clientX - dragStart.x;
+    const handleMove = (e) => {
+      // Support both mouse and touch events
+      const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : null);
+      if (clientX === null) return;
+
+      // Prevent scrolling when dragging with touch
+      if (e.touches) {
+        e.preventDefault();
+      }
+
+      const deltaX = clientX - dragStart.x;
 
       if (isDraggingProgress) {
         // Drag progress indicator
@@ -269,9 +361,12 @@ const GanttBar = ({
       }
     };
 
-    const handleMouseUp = (e) => {
+    const handleEnd = (e) => {
+      // Support both mouse and touch events
+      const clientX = e.clientX !== undefined ? e.clientX : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : null);
+
       // Determine if there was meaningful movement (avoid treating a simple click as a drag)
-      const moved = dragStart && typeof e?.clientX === 'number' && Math.abs(e.clientX - dragStart.x) > 2;
+      const moved = dragStart && clientX !== null && Math.abs(clientX - dragStart.x) > 2;
 
       if (isDraggingProgress) {
         // Update progress
@@ -288,12 +383,19 @@ const GanttBar = ({
       setDragStart(null);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    // Add both mouse and touch listeners
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleEnd);
+    document.addEventListener('touchmove', handleMove, { passive: false });
+    document.addEventListener('touchend', handleEnd);
+    document.addEventListener('touchcancel', handleEnd);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleMove);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchmove', handleMove);
+      document.removeEventListener('touchend', handleEnd);
+      document.removeEventListener('touchcancel', handleEnd);
     };
   }, [isDragging, isResizing, isDraggingProgress, dragStart, currentLeft, currentWidth, currentProgress, dateRange, task.id, onUpdate]);
 
@@ -326,6 +428,7 @@ const GanttBar = ({
           className={`gantt__milestone gantt__milestone--goal ${isDragging ? 'gantt__milestone--dragging' : ''}`}
           style={{ backgroundColor: categoryColor }}
           onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
           onDoubleClick={handleStartInlineEdit}
         />
 
@@ -341,7 +444,12 @@ const GanttBar = ({
             onBlur={handleSaveInlineEdit}
           />
         ) : (
-          <span className="gantt__milestone-label">{task.name}</span>
+          <span
+            className="gantt__milestone-label"
+            onDoubleClick={handleStartInlineEdit}
+          >
+            {task.name || translations?.newTask || 'Nová úloha'}
+          </span>
         )}
 
         {/* Right connector */}
@@ -385,6 +493,7 @@ const GanttBar = ({
       draggable={!isEditingRow && !isDragging && !isResizing}
       onDragStart={handleBarDragStart}
       onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
       onDoubleClick={handleStartInlineEdit}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -403,6 +512,7 @@ const GanttBar = ({
       <div
         className={`gantt__bar-resize gantt__bar-resize--left ${isHovered ? 'gantt__bar-resize--visible' : ''}`}
         onMouseDown={(e) => handleResizeStart(e, 'left')}
+        onTouchStart={(e) => handleResizeTouchStart(e, 'left')}
       />
 
       {/* Task label or input */}
@@ -419,7 +529,7 @@ const GanttBar = ({
           onMouseDown={(e) => e.stopPropagation()}
         />
       ) : (
-        <span className="gantt__bar-label">{task.name}</span>
+        <span className="gantt__bar-label">{task.name || translations?.newTask || 'Nová úloha'}</span>
       )}
 
       {/* Progress handle/marker (visual only, not interactive) */}
@@ -437,6 +547,10 @@ const GanttBar = ({
             e.stopPropagation();
             handleProgressDragStart(e);
           }}
+          onTouchStart={(e) => {
+            e.stopPropagation();
+            handleProgressTouchStart(e);
+          }}
           onMouseEnter={() => setIsTooltipHovered(true)}
           onMouseLeave={() => setIsTooltipHovered(false)}
           style={{ cursor: 'ew-resize' }}
@@ -449,6 +563,7 @@ const GanttBar = ({
       <div
         className={`gantt__bar-resize gantt__bar-resize--right ${isHovered ? 'gantt__bar-resize--visible' : ''}`}
         onMouseDown={(e) => handleResizeStart(e, 'right')}
+        onTouchStart={(e) => handleResizeTouchStart(e, 'right')}
       />
 
       {/* Connection points */}

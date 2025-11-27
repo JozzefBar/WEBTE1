@@ -39,5 +39,10 @@
   "category_goal": "Cieľ",
   "newTask": "Nová úloha",
   "search": "Hľadať",
-  "searchPlaceholder": "Zadajte názov úlohy..."
+  "searchPlaceholder": "Zadajte názov úlohy...",
+  "noResultsForFilters": "Podľa zadaných filtrov sa nenašli žiadne úlohy.",
+  "addTagPlaceholder": "+ štítok",
+  "addTag": "Pridať štítok",
+  "createdBy": "Vytvoril",
+  "allRightsReserved": "Všetky práva vyhradené"
 }

@@ -224,4 +224,43 @@
   background-color: #059669;
 }
 
+.category-modal__reset-confirm {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.category-modal__confirm-btn,
+.category-modal__cancel-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-modal__confirm-btn {
+  background-color: #10b981;
+  color: white;
+}
+
+.category-modal__confirm-btn:hover {
+  background-color: #059669;
+  transform: scale(1.05);
+}
+
+.category-modal__cancel-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.category-modal__cancel-btn:hover {
+  background-color: #dc2626;
+  transform: scale(1.05);
+}
+
 /* Print styles removed per user request */

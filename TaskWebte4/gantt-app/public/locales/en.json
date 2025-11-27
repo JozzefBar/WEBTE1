@@ -39,5 +39,10 @@
   "category_goal": "Goal",
   "newTask": "New task",
   "search": "Search",
-  "searchPlaceholder": "Enter task name..."
+  "searchPlaceholder": "Enter task name...",
+  "noResultsForFilters": "No tasks found matching the specified filters.",
+  "addTagPlaceholder": "+ tag",
+  "addTag": "Add tag",
+  "createdBy": "Created by",
+  "allRightsReserved": "All rights reserved"
 }

@@ -218,26 +218,38 @@ const GanttRow = ({
                       <button
                         className="gantt__tag-remove"
                         onClick={() => handleRemoveTag(tag)}
-                        title="Odstrániť štítok"
                       >
                         ×
                       </button>
                     </span>
                   ))}
                 </div>
-                <input
-                  type="text"
-                  className="gantt__tag-input"
-                  placeholder="+ štítok"
-                  value={newTagInput}
-                  onChange={(e) => setNewTagInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddTag();
-                    }
-                  }}
-                />
+                <div className="gantt__tag-input-wrapper">
+                  <input
+                    type="text"
+                    className="gantt__tag-input"
+                    placeholder={t?.addTagPlaceholder || '+ štítok'}
+                    value={newTagInput}
+                    onChange={(e) => setNewTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      // Handle both key and keyCode for better mobile support
+                      if (e.key === 'Enter' || e.keyCode === 13) {
+                        e.preventDefault();
+                        handleAddTag();
+                      }
+                    }}
+                    enterKeyHint="enter"
+                  />
+                  {newTagInput.trim() && (
+                    <button
+                      type="button"
+                      className="gantt__tag-add-btn"
+                      onClick={handleAddTag}
+                    >
+                      +
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
@@ -246,7 +258,7 @@ const GanttRow = ({
                 className="gantt__cell-text"
                 onDoubleClick={handleStartEdit}
               >
-                {task.name}
+                {task.name || t?.newTask || 'Nová úloha'}
               </span>
               {task.tags && task.tags.length > 0 && (
                 <span className="gantt__tags-inline">
@@ -358,6 +370,7 @@ const GanttRow = ({
           isDraggingRow={isDragging}
           isEditingRow={isEditing}
           onRowDragStart={handleRowDragStart}
+          translations={t}
         />
         {/* Today marker in row */}
         {todayPosition !== null && (

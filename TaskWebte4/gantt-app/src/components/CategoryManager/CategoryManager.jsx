@@ -10,6 +10,7 @@ const CategoryManager = ({ isOpen, onClose, translations: t }) => {
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newColor, setNewColor] = useState('#3b82f6');
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   if (!isOpen) return null;
 
@@ -60,8 +61,17 @@ const CategoryManager = ({ isOpen, onClose, translations: t }) => {
     }
   };
 
-  const handleReset = () => {
+  const handleResetClick = () => {
+    setShowResetConfirm(true);
+  };
+
+  const handleConfirmReset = () => {
     resetToDefaults();
+    setShowResetConfirm(false);
+  };
+
+  const handleCancelReset = () => {
+    setShowResetConfirm(false);
   };
 
   return (
@@ -163,9 +173,20 @@ const CategoryManager = ({ isOpen, onClose, translations: t }) => {
         </div>
 
         <div className="category-modal__footer">
-          <button className="category-modal__reset-btn" onClick={handleReset}>
-            {t?.resetToDefaults || 'Obnoviť predvolené'}
-          </button>
+          {showResetConfirm ? (
+            <div className="category-modal__reset-confirm">
+              <button className="category-modal__confirm-btn" onClick={handleConfirmReset}>
+                ✓
+              </button>
+              <button className="category-modal__cancel-btn" onClick={handleCancelReset}>
+                ✕
+              </button>
+            </div>
+          ) : (
+            <button className="category-modal__reset-btn" onClick={handleResetClick}>
+              {t?.resetToDefaults || 'Obnoviť predvolené'}
+            </button>
+          )}
           <button className="category-modal__done-btn" onClick={onClose}>
             {t?.done || 'Hotovo'}
           </button>

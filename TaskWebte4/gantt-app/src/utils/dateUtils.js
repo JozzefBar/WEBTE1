@@ -211,9 +211,8 @@ export const getCurrentDateFormatted = (language = 'sk') => {
 };
 
 export const getDefaultDateRange = () => {
-  const today = new Date();
-  const start = new Date(today.getFullYear(), today.getMonth(), 1);
-  const end = new Date(today.getFullYear(), today.getMonth() + 3, 0);
+  const start = new Date(2025, 0, 1); // January 1, 2025
+  const end = new Date(2025, 11, 31); // December 31, 2025
 
   return {
     start: formatDate(start),

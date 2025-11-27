@@ -47,6 +47,8 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
   const [hoveredTaskId, setHoveredTaskId] = useState(null);
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showToolbar, setShowToolbar] = useState(true);
+  const [viewMode, setViewMode] = useState('both'); // 'both', 'table-only', 'chart-only'
   const [columnWidths, setColumnWidths] = useState({
     name: 180,
     date: 90,
@@ -88,6 +90,44 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [editingTaskId, stopEditing]);
+
+  // Click outside to cancel linking mode
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      // Cancel linking if clicked outside dependency targets
+      // Use 'click' instead of 'mousedown' to allow onClick handlers to complete first
+      if (linkingFromTask && !e.target.closest('.gantt__dependency-target')) {
+        setLinkingFromTask(null);
+      }
+    };
+
+    if (linkingFromTask) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [linkingFromTask]);
+
+  // Handle responsive view mode based on screen width
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth <= 768;
+
+      // If mobile and currently in 'both' mode, switch to table-only
+      if (isMobile && viewMode === 'both') {
+        setViewMode('table-only');
+      }
+    };
+
+    // Check on mount
+    handleResize();
+
+    // Listen to resize events
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [viewMode]);
 
   // Generate timeline based on zoom level
   const timelineUnits = generateTimelineUnits(dateRange, zoomLevel, t);
@@ -213,6 +253,32 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
     document.addEventListener('mouseup', handleMouseUp);
   };
 
+  // Handle split resize - Touch support
+  const handleSplitTouchStart = (e) => {
+    e.preventDefault();
+    setIsResizingSplit(true);
+
+    const handleTouchMove = (e) => {
+      if (containerRef.current && e.touches[0]) {
+        const containerRect = containerRef.current.getBoundingClientRect();
+        let newWidth = e.touches[0].clientX - containerRect.left;
+        newWidth = Math.max(50, Math.min(800, newWidth));
+        setTableWidth(newWidth);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setIsResizingSplit(false);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('touchcancel', handleTouchEnd);
+    };
+
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+    document.addEventListener('touchcancel', handleTouchEnd);
+  };
+
   // Sync scroll: chart body -> timeline header (horizontal) + table body (vertical)
   // Chart body is the MASTER for vertical scroll
   const handleChartBodyScroll = (e) => {
@@ -279,6 +345,44 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  // Handle column resize - Touch support
+  const handleColumnTouchStart = (column, e) => {
+    e.preventDefault();
+    setResizingColumn(column);
+    const startX = e.touches[0].clientX;
+    const startWidth = columnWidths[column] || DEFAULT_COLUMN_WIDTHS[column] || 60;
+
+    let finalWidth = startWidth;
+    const MIN_WIDTH = 30;
+    const HIDE_THRESHOLD = 40;
+
+    const handleTouchMove = (ev) => {
+      if (ev.touches[0]) {
+        const deltaX = ev.touches[0].clientX - startX;
+        const newWidth = Math.max(0, Math.round(startWidth + deltaX));
+        finalWidth = newWidth;
+        setColumnWidths(prev => ({ ...prev, [column]: Math.max(MIN_WIDTH, newWidth) }));
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setResizingColumn(null);
+
+      if (finalWidth < HIDE_THRESHOLD) {
+        setHiddenColumns(prev => prev.includes(column) ? prev : [...prev, column]);
+        setColumnWidths(prev => ({ ...prev, [column]: 0 }));
+      }
+
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('touchcancel', handleTouchEnd);
+    };
+
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+    document.addEventListener('touchcancel', handleTouchEnd);
   };
 
   // (resizing now handled by full-height resizer overlays rendered in the table body)
@@ -353,13 +457,14 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
   const tableContentWidth = columnWidths.name + columnWidths.date + columnWidths.duration + columnWidths.progress + columnWidths.actions;
 
   return (
-    <div className={`gantt ${isResizingSplit ? 'gantt--resizing' : ''}`} ref={containerRef}>
+    <div className={`gantt ${isResizingSplit ? 'gantt--resizing' : ''} ${!showToolbar ? 'gantt--toolbar-hidden' : ''}`} ref={containerRef}>
       {/* Toolbar - full width */}
-      <div className="gantt__toolbar">
-        {/* Row 1: Date range */}
-        <div className="gantt__toolbar-row-dates">
-          <label className="gantt__toolbar-label">
-            {t?.from || 'Od'}:
+      <div className={`gantt__toolbar-wrapper ${!showToolbar ? 'gantt__toolbar-wrapper--hidden' : ''}`}>
+        <div className="gantt__toolbar">
+            {/* Row 1: Date range */}
+            <div className="gantt__toolbar-row-dates">
+              <label className="gantt__toolbar-label">
+                {t?.from || 'Od'}:
             <input
               type="date"
               className="gantt__toolbar-input"
@@ -456,46 +561,67 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
         </div>
       </div>
 
-      {/* Tag filter row - full width */}
-      {allTags.length > 0 && (
-        <div className="gantt__tags-row">
-          <span className="gantt__tags-label">{t?.tags || 'Štítky'}:</span>
-          {allTags.map(tag => (
-            <button
-              key={tag}
-              className={`gantt__tag-btn ${selectedTags.includes(tag) ? 'gantt__tag-btn--active' : ''}`}
-              onClick={() => onTagToggle(tag)}
-            >
-              {tag}
-            </button>
-          ))}
+          {/* Tag filter row - full width */}
+          {allTags.length > 0 && (
+            <div className="gantt__tags-row">
+              <span className="gantt__tags-label">{t?.tags || 'Štítky'}:</span>
+              {allTags.map(tag => (
+                <button
+                  key={tag}
+                  className={`gantt__tag-btn ${selectedTags.includes(tag) ? 'gantt__tag-btn--active' : ''}`}
+                  onClick={() => onTagToggle(tag)}
+                >
+                  {tag}
+                </button>
+              ))}
+              {/* Toolbar toggle button */}
+              <button
+                className="gantt__toolbar-toggle"
+                onClick={() => setShowToolbar(!showToolbar)}
+              >
+                ▲
+              </button>
+            </div>
+          )}
+      </div>
+
+      {/* Show toolbar button when hidden */}
+      {!showToolbar && (
+        <div className="gantt__toolbar-show">
+          <button
+            className="gantt__toolbar-toggle gantt__toolbar-toggle--show"
+            onClick={() => setShowToolbar(true)}
+          >
+            ▼
+          </button>
         </div>
       )}
 
-      <div className="gantt__main" onDragEnd={handleDragEnd}>
+      <div className={`gantt__main gantt__main--${viewMode}`} onDragEnd={handleDragEnd}>
         {/* Headers row - fixed at top */}
         <div className="gantt__headers-row">
-          <div
-            className={`gantt__table-header ${resizingColumn ? 'gantt__header--resizing' : ''}`}
-            style={{ width: `${tableWidth}px` }}
-            ref={tableHeaderRef}
-          >
+          {viewMode !== 'chart-only' && (
+            <div
+              className={`gantt__table-header ${resizingColumn ? 'gantt__header--resizing' : ''}`}
+              style={{ width: `${tableWidth}px` }}
+              ref={tableHeaderRef}
+            >
               <div className="gantt__table-header-content" style={{ minWidth: `${tableContentWidth}px` }}>
               <div className="gantt__header-cell gantt__header-cell--name" style={{ width: `${columnWidths.name}px`, display: columnWidths.name === 0 ? 'none' : undefined }}>
                 {t?.taskName || 'Názov úlohy'}
-                <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('name', e)} />
+                <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('name', e)} onTouchStart={(e) => handleColumnTouchStart('name', e)} />
               </div>
               <div className="gantt__header-cell gantt__header-cell--date" style={{ width: `${columnWidths.date}px`, display: columnWidths.date === 0 ? 'none' : undefined }}>
                 {t?.startDate || 'Začiatok'}
-                <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('date', e)} />
+                <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('date', e)} onTouchStart={(e) => handleColumnTouchStart('date', e)} />
               </div>
               <div className="gantt__header-cell gantt__header-cell--duration" style={{ width: `${columnWidths.duration}px`, display: columnWidths.duration === 0 ? 'none' : undefined }}>
                 {t?.days || 'Dni'}
-                <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('duration', e)} />
+                <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('duration', e)} onTouchStart={(e) => handleColumnTouchStart('duration', e)} />
               </div>
               <div className="gantt__header-cell gantt__header-cell--progress" style={{ width: `${columnWidths.progress}px`, display: columnWidths.progress === 0 ? 'none' : undefined }}>
                 %
-                <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('progress', e)} />
+                <div className="gantt__column-resize" onMouseDown={(e) => handleColumnResize('progress', e)} onTouchStart={(e) => handleColumnTouchStart('progress', e)} />
               </div>
               <div className="gantt__header-cell gantt__header-cell--actions" style={{ width: `${columnWidths.actions}px`, display: columnWidths.actions === 0 ? 'none' : undefined }}>
                 <button
@@ -532,14 +658,16 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                 </div>
               )}
             </div>
-          </div>
+            </div>
+          )}
 
           {/* Timeline Header */}
-          <div
-            className="gantt__timeline-header"
-            ref={timelineHeaderRef}
-            onScroll={handleTimelineHeaderScroll}
-          >
+          {viewMode !== 'table-only' && (
+            <div
+              className="gantt__timeline-header"
+              ref={timelineHeaderRef}
+              onScroll={handleTimelineHeaderScroll}
+            >
             <div className="gantt__timeline-scroll" style={{ minWidth: `${timelineMinWidth}px` }}>
               {timelineUnits.map((unit, index) => (
                 <div
@@ -558,12 +686,14 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                 />
               )}
             </div>
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Bodies row - table and chart side by side */}
         <div className="gantt__bodies-row">
           {/* Table Body */}
+          {viewMode !== 'chart-only' && (
             <div
               className="gantt__table-body"
               style={{ width: `${tableWidth}px` }}
@@ -580,10 +710,16 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                   >
               {filteredTasks.length === 0 ? (
                 <div className="gantt__empty">
-                  <p>{t?.noTasks || 'Žiadne úlohy.'}</p>
-                  <button className="gantt__empty-btn" onClick={() => addTask(null)}>
-                    + {t?.addFirstTask || 'Pridať prvú úlohu'}
-                  </button>
+                  {tasks.length === 0 ? (
+                    <>
+                      <p>{t?.noTasks || 'Žiadne úlohy.'}</p>
+                      <button className="gantt__empty-btn" onClick={() => addTask(null)}>
+                        + {t?.addFirstTask || 'Pridať prvú úlohu'}
+                      </button>
+                    </>
+                  ) : (
+                    <p>{t?.noResultsForFilters || 'Podľa zadaných filtrov sa nenašli žiadne úlohy.'}</p>
+                  )}
                 </div>
               ) : (
                 filteredTasks.map(task => {
@@ -635,12 +771,53 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
               )}
                 </div>
               {/* Allow starting column resize from body */}
-              
+              {/* Full-height resizer overlays between columns - clickable from any row */}
+                <div className="gantt__table-resizers" aria-hidden="true">
+                  {(() => {
+                    const cols = ['name','date','duration','progress','actions'];
+                    const resizers = [];
+                    const widthFor = (c) => (typeof columnWidths[c] === 'number' ? columnWidths[c] : (DEFAULT_COLUMN_WIDTHS[c] || 0));
+                    let cum = 0;
+                    for (let i = 0; i < cols.length - 1; i++) {
+                      const col = cols[i];
+                      cum += widthFor(col);
+
+                      // find nearest visible columns to left and right of this boundary
+                      let leftVisible = null;
+                      for (let j = i; j >= 0; j--) {
+                        if (widthFor(cols[j]) > 0) { leftVisible = cols[j]; break; }
+                      }
+                      let rightVisible = null;
+                      for (let j = i + 1; j < cols.length; j++) {
+                        if (widthFor(cols[j]) > 0) { rightVisible = cols[j]; break; }
+                      }
+
+                      // render resizer only when it separates two different visible columns
+                      if (leftVisible && rightVisible && leftVisible !== rightVisible) {
+                        // compute left position based on leftVisible cumulative width
+                        const leftIndex = cols.indexOf(leftVisible);
+                        const leftPos = cols.slice(0, leftIndex + 1).reduce((s, c) => s + widthFor(c), 0);
+
+                        resizers.push(
+                          <div
+                            key={`resizer-${i}`}
+                            className="gantt__table-resizer"
+                            style={{ left: `${leftPos}px` }}
+                            onMouseDown={(e) => handleColumnResize(leftVisible, e)}
+                            onTouchStart={(e) => handleColumnTouchStart(leftVisible, e)}
+                          />
+                        );
+                      }
+                    }
+                    return resizers;
+                  })()}
+                </div>
               </div>
             </div>
+          )}
 
-
-            {/* Chart Body */}
+          {/* Chart Body */}
+          {viewMode !== 'table-only' && (
             <div className="gantt__chart-body">
               <div
                 className="gantt__chart-body-scroll"
@@ -716,56 +893,105 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                 </>
               )}
                 </div>
-                {/* Full-height resizer overlays between columns - clickable from any row */}
-                <div className="gantt__table-resizers" aria-hidden="true">
-                  {(() => {
-                    const cols = ['name','date','duration','progress','actions'];
-                    const resizers = [];
-                    const widthFor = (c) => (typeof columnWidths[c] === 'number' ? columnWidths[c] : (DEFAULT_COLUMN_WIDTHS[c] || 0));
-                    let cum = 0;
-                    for (let i = 0; i < cols.length - 1; i++) {
-                      const col = cols[i];
-                      cum += widthFor(col);
+                {/* Full-height resizer overlays between columns - only in both mode */}
+                {viewMode === 'both' && (
+                  <div className="gantt__table-resizers" aria-hidden="true">
+                    {(() => {
+                      const cols = ['name','date','duration','progress','actions'];
+                      const resizers = [];
+                      const widthFor = (c) => (typeof columnWidths[c] === 'number' ? columnWidths[c] : (DEFAULT_COLUMN_WIDTHS[c] || 0));
+                      let cum = 0;
+                      for (let i = 0; i < cols.length - 1; i++) {
+                        const col = cols[i];
+                        cum += widthFor(col);
 
-                      // find nearest visible columns to left and right of this boundary
-                      let leftVisible = null;
-                      for (let j = i; j >= 0; j--) {
-                        if (widthFor(cols[j]) > 0) { leftVisible = cols[j]; break; }
-                      }
-                      let rightVisible = null;
-                      for (let j = i + 1; j < cols.length; j++) {
-                        if (widthFor(cols[j]) > 0) { rightVisible = cols[j]; break; }
-                      }
+                        // find nearest visible columns to left and right of this boundary
+                        let leftVisible = null;
+                        for (let j = i; j >= 0; j--) {
+                          if (widthFor(cols[j]) > 0) { leftVisible = cols[j]; break; }
+                        }
+                        let rightVisible = null;
+                        for (let j = i + 1; j < cols.length; j++) {
+                          if (widthFor(cols[j]) > 0) { rightVisible = cols[j]; break; }
+                        }
 
-                      // render resizer only when it separates two different visible columns
-                      if (leftVisible && rightVisible && leftVisible !== rightVisible) {
-                        // compute left position based on leftVisible cumulative width
-                        const leftIndex = cols.indexOf(leftVisible);
-                        const leftPos = cols.slice(0, leftIndex + 1).reduce((s, c) => s + widthFor(c), 0);
+                        // render resizer only when it separates two different visible columns
+                        if (leftVisible && rightVisible && leftVisible !== rightVisible) {
+                          // compute left position based on leftVisible cumulative width
+                          const leftIndex = cols.indexOf(leftVisible);
+                          const leftPos = cols.slice(0, leftIndex + 1).reduce((s, c) => s + widthFor(c), 0);
 
-                        resizers.push(
-                          <div
-                            key={`resizer-${i}`}
-                            className="gantt__table-resizer"
-                            style={{ left: `${leftPos}px` }}
-                            onMouseDown={(e) => handleColumnResize(leftVisible, e)}
-                          />
-                        );
+                          resizers.push(
+                            <div
+                              key={`resizer-${i}`}
+                              className="gantt__table-resizer"
+                              style={{ left: `${leftPos}px` }}
+                              onMouseDown={(e) => handleColumnResize(leftVisible, e)}
+                              onTouchStart={(e) => handleColumnTouchStart(leftVisible, e)}
+                            />
+                          );
+                        }
                       }
-                    }
-                    return resizers;
-                  })()}
-                </div>
+                      return resizers;
+                    })()}
+                  </div>
+                )}
               </div>
             </div>
+          )}
         </div>
 
         {/* Single Split Divider - spans full height */}
-        <div
-          className="gantt__split-divider"
-          style={{ left: `${tableWidth}px` }}
-          onMouseDown={handleSplitMouseDown}
-        />
+        {viewMode === 'both' && (
+          <div
+            className="gantt__split-divider"
+            style={{ left: `${tableWidth}px` }}
+            onMouseDown={handleSplitMouseDown}
+            onTouchStart={handleSplitTouchStart}
+          >
+            {/* View mode toggle buttons */}
+            <div className="gantt__view-toggle">
+              <button
+                className="gantt__view-toggle-btn"
+                onClick={() => setViewMode('chart-only')}
+              >
+                ◀
+              </button>
+              <button
+                className="gantt__view-toggle-btn"
+                onClick={() => setViewMode('table-only')}
+              >
+                ▶
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Restore buttons when in single view mode */}
+        {viewMode === 'table-only' && (
+          <button
+            className="gantt__restore-btn gantt__restore-btn--right"
+            onClick={() => {
+              // On mobile/tablet, toggle to chart-only instead of both
+              const isMobile = window.innerWidth <= 768;
+              setViewMode(isMobile ? 'chart-only' : 'both');
+            }}
+          >
+            ◀
+          </button>
+        )}
+        {viewMode === 'chart-only' && (
+          <button
+            className="gantt__restore-btn gantt__restore-btn--left"
+            onClick={() => {
+              // On mobile/tablet, toggle to table-only instead of both
+              const isMobile = window.innerWidth <= 768;
+              setViewMode(isMobile ? 'table-only' : 'both');
+            }}
+          >
+            ▶
+          </button>
+        )}
       </div>
 
       {/* Legend */}
@@ -793,6 +1019,13 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
         onClose={() => setIsCategoryManagerOpen(false)}
         translations={t}
       />
+
+      {/* Footer */}
+      <div className="gantt__footer">
+        <span className="gantt__footer-text">
+          © {new Date().getFullYear()} {t?.createdBy || 'Vytvoril'} Jozef Barčák. {t?.allRightsReserved || 'Všetky práva vyhradené'}.
+        </span>
+      </div>
     </div>
   );
 };
