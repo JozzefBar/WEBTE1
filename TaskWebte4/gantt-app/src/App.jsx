@@ -20,7 +20,7 @@ function App() {
   useEffect(() => {
     const loadLocale = async () => {
       try {
-        const res = await fetch(`/locales/${language}.json`);
+        const res = await fetch(`./locales/${language}.json`);
         if (!res.ok) throw new Error('Locale fetch failed');
         const data = await res.json();
         setT(data);

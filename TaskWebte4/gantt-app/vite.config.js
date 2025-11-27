@@ -4,9 +4,9 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  base: '/~xbarcakj/TaskWebte/TaskWebte4/dist/',
   server: {
-    host: true, // Enables access from local network (mobile/tablet)
+    host: true,
     port: 5173,
   },
 })

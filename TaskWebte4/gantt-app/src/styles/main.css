@@ -322,6 +322,7 @@ body {
   cursor: col-resize;
   background: transparent;
   z-index: 60;
+  touch-action: none; /* Prevent scrolling when touching/dragging resizers */
 }
 
 .gantt__table-resizer:hover {
@@ -374,6 +375,7 @@ body {
   cursor: col-resize;
   transition: background-color 0.15s;
   z-index: 100; /* Must be higher than table resizers (60) */
+  touch-action: none; /* Prevent scrolling when touching/dragging divider */
 }
 
 .gantt__split-divider:hover {

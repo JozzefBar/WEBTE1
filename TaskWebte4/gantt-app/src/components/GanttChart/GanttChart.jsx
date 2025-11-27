@@ -255,7 +255,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
 
   // Handle split resize - Touch support
   const handleSplitTouchStart = (e) => {
-    e.preventDefault();
     setIsResizingSplit(true);
 
     const handleTouchMove = (e) => {
@@ -349,7 +348,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
 
   // Handle column resize - Touch support
   const handleColumnTouchStart = (column, e) => {
-    e.preventDefault();
     setResizingColumn(column);
     const startX = e.touches[0].clientX;
     const startWidth = columnWidths[column] || DEFAULT_COLUMN_WIDTHS[column] || 60;
@@ -770,48 +768,6 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                 })
               )}
                 </div>
-              {/* Allow starting column resize from body */}
-              {/* Full-height resizer overlays between columns - clickable from any row */}
-                <div className="gantt__table-resizers" aria-hidden="true">
-                  {(() => {
-                    const cols = ['name','date','duration','progress','actions'];
-                    const resizers = [];
-                    const widthFor = (c) => (typeof columnWidths[c] === 'number' ? columnWidths[c] : (DEFAULT_COLUMN_WIDTHS[c] || 0));
-                    let cum = 0;
-                    for (let i = 0; i < cols.length - 1; i++) {
-                      const col = cols[i];
-                      cum += widthFor(col);
-
-                      // find nearest visible columns to left and right of this boundary
-                      let leftVisible = null;
-                      for (let j = i; j >= 0; j--) {
-                        if (widthFor(cols[j]) > 0) { leftVisible = cols[j]; break; }
-                      }
-                      let rightVisible = null;
-                      for (let j = i + 1; j < cols.length; j++) {
-                        if (widthFor(cols[j]) > 0) { rightVisible = cols[j]; break; }
-                      }
-
-                      // render resizer only when it separates two different visible columns
-                      if (leftVisible && rightVisible && leftVisible !== rightVisible) {
-                        // compute left position based on leftVisible cumulative width
-                        const leftIndex = cols.indexOf(leftVisible);
-                        const leftPos = cols.slice(0, leftIndex + 1).reduce((s, c) => s + widthFor(c), 0);
-
-                        resizers.push(
-                          <div
-                            key={`resizer-${i}`}
-                            className="gantt__table-resizer"
-                            style={{ left: `${leftPos}px` }}
-                            onMouseDown={(e) => handleColumnResize(leftVisible, e)}
-                            onTouchStart={(e) => handleColumnTouchStart(leftVisible, e)}
-                          />
-                        );
-                      }
-                    }
-                    return resizers;
-                  })()}
-                </div>
               </div>
             </div>
           )}
@@ -893,50 +849,51 @@ const GanttChart = ({ dateRange, onDateRangeChange, selectedTags, onTagToggle, o
                 </>
               )}
                 </div>
-                {/* Full-height resizer overlays between columns - only in both mode */}
-                {viewMode === 'both' && (
-                  <div className="gantt__table-resizers" aria-hidden="true">
-                    {(() => {
-                      const cols = ['name','date','duration','progress','actions'];
-                      const resizers = [];
-                      const widthFor = (c) => (typeof columnWidths[c] === 'number' ? columnWidths[c] : (DEFAULT_COLUMN_WIDTHS[c] || 0));
-                      let cum = 0;
-                      for (let i = 0; i < cols.length - 1; i++) {
-                        const col = cols[i];
-                        cum += widthFor(col);
-
-                        // find nearest visible columns to left and right of this boundary
-                        let leftVisible = null;
-                        for (let j = i; j >= 0; j--) {
-                          if (widthFor(cols[j]) > 0) { leftVisible = cols[j]; break; }
-                        }
-                        let rightVisible = null;
-                        for (let j = i + 1; j < cols.length; j++) {
-                          if (widthFor(cols[j]) > 0) { rightVisible = cols[j]; break; }
-                        }
-
-                        // render resizer only when it separates two different visible columns
-                        if (leftVisible && rightVisible && leftVisible !== rightVisible) {
-                          // compute left position based on leftVisible cumulative width
-                          const leftIndex = cols.indexOf(leftVisible);
-                          const leftPos = cols.slice(0, leftIndex + 1).reduce((s, c) => s + widthFor(c), 0);
-
-                          resizers.push(
-                            <div
-                              key={`resizer-${i}`}
-                              className="gantt__table-resizer"
-                              style={{ left: `${leftPos}px` }}
-                              onMouseDown={(e) => handleColumnResize(leftVisible, e)}
-                              onTouchStart={(e) => handleColumnTouchStart(leftVisible, e)}
-                            />
-                          );
-                        }
-                      }
-                      return resizers;
-                    })()}
-                  </div>
-                )}
               </div>
+            </div>
+          )}
+
+          {/* Full-height resizer overlays between columns - works in both and table-only modes */}
+          {viewMode !== 'chart-only' && (
+            <div className="gantt__table-resizers" aria-hidden="true">
+              {(() => {
+                const cols = ['name','date','duration','progress','actions'];
+                const resizers = [];
+                const widthFor = (c) => (typeof columnWidths[c] === 'number' ? columnWidths[c] : (DEFAULT_COLUMN_WIDTHS[c] || 0));
+                let cum = 0;
+                for (let i = 0; i < cols.length - 1; i++) {
+                  const col = cols[i];
+                  cum += widthFor(col);
+
+                  // find nearest visible columns to left and right of this boundary
+                  let leftVisible = null;
+                  for (let j = i; j >= 0; j--) {
+                    if (widthFor(cols[j]) > 0) { leftVisible = cols[j]; break; }
+                  }
+                  let rightVisible = null;
+                  for (let j = i + 1; j < cols.length; j++) {
+                    if (widthFor(cols[j]) > 0) { rightVisible = cols[j]; break; }
+                  }
+
+                  // render resizer only when it separates two different visible columns
+                  if (leftVisible && rightVisible && leftVisible !== rightVisible) {
+                    // compute left position based on leftVisible cumulative width
+                    const leftIndex = cols.indexOf(leftVisible);
+                    const leftPos = cols.slice(0, leftIndex + 1).reduce((s, c) => s + widthFor(c), 0);
+
+                    resizers.push(
+                      <div
+                        key={`resizer-${i}`}
+                        className="gantt__table-resizer"
+                        style={{ left: `${leftPos}px` }}
+                        onMouseDown={(e) => handleColumnResize(leftVisible, e)}
+                        onTouchStart={(e) => handleColumnTouchStart(leftVisible, e)}
+                      />
+                    );
+                  }
+                }
+                return resizers;
+              })()}
             </div>
           )}
         </div>
